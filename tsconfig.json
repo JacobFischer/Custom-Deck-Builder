@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "none",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "sourceMap": true,
+        "outDir": "js",
+        "target": "es2015"
+    },
+    "include": [
+        "node_modules/@types/**/*.d.ts",
+        "src/**/*.ts"
+    ]
+}

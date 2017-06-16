@@ -1,0 +1,22 @@
+{
+  "name": "custom-deck-builder",
+  "author": {
+    "name": "Jacob Fischer"
+  },
+  "homepage": "https://github.com/JacobFischer/Custom-Deck-Builder",
+  "version": "1.0.0",
+  "description": "Custom Deck Builder",
+  "private": true,
+  "dependencies": {
+    "babel-core": "^6.23.1",
+    "babel-loader": "^6.3.2",
+    "babel-preset-es2015-native-modules": "^6.9.4",
+    "ts-loader": "2.0.1",
+    "typescript": "2.2.1",
+    "webpack": "^2.2.1"
+  },
+  "directories": {},
+  "scripts": {
+    "app": "webpack-dev-server --progress --colors --host 0.0.0.0 --port 8080"
+  }
+}
