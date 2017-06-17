@@ -1,28 +1,31 @@
 "use strict";
 
-import * as _ from 'lodash';
+import * as PIXI from 'pixi.js';
+import * as img from '../images/bunny.png';
 
-import { ANSWER } from './modules/constants';
-import SmartClass from './modules/functions';
-import { OtherClass } from './modules/lib';
+console.log("bunny", img);
 
+const app = new PIXI.Application(800, 600, {backgroundColor : 0x1099bb});
+document.body.appendChild(app.view);
 
-let words: string[] = ['hello', 'world'];
-_.each(words, word => console.log(word));
+// create a new Sprite from an image path
+const bunny = PIXI.Sprite.fromImage(img);
 
-console.log('here are some number: ');
-[1, 2, 3].map(n => n ** 2).forEach(console.log)
+// center the sprite's anchor point
+bunny.anchor.set(0.5);
 
+// move the sprite to the center of the screen
+bunny.x = app.renderer.width / 2;
+bunny.y = app.renderer.height / 2;
 
-console.log(`but we only trust this one: ${ANSWER}`);
+app.stage.addChild(bunny);
 
+// Listen for animate update
+app.ticker.add((delta) => {
+    // just for fun, let's rotate mr rabbit a little
+    // delta is 1 if running at 100% performance
+    // creates frame-independent tranformation
+    bunny.rotation += 0.1 * delta;
+});
 
-console.log('et voilà!');
-
-let instance: SmartClass = new SmartClass();
-instance.doSomethingSmart();
-
-var t: OtherClass = new OtherClass();
-t.justDoIt();
-
-console.log('--- DONE several modules used and no one hurt JTF ---')
+console.log('--- DONE several modules used and no one hurt JTF ---');
