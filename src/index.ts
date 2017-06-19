@@ -1,31 +1,31 @@
 "use strict";
 
-import * as PIXI from 'pixi.js';
-import * as img from '../images/bunny.png';
+import { initialize } from './initialize';
+import { Card } from './card';
 
-console.log("bunny", img);
+initialize((app) => {
+    /*
+    // create a new Sprite from an image path
+    const bunny = new PIXI.Sprite(PIXI.loader.resources['starter'].texture);
+    // center the sprite's anchor point
+    bunny.anchor.set(0.5);
 
-const app = new PIXI.Application(800, 600, {backgroundColor : 0x1099bb});
-document.body.appendChild(app.view);
+    // move the sprite to the center of the screen
+    bunny.x = app.renderer.width / 2;
+    bunny.y = app.renderer.height / 2;
 
-// create a new Sprite from an image path
-const bunny = PIXI.Sprite.fromImage(img);
+    app.stage.addChild(bunny);
 
-// center the sprite's anchor point
-bunny.anchor.set(0.5);
+    // Listen for animate update
+    app.ticker.add((delta) => {
+        // just for fun, let's rotate mr rabbit a little
+        // delta is 1 if running at 100% performance
+        // creates frame-independent transformation
+        bunny.rotation += 0.1 * delta;
+    });
+    */
 
-// move the sprite to the center of the screen
-bunny.x = app.renderer.width / 2;
-bunny.y = app.renderer.height / 2;
+    const card = new Card('Batman', 'Hero', '', 3, 9, '+2 Power for each Equipment you Control.');
 
-app.stage.addChild(bunny);
-
-// Listen for animate update
-app.ticker.add((delta) => {
-    // just for fun, let's rotate mr rabbit a little
-    // delta is 1 if running at 100% performance
-    // creates frame-independent tranformation
-    bunny.rotation += 0.1 * delta;
+    card.draw(app);
 });
-
-console.log('--- DONE several modules used and no one hurt JTF ---');
