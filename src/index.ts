@@ -13,7 +13,7 @@ const card = new Card(
     '',
     2,
     7,
-    '<b>+2 Power</b>\n\n<b>Defense:</b> You may discard this card to avoid an <b>Attack</b>. If you do, draw two cards and you may put an <b>Ongoing</b> card from your discard pile into play.',
+    '<b>+2 Power</b>\n\n<b>Defense:</b> You may discard this card to avoid an <b>Attack</b>. If you do, draw two cards and you may put an <b>Ongoing</b> card from your discard pile into play.</i>',
     mercyHor,
     'https://i.imgur.com/ovWF3PC.png',
     38,

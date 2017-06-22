@@ -37,6 +37,7 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
     let line: string[] = [];
     let dy = 0;
     let bolding = false;
+    let italics = false;
     for (let i = 0; i < words.length; i++) {
         console.log(i, words[i]);
         if (!tspan) {
@@ -46,15 +47,26 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
             textElement.appendChild(tspan);
         }
 
+        // check to start/end the bolding/italics
         let  word = words[i];
-        if (word.startsWith(BOLD_START)) {
+        if (word.indexOf(BOLD_START) !== -1) {
             word = word.replace(BOLD_START, BOLD_TAG);
             bolding = true;
         }
+
+        if (word.indexOf(ITALIC_START) !== -1) {
+            word = word.replace(ITALIC_START, ITALIC_TAG);
+            italics = true;
+        }
         
-        if (word.endsWith(BOLD_END)) {
+        if (word.indexOf(BOLD_END) !== -1) {
             word = word.replace(BOLD_END, END_TAG);
             bolding = false;
+        }
+
+        if (word.indexOf(ITALIC_END) !== -1) {
+            word = word.replace(ITALIC_END, END_TAG);
+            italics = false;
         }
 
         // assume we now want a new line
@@ -85,10 +97,11 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
 
         console.log(currentWidth);
         if (newline) {
-            if (bolding) {
-                // stop bolding
+            if (bolding || italics) {
+                // stop bolding or italics
                 line[line.length - 1] = line[line.length - 1] + END_TAG;
-                bolding = true;
+                bolding = false;
+                italics = false;
             }
 
             tspan.innerHTML = line.join(' ');
