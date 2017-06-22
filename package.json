@@ -8,6 +8,8 @@
   "description": "Custom Deck Builder",
   "private": true,
   "dependencies": {
+    "@types/fontfaceobserver": "0.0.5",
+    "@types/handlebars": "^4.0.33",
     "@types/node": "^7.0.31",
     "@types/pixi.js": "^4.5.0",
     "@types/webpack-env": "^1.13.0",
@@ -15,6 +17,9 @@
     "babel-loader": "^6.3.2",
     "babel-preset-es2015-native-modules": "^6.9.4",
     "file-loader": "^0.11.2",
+    "fontfaceobserver": "^2.0.13",
+    "handlebars": "^4.0.10",
+    "handlebars-loader": "^1.5.0",
     "pixi.js": "^4.5.3",
     "ts-loader": "2.0.1",
     "typescript": "2.2.1",

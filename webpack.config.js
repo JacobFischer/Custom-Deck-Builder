@@ -55,15 +55,30 @@ module.exports = {
           {
             loader: 'file-loader',
             options: {
-              outputPath: 'images/',
+              outputPath: 'resources/',
             },
           },
         ],
       },
+      {
+        test: /\.hbs$/,
+        use: { 
+          loader: "handlebars-loader",
+          options: {
+            helperDirs: [ __dirname + '/src/handlebars-helpers' ],
+          },
+        },
+      },
     ]
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js"]
+    extensions: [".tsx", ".ts", ".js"],
+    alias: {
+       //handlebars: 'handlebars/dist/handlebars.min.js' // allows handlebars to work without the need for 'fs'
+    }
+  },
+  node: {
+    fs: "empty"
   },
   devtool: 'source-map',
   plugins: [
