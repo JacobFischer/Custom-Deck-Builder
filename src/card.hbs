@@ -1,8 +1,5 @@
 <!--<svg width="750px" height="1050px">-->
   <defs>
-    <filter id="back" x="0" y="0" width="200%" height="200%">
-      <feBlend in="SourceGraphic" in2="offOut" mode="normal"/>
-    </filter>
     <filter id="shadow">
       <feDropShadow dx="4" dy="8" stdDeviation="0"/>
     </filter>
@@ -16,29 +13,27 @@
   <image xlink:href="{{backgroundCostImage}}" x="0" y="0" width="750px" height="1050"/>
 
   <!-- Text -->
-  <text id="card-name" alignment-baseline="baseline" x="40", y="120" fill="#FFFFFF" style="font-family: CompactaBT; font-size: 83.33px; fill: #FFFFFF; font-style: italic;" transform="scale(1 0.75)" filter="url(#shadow)" letter-spacing="0.1">{{name}}</text>
-  <text id="card-type" alignment-baseline="baseline" x="40", y="933" fill="{{typeFill}}" style="font-family: CompactaBT; font-size: 60px; font-style: italic;" transform="scale(1 0.75)" letter-spacing="1">{{type}}</text>
+  <text class="card-name" x="40", y="120" transform="scale(1 0.75)" filter="url(#shadow)">{{name}}</text>
 
+  <!-- Card type bannar -->
+  <text class="card-type card-maintype" x="40", y="933" transform="scale(1 0.75)">{{type}}</text>
   {{#if subtype}}
-  <text id="card-subtype" text-anchor="end" alignment-baseline="baseline" x="710", y="933" fill="{{typeFill}}" style="font-family: CompactaBT; font-size: 30px; font-style: italic;" transform="scale(1 0.75)" letter-spacing="0.5">{{subtype}}</text>
+  <text class="card-type card-subtype" text-anchor="end" x="710", y="933" transform="scale(1 0.75)">{{subtype}}</text>
   {{/if}}
+
+  <!-- Main body text -->
+  <text class="card-text" x="40" y="764" width="700" style="font-size: {{textSize}}px;"></text>
+
+  <!-- Bottom -->
+  <text class="card-copyright" x="224" y="937">{{copyright}}</text>
+  <text class="card-legal" x="224" y="972" width="332"></text>
 
   {{#if vpVariableImage}}
   <image xlink:href="{{vpVariableImage}}" x="0" y="0" width="750px" height="1050"/>
   {{else}}
-  <text id="card-vp" text-anchor="middle" x="87", y="1320" fill="#FFFFFF" style="font-family: CompactaBdBT; font-size: 48.75px; fill: #000000; paint-order: stroke; stroke:#fcb041;stroke-width:6px; stroke-linecap: butt; stroke-linejoin: miter;" transform="scale(1 0.75)">{{vp}}</text>
+  <text class="card-vp" text-anchor="middle" x="87", y="1320" transform="scale(1 0.75)">{{vp}}</text>
   {{/if}}
-  <text id="card-cost-back" text-anchor="middle" x="640", y="982" style="font-family: CompactaBdBT; font-weight: bold; font-size: 91.67px; fill: #000000; paint-order: stroke; stroke:#646569; stroke-width:20px; stroke-linecap: round; stroke-linejoin: round;">{{cost}}</text>
-  <text id="card-cost" text-anchor="middle" x="640", y="982" style="font-family: CompactaBdBT; font-weight: bold; font-size: 91.67px; fill: #000000; paint-order: stroke; stroke:#ffffff; stroke-width:12px; stroke-linecap: round; stroke-linejoin: round;">{{cost}}</text>
+  <text class="card-cost-back" text-anchor="middle" x="640", y="982">{{cost}}</text>
+  <text class="card-cost" text-anchor="middle" x="640", y="982">{{cost}}</text>
 
-  <!--{{#each blocks as |block blockKey|}}
-  {{#each lines as |line lineKey|}}
-  <text id="card-text" x="40" y="{{eval blockKey '*' 10 '+' lineKey '*' 34 '+' 760}}" style="font-family: TradeGothic; font-size: 33.33px; fill: #000000; letter-spacing: -1.5;">{{{block}}}</text>
-  {{/each}}
-  {{/each}}-->
-  <text id="card-text" x="40" y="764" width="720" style="font-family: TradeGothic; font-size: {{textSize}}px; fill: #000000; letter-spacing: -1.5;"></text>
-
-  <!-- Bottom copyright stuff -->
-  <text id="card-copyright" x="224" y="937" style="font-family: TradeGothic; font-size: 20px; fill: #000000; letter-spacing: -0.3;">{{copyright}}</text>
-  <text id="card-legal" x="224" y="972" width="332" style="font-family: TradeGothic; font-size: 20px; fill: #ffffff; letter-spacing: -0.3;"></text>
 <!--</svg>-->

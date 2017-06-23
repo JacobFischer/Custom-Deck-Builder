@@ -1,0 +1,165 @@
+@font-face {
+    font-family: CompactaBT;
+    src: url("../resources/fonts/CompactaBT-Roman.otf") format("opentype");
+}
+
+@font-face {
+    font-family: CompactaBT;
+    font-weight: bold;
+    src: url("../resources/fonts/CompactaBT-Bold.otf") format("opentype");
+}
+
+@font-face {
+    font-family: CompactaBT;
+    font-style: italic;
+    src: url("../resources/fonts/CompactaBT-Italic.otf") format("opentype");
+}
+
+
+
+@font-face {
+    font-family: CompactaBdBT;
+    src: url("../resources/fonts/Compacta-Bd-BT-Roman.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: CompactaBdBT;
+    font-weight: bold;
+    src: url("../resources/fonts/Compacta-Bd-BT-Bold.ttf") format("truetype");
+}
+
+
+
+@font-face {
+    font-family: TradeGothic;
+    src: url("../resources/fonts/TradeGothic-Regular.woff") format("woff");
+}
+
+@font-face {
+    font-family: TradeGothic;
+    font-weight: bold;
+    src: url("../resources/fonts/TradeGothic-Bold.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: TradeGothic;
+    font-style: italic;
+    src: url("../resources/fonts/TradeGothic-Italic.otf") format("opentype");
+}
+
+.custom-card {
+    // General stylings for all cards
+    & .card-name {
+        font-family: CompactaBT;
+        font-size: 83.33px;
+        font-style: italic;
+        letter-spacing: 0.1;
+    }
+
+    & .card-type {
+        fill: #ffffff;
+        font-family: CompactaBT;
+        font-size: 30px;
+        font-style: italic;
+        letter-spacing: 1.25;
+
+        &.card-maintype {
+            font-size: 60px;
+            letter-spacing: 2.5;
+        }
+    }
+
+    & .card-text {
+        fill: #000000;
+        font-family: TradeGothic;
+        letter-spacing: -1.5;
+    }
+
+    & .card-copyright, & .card-legal {
+        fill: #ffffff;
+        font-family: TradeGothic;
+        font-size: 20px;
+        letter-spacing: -0.3;
+    }
+
+    & .card-copyright {
+        fill: #000000;
+    }
+
+    & .card-vp, & .card-cost-back, & .card-cost {
+        font-family: CompactaBdBT;
+        fill: #000000;
+        paint-order: stroke;
+        stroke-linejoin: round;
+        stroke-linecap: round;
+    }
+
+    & .card-vp {
+        font-size: 48.75px;
+        stroke:#fcb041;
+        stroke-width: 6px;
+    }
+
+    & .card-cost-back, & .card-cost {
+        font-weight: bold;
+        font-size: 91.67px;
+        stroke:#646569;
+        stroke-width: 20px;
+    }
+
+    & .card-cost {
+        stroke:#ffffff;
+        stroke-width: 12px;
+    }
+
+
+    // Specific card types
+
+    &.main-type-super-hero, &.main-type-super-villian {
+        & .card-text {
+            fill: #ffffff;
+        }
+
+        & .card-copyright {
+            fill: #ffffff;
+        }
+    }
+
+    &.main-type-hero, &.main-type-super-hero {
+        & .card-name {
+            fill: #00a5e3;
+        }
+    }
+
+    &.main-type-superpower {
+        & .card-name {
+            fill: #f77d27;
+        }
+
+        & .card-type {
+            fill: #000000;
+        }
+    }
+
+    &.main-type-equipment {
+        & .card-name {
+            fill: #ffffff;
+        }
+
+        & .card-type {
+            fill: #000000;
+        }
+    }
+
+    &.main-type-villain {
+        & .card-name {
+            fill: #ed2122;
+        }
+    }
+
+    &.main-type-location {
+        & .card-name {
+            fill: #ea078c;
+        }
+    }
+}

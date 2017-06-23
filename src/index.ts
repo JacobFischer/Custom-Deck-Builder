@@ -10,15 +10,16 @@ const oldLogo = 'https://i.imgur.com/UM1GVo9.png';
 const card = new Card(
     'Angela Ziegler',
     'Hero',
+    false,
     '',
     2,
     7,
-    '<b>+2 Power</b>\n\n<b>Defense:</b> You may discard this card to avoid an <b>Attack</b>. If you do, draw two cards and you may put an <b>Ongoing</b> card from your discard pile into play.</i>',
+    '<b>+2 Power</b>\n\n<b>Defense:</b> You may discard this card to avoid an <b>Attack</b>. If you do, draw two cards and you may put an <b>Ongoing</b> card from your discard pile into play.',
     mercyHor,
     'https://i.imgur.com/ovWF3PC.png',
     38,
     '2017 CZE',
-    'All Overwatch characters and elements\n© and ™ Blizzard.\n(s1)',
+    'All Overwatch characters and\nelements © and ™ Blizzard.\n(s01)',
     'Mercy',
 );
 

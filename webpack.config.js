@@ -61,6 +61,17 @@ module.exports = {
         ],
       },
       {
+        test: /\.(ttf|otf|woff)$/i,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: 'resources/',
+            },
+          },
+        ],
+      },
+      {
         test: /\.hbs$/,
         use: { 
           loader: "handlebars-loader",
@@ -69,6 +80,20 @@ module.exports = {
           },
         },
       },
+      {
+        test: /\.(css|sass|scss)$/,
+        use: [
+          {
+            loader: "style-loader" // creates style nodes from JS strings
+          },
+          {
+            loader: "css-loader" // translates CSS into CommonJS
+          },
+          {
+            loader: "sass-loader" // compiles Sass to CSS
+          }
+        ]
+      }
     ]
   },
   resolve: {
