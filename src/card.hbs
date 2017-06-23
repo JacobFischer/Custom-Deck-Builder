@@ -16,9 +16,11 @@
   <text class="card-name" x="40", y="120" transform="scale(1 0.75)" filter="url(#shadow)">{{name}}</text>
 
   <!-- Card type bannar -->
+  {{#if type}}
   <text class="card-type card-maintype" x="40", y="933" transform="scale(1 0.75)">{{type}}</text>
   {{#if subtype}}
   <text class="card-type card-subtype" text-anchor="end" x="710", y="933" transform="scale(1 0.75)">{{subtype}}</text>
+  {{/if}}
   {{/if}}
 
   <!-- Main body text -->

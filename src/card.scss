@@ -131,7 +131,7 @@
         }
     }
 
-    &.main-type-superpower {
+    &.main-type-super-power {
         & .card-name {
             fill: #f77d27;
         }
@@ -160,6 +160,26 @@
     &.main-type-location {
         & .card-name {
             fill: #ea078c;
+        }
+    }
+
+    &.main-type-starter {
+        & .card-name {
+            fill: #fff200;
+        }
+
+        & .card-type {
+            fill: #000000;
+        }
+    }
+
+    &.main-type-weakness {
+        & .card-name {
+            fill: #8dc73f;
+        }
+
+        & .card-type {
+            fill: #000000;
         }
     }
 }

@@ -48,7 +48,7 @@ export class Card {
         }
 
         const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        const variantType = ((this.variant ? 'super-' : '') + this.type).toLowerCase();
+        const variantType = ((this.variant ? 'super-' : '') + this.type).replace(' ', '-').toLowerCase();
 
         // TODO: extract this from the template?
         svgElement.setAttribute('width', '750px');
@@ -58,7 +58,7 @@ export class Card {
 
         svgElement.innerHTML = template({
             name: this.name.toUpperCase(),
-            type: this.type.toUpperCase(),
+            type: this.type !== 'Weakness' && this.type.toUpperCase(),
             backgroundTypeImage: require(`../resources/card-templates/${variantType}.png`),
             backgroundVPImage: require(`../resources/card-templates/background-vp-${vpKey}.png`),
             backgroundCostImage: require(`../resources/card-templates/background-cost.png`),
@@ -70,7 +70,7 @@ export class Card {
             textSize: this.textSize,
             copyright: this.copyright,
             legal: this.legal,
-            subtype: this.subtype.toUpperCase(),
+            subtype: this.type !== 'Weakness' && this.subtype.toUpperCase(),
         });
 
         // now we need to manually wrap the text, because svg can't do that for whatever reason :P
