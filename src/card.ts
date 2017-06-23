@@ -22,7 +22,7 @@ export class Card {
 
     constructor(
         readonly name: string,
-        readonly type: 'Equipment' | 'Hero' | 'Location' | 'Starter' | 'Super Hero' | 'Super Power' | 'Super Villain' | 'Villain' | 'Weakness',
+        readonly baseType: 'Equipment' | 'Hero' | 'Location' | 'Starter' | 'Super Power' | 'Villain' | 'Weakness',
         readonly variant: boolean = false,
         readonly typePrefix: string = '',
         readonly victoryPoints: '*' | number = 1,
@@ -48,29 +48,34 @@ export class Card {
         }
 
         const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        const variantType = ((this.variant ? 'super-' : '') + this.type).replace(' ', '-').toLowerCase();
+        let variantType: string = this.baseType;
+        if (this.variant && (this.baseType === 'Hero' || this.baseType === 'Villain')) {
+            variantType = `Super ${variantType}`;
+        }
+        variantType = variantType.replace(' ', '-').toLowerCase();
 
         // TODO: extract this from the template?
         svgElement.setAttribute('width', '750px');
         svgElement.setAttribute('height', '1050px');
         svgElement.setAttribute('viewBox', '0 0 750 1050');
-        svgElement.setAttribute('class', `custom-card main-type-${variantType}`);
+        svgElement.setAttribute('class', `custom-card main-type-${this.baseType.replace(' ', '-').toLowerCase()} ${this.variant ? 'variant' : 'normal'}`);
 
         svgElement.innerHTML = template({
             name: this.name.toUpperCase(),
-            type: this.type !== 'Weakness' && this.type.toUpperCase(),
+            type: this.baseType !== 'Weakness' && this.baseType.toUpperCase(),
             backgroundTypeImage: require(`../resources/card-templates/${variantType}.png`),
             backgroundVPImage: require(`../resources/card-templates/background-vp-${vpKey}.png`),
             backgroundCostImage: require(`../resources/card-templates/background-cost.png`),
             vpVariableImage: this.victoryPoints === '*' && require(`../resources/card-templates/vp-variable.png`),
-            vp: this.victoryPoints,
+            vpType: this.victoryPoints < 0 ? 'negative' : 'positive',
+            vp: Math.abs(<number>this.victoryPoints),
             cost: this.cost,
             imageURL: this.imageURL,
             logoURL: this.logoURL,
             textSize: this.textSize,
             copyright: this.copyright,
             legal: this.legal,
-            subtype: this.type !== 'Weakness' && this.subtype.toUpperCase(),
+            subtype: this.baseType !== 'Weakness' && this.subtype.toUpperCase(),
         });
 
         // now we need to manually wrap the text, because svg can't do that for whatever reason :P

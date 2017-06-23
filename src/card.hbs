@@ -8,6 +8,7 @@
   <!-- Background images -->
   <image xlink:href="{{imageURL}}" x="0" y="117" width="750" height="523" preserveAspectRatio="xMidYMid slice"/>
   <image xlink:href="{{backgroundTypeImage}}" x="0" y="0" width="750px" height="1050"/>
+  <rect class="variant-text-background" x="0", y="719" width="750", height="224" />
   <image xlink:href="{{logoURL}}" x="614" y="26" width="100px" height="350px" preserveAspectRatio="xMidYMin meet"/>
   <image xlink:href="{{backgroundVPImage}}" x="0" y="0" width="750px" height="1050"/>
   <image xlink:href="{{backgroundCostImage}}" x="0" y="0" width="750px" height="1050"/>
@@ -33,7 +34,7 @@
   {{#if vpVariableImage}}
   <image xlink:href="{{vpVariableImage}}" x="0" y="0" width="750px" height="1050"/>
   {{else}}
-  <text class="card-vp" text-anchor="middle" x="87", y="1320" transform="scale(1 0.75)">{{vp}}</text>
+  <text class="card-vp vp-{{vpType}}" text-anchor="middle" x="87", y="1320" transform="scale(1 0.75)">{{vp}}</text>
   {{/if}}
   <text class="card-cost-back" text-anchor="middle" x="640", y="982">{{cost}}</text>
   <text class="card-cost" text-anchor="middle" x="640", y="982">{{cost}}</text>

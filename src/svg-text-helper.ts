@@ -119,7 +119,7 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
         tspans.push(tspan);
     }
 
-    for (let tspan of tspans) {
+    for (const tspan of tspans) {
         textElement.appendChild(tspan);
     }
 };

@@ -100,6 +100,10 @@
         stroke-width: 6px;
     }
 
+    & .card-vp.vp-negative {
+        stroke: #9dcd4e;
+    }
+
     & .card-cost-back, & .card-cost {
         font-weight: bold;
         font-size: 91.67px;
@@ -112,16 +116,24 @@
         stroke-width: 12px;
     }
 
+    & .variant-text-background {
+        fill: #ffffff;
+    }
+
 
     // Specific card types
 
-    &.main-type-super-hero, &.main-type-super-villian {
+    &.variant {
         & .card-text {
             fill: #ffffff;
         }
 
         & .card-copyright {
             fill: #ffffff;
+        }
+
+        & .variant-text-background {
+            fill: #000000;
         }
     }
 
