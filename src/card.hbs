@@ -25,11 +25,16 @@
   {{/if}}
 
   <!-- Main body text -->
-  <text class="card-text" x="40" y="764" width="700" style="font-size: {{textSize}}px;"></text>
+  <text class="card-text" x="40" y="764" width="670" style="font-size: {{textSize}}px;"></text>
 
   <!-- Bottom -->
   <text class="card-copyright" x="224" y="937">{{copyright}}</text>
-  <text class="card-legal" x="224" y="972" width="332"></text>
+  <text class="card-legal" x="224" y="972" width="330"></text>
+
+  {{#if set}}
+  <path class="card-set-background" fill="{{setBackgroundColor}}"/>
+  <text class="card-set-text" text-anchor="end" x="542" y="1248" transform="scale(1 0.75)" style='fill: {{setTextColor}}'>{{set}}</text>
+  {{/if}}
 
   {{#if vpVariableImage}}
   <image xlink:href="{{vpVariableImage}}" x="0" y="0" width="750px" height="1050"/>

@@ -1,4 +1,4 @@
-import { wrapText } from './svg-text-helper';
+import { wrapText, roundedRectangle } from './svg-text-helper';
 import './card.scss';
 import 'normalize.css';
 
@@ -34,6 +34,9 @@ export class Card {
         readonly copyright: string = '',
         readonly legal: string = '',
         readonly subtype: string = null,
+        readonly set: string = null,
+        readonly setTextColor = '#ffffff',
+        readonly setBackgroundColor = '#000000',
     ) {
         if (!copyright) {
             this.copyright = String(new Date().getFullYear());
@@ -59,6 +62,7 @@ export class Card {
         svgElement.setAttribute('height', '1050px');
         svgElement.setAttribute('viewBox', '0 0 750 1050');
         svgElement.setAttribute('class', `custom-card main-type-${this.baseType.replace(' ', '-').toLowerCase()} ${this.variant ? 'variant' : 'normal'}`);
+        svgElement.setAttribute('style', 'display: block;');
 
         svgElement.innerHTML = template({
             name: this.name.toUpperCase(),
@@ -76,6 +80,9 @@ export class Card {
             copyright: this.copyright,
             legal: this.legal,
             subtype: this.baseType !== 'Weakness' && this.subtype.toUpperCase(),
+            set: this.set && this.set.toUpperCase(),
+            setTextColor: this.setTextColor,
+            setBackgroundColor: this.setBackgroundColor,
         });
 
         // now we need to manually wrap the text, because svg can't do that for whatever reason :P
@@ -84,9 +91,16 @@ export class Card {
         // We will extract those and manually wrap them
         const cardText = <any>svgElement.getElementsByClassName('card-text')[0];
         const cardLegal = <any>svgElement.getElementsByClassName('card-legal')[0];
+
         setTimeout(() => {
             wrapText(cardText, this.text, this.textSize * 36/DEFAULT_TEXT_SIZE, 40, this.textSize * 50/DEFAULT_TEXT_SIZE);
             wrapText(cardLegal, this.legal, 20, 224, 30);
+
+            if (this.set) {
+                const setText = <any>svgElement.getElementsByClassName('card-set-text')[0];
+                const setBackground = <any>svgElement.getElementsByClassName('card-set-background')[0];
+                roundedRectangle(setBackground, setText);
+            }
         }, 1);
 
         return svgElement;

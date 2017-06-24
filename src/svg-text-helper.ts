@@ -29,8 +29,6 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
     text = replaceAll(text, '\n', ` ${LINE_BREAK} `);
     text = replaceAll(text, '\r', ''); // remove all carrier returns
 
-    console.log(text);
-
     const words = text.split(' ');
     let tspan: SVGTSpanElement;
     let tspans: SVGTSpanElement[] = [];
@@ -39,7 +37,6 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
     let bolding = false;
     let italics = false;
     for (let i = 0; i < words.length; i++) {
-        console.log(i, words[i]);
         if (!tspan) {
             tspan = document.createElementNS("http://www.w3.org/2000/svg", 'tspan');
             tspan.setAttribute('x', String(xStart));
@@ -83,7 +80,7 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
             line.push(word);
             tspan.innerHTML = line.join(' ');
 
-            currentWidth = tspan.getBoundingClientRect().width;
+            currentWidth = tspan.getBBox().width;
 
             newline = currentWidth >= width;
             if (newline) { // it can't fit
@@ -95,7 +92,6 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
             }
         }
 
-        console.log(currentWidth);
         if (newline) {
             if (bolding || italics) {
                 // stop bolding or italics
@@ -110,7 +106,6 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
             tspans.push(tspan);
             tspan.remove();
             tspan = null;
-            console.log("newline!", dy);
         }
     }
 
@@ -123,3 +118,9 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
         textElement.appendChild(tspan);
     }
 };
+
+export function roundedRectangle(path: SVGPathElement, text: SVGTextElement, rounding: number = 5): void {
+    const b = text.getBBox();
+    const r = rounding;
+    path.setAttribute('d', `M${b.x},${b.y*0.75 - 2} h${b.width} a${r},${r} 0 0 1 ${r},${r} v${b.height-18} a${r},${r} 0 0 1 -${r},${r} h-${b.width} a${r},${r} 0 0 1 -${r},-${r} v-${b.height-18} a${r},${r} 0 0 1 ${r},-${r} z`);
+}
