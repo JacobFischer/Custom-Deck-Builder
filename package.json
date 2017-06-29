@@ -8,6 +8,7 @@
   "description": "Custom Deck Builder",
   "private": true,
   "dependencies": {
+    "@types/csv-parse": "^1.1.8",
     "@types/fontfaceobserver": "0.0.5",
     "@types/handlebars": "^4.0.33",
     "@types/node": "^7.0.31",
@@ -17,6 +18,7 @@
     "babel-loader": "^6.3.2",
     "babel-preset-es2015-native-modules": "^6.9.4",
     "css-loader": "^0.28.4",
+    "csv-parse": "^1.2.0",
     "file-loader": "^0.11.2",
     "fontfaceobserver": "^2.0.13",
     "handlebars": "^4.0.10",

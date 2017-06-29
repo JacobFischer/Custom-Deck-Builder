@@ -1,13 +1,10 @@
 import { wrapText, roundedRectangle } from './svg-text-helper';
+import { replaceAll } from './utils';
 import './card.scss';
 import 'normalize.css';
 
 const template: (args: Object) => string = require('./card.hbs');
 const DEFAULT_TEXT_SIZE = 38;
-
-function replaceAll(target: string, search: string, replacement: string): string {
-    return target.replace(new RegExp(search, 'g'), replacement);
-};
 
 /**
  * @class represents a custom card
@@ -79,7 +76,7 @@ export class Card {
             textSize: this.textSize,
             copyright: this.copyright,
             legal: this.legal,
-            subtype: this.baseType !== 'Weakness' && this.subtype.toUpperCase(),
+            subtype: this.baseType !== 'Weakness' && this.subtype && this.subtype.toUpperCase(),
             set: this.set && this.set.toUpperCase(),
             setTextColor: this.setTextColor,
             setBackgroundColor: this.setBackgroundColor,

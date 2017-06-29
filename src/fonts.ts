@@ -40,10 +40,9 @@ for (const fontFamily of Object.keys(fonts)) {
 
         let fontFaceObserver = new FontFaceObserver(fontFamily, properties).load().then((...args: Array<any>) => {
             _ready[fontFamily + fontType] = true;
-            console.log(`${fontFamily} ${fontType} is ready`, _ready);
             checkIfReady();
         }, (...args: Array<any>) => {
-            console.log(`${fontFamily} ${fontType} is DED`, args);
+            console.error(`${fontFamily} ${fontType} could not be loaded`, args);
             _onReady.callback(false);
         });
     }
