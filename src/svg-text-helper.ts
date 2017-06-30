@@ -1,16 +1,13 @@
-function replaceAll(target: string, search: string, replacement: string): string {
-    return target.replace(new RegExp(search, 'g'), replacement);
-};
+import { replaceAll } from './utils';
 
+const LINE_BREAK = '[br/]}';
+const NEW_PARAGRAPH = '[p/]';
 
-const LINE_BREAK = '<br/>}';
-const NEW_PARAGRAPH = '<p/>';
+const BOLD_START = `[b]`;
+const BOLD_END = `[/b]`;
 
-const BOLD_START = `<b>`;
-const BOLD_END = `</b>`;
-
-const ITALIC_START = `<i>`;
-const ITALIC_END = `</i>`;
+const ITALIC_START = `[i]`;
+const ITALIC_END = `[/i]`;
 
 const BOLD_TAG = '<tspan style="font-weight: bold;">';
 const ITALIC_TAG = '<tspan style="font-style: italic;">';
@@ -47,22 +44,22 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
         // check to start/end the bolding/italics
         let  word = words[i];
         if (word.indexOf(BOLD_START) !== -1) {
-            word = word.replace(BOLD_START, BOLD_TAG);
+            word = replaceAll(word, BOLD_START, BOLD_TAG);
             bolding = true;
         }
 
         if (word.indexOf(ITALIC_START) !== -1) {
-            word = word.replace(ITALIC_START, ITALIC_TAG);
+            word = replaceAll(word, ITALIC_START, ITALIC_TAG);
             italics = true;
         }
         
         if (word.indexOf(BOLD_END) !== -1) {
-            word = word.replace(BOLD_END, END_TAG);
+            word = replaceAll(word, BOLD_END, END_TAG);
             bolding = false;
         }
 
         if (word.indexOf(ITALIC_END) !== -1) {
-            word = word.replace(ITALIC_END, END_TAG);
+            word = replaceAll(word, ITALIC_END, END_TAG);
             italics = false;
         }
 

@@ -31,6 +31,20 @@ When you play this card, return it to the Weakness stack and gain 1 DP.",0,-1,,,
 
 Otherwise, draw a card.",4,1,,,,https://i.imgur.com/RPtzo4V.jpg,,,,,,
 ,Spawn Room,Location,"Ongoing: Whenever a player flips their character card face down, draw a card.",6,2,,,,https://i.imgur.com/6Xrs3hr.jpg,,,,,,
+,Sven,Villain,"+2 Power, and you may put an equipment from your discard pile into your hand.",5,1,,,,https://i.imgur.com/boZuuTz.png,,,,,,
+,Titan Destroyer,Villain,"+4 Power
+
+This card is also an Equipment.",7,2,Omnic,,,https://i.imgur.com/ej9dnUW.png,,,,,,
+,Omnic Bomber,Villain,"+2 Power, and you may destroy a card in your hand. If you do, additional +2 Power.
+
+This card is also an Equipment",6,2,Omnic,,,https://i.imgur.com/zweF85v.png,,,,,,
+,The Dragons,Villain,"+1 Power
+
+Attack: All foes reveal their hand. If they do not avoid this attack or reveal a Defense card, you may gain a card from the lineup.",4,1,,,,https://i.imgur.com/iMXzXYh.png,,,,,,
+,The Junkers,Villain,"You may destroy a card from you hand. If you do gain up to the destroyed cards cost worth of cards from the line up to your hand.
+
+If you choose not to, +3 Power.",7,2,,,,https://i.imgur.com/M1WR161.png,,,,,,
+,,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,
 Maps,Practice Range,Location,"(This card starts on top of the Map Stack)
 Stack Ongoing: Cards with your character's name cost 1 less to buy.
@@ -39,11 +53,11 @@ Ongoing: During each other player's turn, cards with your character's name have 
 ,,,,,,,,,,,,,,,
 Escort,Route 66,Location,"Stack Ongoing: At the start of each of your turns, discard a Starter. If you cannot add 2 DPs to your character.
 
-Ongoing: Once during each of your turns, you may put a Stater card from your discard pile into your hand.",9,5,Map,X,,https://i.imgur.com/2lnrTwM.jpg,,,,,,
-Escort,Dorado,Location,"""Stack Ongoing: At the start of each of your turns, reveal a Villain from your hand. If you cannot add 1 DP to your character.
+Ongoing: Once during each of your turns, you may put a card with cost 1 or less card from your discard pile into your hand.",9,5,Map,X,,https://i.imgur.com/2lnrTwM.jpg,,,,,,
+Escort,Dorado,Location,"Stack Ongoing: At the start of each of your turns, reveal a Villain from your hand. If you cannot add 1 DP to your character.
 
 Ongoing: Once during each of your turns, you may select a Villain from your discard pile. If its cost is 5 or less put it into your hand. Otherwise put it on top of your deck.""",11,7,Map,X,,https://i.imgur.com/PVQwyBc.jpg,,,,,,
-Escort,Watchpoint: Gibraltar,Location,"""Stack Ongoing: At the start of each of your turns, reveal a Hero from your hand. If you cannot add 1 DP to your character.
+Escort,Watchpoint: Gibraltar,Location,"Stack Ongoing: At the start of each of your turns, reveal a Hero from your hand. If you cannot add 1 DP to your character.
 
 Ongoing: Once during each of your turns, you may select a Hero from your discard pile. If its cost is 5 or less put it into your hand. Otherwise put it on top of your deck.""",11,7,Map,X,,https://i.imgur.com/lmrDYRG.jpg,,,,,,
 ,,,,,,,,,,,,,,,
@@ -69,13 +83,13 @@ Ongoing: Once per turn you may put one Location from your discard pile into your
 Assault,Temple of Anubis,Location,"Stack Ongoing: At the start of each of player's turn, they may put a Weakness from their hand and put it on the top of the Weakness stack. Otherwise they gain one DP.
 
 Ongoing: Once per each of your turns, you may pass a Weakness from your discard pile to any other player.",11,6,Map,X,,https://i.imgur.com/k6NoV3F.png,,,,,,
-Assault,Horizon Lunar Colony,Location,"Stack Ongoing: At the start of each of your turns, reveal an Super Power from your hand. If you cannot add 1 DP to your character.
+Assault,Horizon Lunar Colony,Location,"Stack Ongoing: At the start of each of your turns, reveal a Super Power from your hand. If you cannot add 1 DP to your character.
 
 Ongoing: Once during each of your turns, you may select an Super Power from your discard pile. If its cost is 3 or less put it into your hand. Otherwise put it on top of your deck.",10,6,Map,X,,https://i.imgur.com/vNIjTp5.png,,,,,,
 ,,,,,,,,,,,,,,,
 Escort/Assault,Eichenwalde,Location,"Stack Ongoing: Once per each player's turns, the first time they play an Attack card they gain one DP.
 
-Ongoing: Once during each of your turn, when you plan an Attack card, you may add or remove one DP from all affected players.",12,7,Map,X,,https://i.imgur.com/xsgBwhW.jpg,,,,,,
+Ongoing: Once during each of your turns, when you play an Attack card, you may add or remove one DP from all affected players.",12,7,Map,X,,https://i.imgur.com/xsgBwhW.jpg,,,,,,
 Escort/Assault,Hollywood,Location,"Stack Ongoing: Character cards cannot be flipped over.
 
 Ongoing: Whenever another player's character is flipped over, draw a card.",9,5,Map,X,,https://i.imgur.com/9QlaecX.jpg,,,,,,
@@ -93,7 +107,7 @@ Genji,Genji,Super Hero,+1 Power for each foe you successfully attack during each
 
 Attack: That foe discards a card with cost 0 from their hand.",3,1,Genji,,,https://i.imgur.com/Hqp6brS.jpg,,,,,,
 ,Deflect,Super Power,"Choose a foe.
-Attack: That foe reveals his hand. Choose an Attack card revealed this way to play immediatley against them. Otherwise +2 Power.
+Attack: That foe reveals his hand. Choose an Attack card revealed this way, and play it against them.
 
 Defense: You may discard this card to avoid an attack. If you do Attack: This card gains the text of the attacking card.",7,2,Genji,,,https://i.imgur.com/MSF1TG3.jpg,,,,,,
 ,Swift Strike,Super Power,"+1 Power and choose a foe.
@@ -103,8 +117,8 @@ Attack: That player discards a card from their hand and gains 1 DP. If they do n
 
 You may put all Attack cards from your discard pile into your hand.",8,3,Genji Ultimate,X,,https://i.imgur.com/UcP9Bxc.png,,,,,,
 ,,,,,,,,,,,,,,,
-McCree,McCree,Super Hero,"Each time you successfully Attack a player, you may reveal the top card of the main deck. You may then choose gain that card if you put a card with the same cost or greater from your discard pile or hand on the bottom of the main deck.",,,4 Health,,X,https://i.imgur.com/WlMc0eH.png,,,,,,
-,McCree,Hero,"+2 Power
+McCree,McCree,Villain,"Each time you successfully Attack a player, you may reveal the top card of the main deck. You may then choose gain that card if you put a card with the same cost or greater from your discard pile or hand on the bottom of the main deck.",,,4 Health,,X,https://i.imgur.com/WlMc0eH.png,,,,,,
+,McCree,Villain,"+2 Power
 
 Villains cost 1 less this turn.",4,1,McCree,,,https://i.imgur.com/26EIbTF.png,,,,,,
 ,Blackwatch McCree,Villain,"+2 Power
@@ -139,7 +153,7 @@ You may pay discard costs this turn, without actually discarding a card.
 You may privately view the top 3 cards of the main deck. You may then exchange one card in the lineup with one of those top 3 cards. Put the cards back in any order.",3,1,Pharah,,,https://i.imgur.com/xWz2reF.png,,,,,,
 ,Barrage,Equipment,"You may discard any number of cards from your hand, +1 Power for each card discarded this way.
 
-Attack: All foes must discard a card for each card you have discarded this turn. '+1 Power for each card discarded this way.",9,3,Pharah Ultimate,X,,https://i.imgur.com/4IgsKo0.png,,,,,,
+Attack: All foes must discard a card for each card you have discarded this turn. +1 Power for each card discarded this way.",9,3,Pharah Ultimate,X,,https://i.imgur.com/4IgsKo0.png,,,,,,
 ,,,,,,,,,,,,,,,
 Reaper,Reaper,Super Villain,"+2 Power if you control two different Villains during your turn.
 
@@ -150,7 +164,7 @@ The first time you add a DP to another player, that player gains an additional D
 
 If you control a Villain, choose a foe.
 Attack: That foe discards two cards. +Power for each non Villain card discarded this way.",6,2,Reaper,,,https://i.imgur.com/0XoBndg.png,,,,,,
-,Wraith Form,Super Power,"2 Power, and you may put a Villian on top of your deck.
+,Wraith Form,Super Power,"+2 Power, and you may put a Villian on top of your deck.
 
 Defense: You may reveal to avoid an attack. You may then discard a Villian, otherwise discard this card.",4,1,Reaper,,,https://i.imgur.com/RcWCoxt.png,,,,,,
 ,Shadow Step,Super Power,"Draw two cards, then if you do not control a Villain this turn, discard two cards.",4,1,Reaper,,,https://i.imgur.com/mpiGoGP.png,,,,,,
@@ -176,7 +190,7 @@ Reveal the top 3 cards of your deck, and discard any of them, then put the rest 
 All those players may remove one DP from their character. +1 Power for each player that does so.",3,1,Solider 76,,,https://i.imgur.com/RorMoeQ.jpg,,,,,,
 ,Tactical Visor,Equipment,"If you have played a Hero this turn, this card's Attack cannot be avoided.
 
-Attack: Look at each foes hand and discard a card. For each card discarded gain power equal to the discarded card's cost
+Attack: Look at each foes hand and discard a card. For each card discarded +Power equal to the discarded card's cost
 <i>(* = 3)</i>",8,3,Solider 76 Ultimate,X,,https://i.imgur.com/wfzJHPC.png,,,,,,
 ,,,,,,,,,,,,,,,
 Sombra,Sombra,Super Villain,"Once per each of your turns, when a player discards a card, you may play it.
@@ -185,7 +199,7 @@ Sombra,Sombra,Super Villain,"Once per each of your turns, when a player discards
 ,░░░░░░,Villain,"+2 Power
 
 Whenever you buy or gain this card all foes must discard a card (this is not an Attack)",4,1,Sombra,,,https://i.imgur.com/8pgSO6r.png,,,,,,
-,Machine Pistol,Equipment,"+1 Power and choose a foe:
+,Machine Pistol,Equipment,"+1 Power and choose a foe.
 
 Attack: If that foe has 3 or more DP on their character, they discard a card. Otherwise they gain a Weakness.",3,1,Sombra,,,https://i.imgur.com/rI5w9YE.png,,,,,,
 ,Hack,Super Power,"+1 Power and choose a foe.
@@ -232,13 +246,14 @@ All players reveal their hands. <i>(This is not an attack)</i>",5,1,Bastion,,,ht
 ,B73-NS,Villain,"+2 Power
 
 Whenever you Attack a foe this turn, Attack: That foe discards a card.",5,1,Bastion,,,https://i.imgur.com/bTww4J5.png,,,,,,
-,Recon Mode,Super Power,"+1 Power and choose a foe, that foe reveals their hand. <i>(This is not an attack)</i>",2,1,Bastion,,,https://i.imgur.com/ztjvtFt.png,,,,,,
+,Recon Mode,Super Power,"+1 Power and choose a foe, that foe reveals their hand.
+(This is not an Attack)",2,1,Bastion,,,https://i.imgur.com/ztjvtFt.png,,,,,,
 ,Sentry Mode,Super Power,"+3 Power and choose a foe.
 
 Attack: That foe reveals their hand. If they have a Defense card this attack is avoided without the use of that card. Otherwise +2 Power and the foe must discard two cards and gain two additional DP.",7,2,Bastion,,,https://i.imgur.com/ybBjJ64.png,,,,,,
 ,Reconfigure,Super Power,"Discard any number of cards, then draw that many cards.
 
-If you control the <b>Bastion</b> character this turn you may rotate that card.",4,1,Bastion,,,https://i.imgur.com/A4gUpIz.png,,,,,,
+If you control the Bastion character this turn you may rotate that card.",4,1,Bastion,,,https://i.imgur.com/A4gUpIz.png,,,,,,
 ,Self-Repair,Super Power,"Remove a DP from your character.
 
 If this is the first card you have played this turn, discard your hand, then draw 5 cards, otherwise +1 Power.",3,1,Bastion,,,https://i.imgur.com/npJvR72.png,,,,,,
@@ -246,17 +261,31 @@ If this is the first card you have played this turn, discard your hand, then dra
 
 Attack: Each foe discards 2 cards, or 1 card if they avoided this attack.",8,3,Bastion Ultimate,X,,https://i.imgur.com/eUalg1s.png,,,,,,
 ,,,,,,,,,,,,,,,
-Hanzo,Hanzo,Super Hero,"During each of your turns, +1 Power each time a card or hand is revealed.",,,4 Health,,X,https://i.imgur.com/DJmQjbV.png,,,,,,
-,Hanzo Shimada,Hero,You may reveal the top card of your deck. When this card is destroyed in any zone draw 2 cards.,1,0,Hanzo,,,https://i.imgur.com/hNljHZz.png,,,,,,
-,Storm Bow,Equipment,"+2 Power and choose a foe
+Hanzo,Hanzo,Super Villain,"Whenever you reveal the top card of your deck, you may choose to discard it. You must then reveal the next card as normal.",,,4 Health,,X,https://i.imgur.com/DJmQjbV.png,,,,,,
+,Hanzo Shimada,Villain,"You may reveal the top card of your deck. +Power equal to its VP.
+(* = 3)
 
-Attack: That foe reveals and discards a random card. If its cost is 1 or greater, +2 additional Power.",6,1,Hanzo,,,https://i.imgur.com/85WLqyr.png,,,,,,
+This card is worth 1 VP at the end of the game if you own no Genji cards. Otherwise -1 VP.",1,*,Hanzo,,,https://i.imgur.com/hNljHZz.png,,,,,,
+,Storm Bow,Equipment,"+2 Power and reveal the top card. If it's VP is 1 or greater, draw it.
+(* = 3)
+
+This card is worth 1 VP at the end of the game if you own no Genji cards. Otherwise -1 VP.",3,*,Hanzo,,,https://i.imgur.com/85WLqyr.png,,,,,,
 ,Sonic Arrow,Equipment,"+1 Power
 
-All foes reveal their hands. <i>(This is not an attack)</i>",2,1,Hanzo,,,https://i.imgur.com/qxpQZjq.png,,,,,,
-,Scatter Arrow,Equipment,Reveal the top card of your deck. +Power equal to that card's VP (* = 3),2,1,Hanzo,,,https://i.imgur.com/d7cMgCL.png,,,,,,
-,Dragonstrike,Super Power,Attack: All foes must reveal and discard two randoms card. +2 power for each card discarded with a cost of 1 or greater this way.,8,3,Hanzo Ultimate,X,,https://i.imgur.com/ll2vFj5.png,,,,,,
-,,,,,,,,,,,,,,,
+All foes reveal their hands. <i>(This is not an attack)</i>
+
+This card is worth 1 VP at the end of the game if you own no Genji cards. Otherwise -1 VP.",2,*,Hanzo,,,https://i.imgur.com/qxpQZjq.png,,,,,,
+,Scatter Arrow,Equipment,"Reveal the top card of your deck. +Power equal to that card's VP, and choose a foe.
+(* = 3)
+
+Attack: That foe discards a number of cards equal to that card's VP.
+
+This card is worth 2 VP at the end of the game if you own no Genji cards. Otherwise -2 VP.",6,*,Hanzo,,,https://i.imgur.com/d7cMgCL.png,,,,,,
+,Dragonstrike,Super Power,"Reveal the top card of your deck.
+
+Attack: All foes must discard a number of random cards from their hand equal to the VP of the top card of your deck. +2 power for each card discarded with a cost of 1 or greater this way.
+(* = 3)",8,3,Hanzo Ultimate,X,,https://i.imgur.com/ll2vFj5.png,,,,,,
+,,,(* -,,,,,,,,,,,,
 Junkrat,Junkrat,Super Villain,"If a card gives you an option to destroy a card, you can choose a card to destory without actually destroying it",,,4 Health,,X,https://i.imgur.com/ugbcHSz.png,,,,,,
 ,Jamison Fawkes,Villain,"+1 Power
 
@@ -420,7 +449,7 @@ Defense: When any player is attacked, you may reveal this card. If you do they a
 
 Attack: All foes who do not avoid this Attack must discard all Defense cards in their hands.",7,3,Zarya Ultimate,X,,https://i.imgur.com/tnh1GaR.png,,,,,,
 ,,,,,,,,,,,,,,,
-Ana,Ana,Super Hero,"+1 Power each time you sucessfully Attack another player and they do not discard a card, or gain a Weakness or Starter",,,4 Health,,X,https://i.imgur.com/fcSSD8w.png,,,,,,
+Ana,Ana,Super Hero,"+1 Power each time you sucessfully Attack another player and they do not discard a card, or gain a card with cost 0.",,,4 Health,,X,https://i.imgur.com/fcSSD8w.png,,,,,,
 ,Captain Amari,Hero,"You may place an Attack card with cost 3 or less from your discard pile pile into your hand.
 If you choose not to, +2 Power",4,1,Ana,,,https://i.imgur.com/AttrwEd.png,,,,,,
 ,Ana Amari,Hero,"+1 Power and choose any number of players.
@@ -477,7 +506,8 @@ Defense: Discard this card to avoid an attack. If you do play it immediately",7,
 Symmetra,Symmetra,Super Hero,"Once during each of your turns you may discard a card, if you do you can put an equipment of cost 3 or less from you discard pile into your hand",,,4 Health,,X,https://i.imgur.com/Aoq0XQX.png,,,,,,
 ,Satya Vaswani,Hero,+1 Power for each equipment you control this turn.,4,1,Symetta,,,https://i.imgur.com/8aaAbFe.png,,,,,,
 ,Photon Projector,Equipment,"+1 Power, plus an additional +1 Power for each Photon Projector you control this turn.",3,1,Symetta,,,https://i.imgur.com/QWkuDWS.png,,,,,,
-,Sentry Turret,Equipment,"Ongoing: 1 Power, discard this card when you fail to avoid an attack",3,1,Symetta,,,https://i.imgur.com/3l3nVtW.png,,,,,,
+,Sentry Turret,Equipment,"Ongoing: +1 Power
+Discard this card when you fail to avoid an Attack.",3,1,Symetta,,,https://i.imgur.com/3l3nVtW.png,,,,,,
 ,Photon Barrier,Equipment,"You may double the power of the next Attack card you play. If you choose not to, +2 Power.",5,2,Symetta,,,https://i.imgur.com/4nv1qwz.png,,,,,,
 ,Teleporter,Equipment,"Place 6 PP tokens on this card.
 

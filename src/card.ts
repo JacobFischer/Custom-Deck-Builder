@@ -1,5 +1,5 @@
 import { wrapText, roundedRectangle } from './svg-text-helper';
-import { replaceAll } from './utils';
+import { replaceAll, surroundText } from './utils';
 import './card.scss';
 import 'normalize.css';
 
@@ -89,8 +89,10 @@ export class Card {
         const cardText = <any>svgElement.getElementsByClassName('card-text')[0];
         const cardLegal = <any>svgElement.getElementsByClassName('card-legal')[0];
 
+        const formattedText = this.formatText();
+
         setTimeout(() => {
-            wrapText(cardText, this.text, this.textSize * 36/DEFAULT_TEXT_SIZE, 40, this.textSize * 50/DEFAULT_TEXT_SIZE);
+            wrapText(cardText, formattedText, this.textSize * 36/DEFAULT_TEXT_SIZE, 40, this.textSize * 50/DEFAULT_TEXT_SIZE);
             wrapText(cardLegal, this.legal, 20, 224, 30);
 
             if (this.set) {
@@ -101,5 +103,18 @@ export class Card {
         }, 1);
 
         return svgElement;
+    }
+
+    private formatText(): string {
+        let formattedText = this.text;
+
+        formattedText = surroundText(formattedText, /\+(.*?)\ Power/g, '[b]', '[/b]');
+        formattedText = surroundText(formattedText,  /\(([^)]+)\)/g, '[i]', '[/i]');
+
+        for (const toBold of ['+Power', ':', 'Attack', 'Defense', 'Ongoing', 'Weakness']) {
+            formattedText = replaceAll(formattedText, toBold, `[b]${toBold}[/b]`);
+        }
+
+        return formattedText;
     }
 }
