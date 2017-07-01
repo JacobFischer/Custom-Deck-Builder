@@ -1,0 +1,33 @@
+<!--<svg width="750px" height="1050px">-->
+  <defs>
+    <filter id="shadow">
+      <feDropShadow dx="4" dy="8" stdDeviation="0"/>
+    </filter>
+  </defs>
+  <!-- width="750" height="523" -->
+  <!-- Background images -->
+  <image xlink:href="{{imageURL}}" x="0" y="216" width="900" height="741" preserveAspectRatio="xMidYMid slice"/>
+  <image xlink:href="{{backgroundTypeImage}}" x="0" y="0" width="900" height="1200"/>
+  <image xlink:href="{{logoURL}}" x="670" y="26" width="190px" height="350px" preserveAspectRatio="xMidYMin meet"/>
+
+  <!-- Text -->
+  <text class="card-name" x="40", y="150" transform="scale(1 0.75)" filter="url(#shadow)">{{name}}</text>
+
+  <!-- Card type bannar -->
+  {{#if subtype}}
+  <text class="card-type card-subtype" text-anchor="end" x="860", y="1264" transform="scale(1 0.75)" filter="url(#shadow)">{{subtype}}</text>
+  {{/if}}
+
+  <!-- Main body text -->
+  <text class="card-text" x="40" y="966" width="820" height="155" style="font-size: {{textSize}}px;" alignment-baseline="hanging"></text>
+
+  <!-- Bottom -->
+  <text class="card-legal" x="40" y="1150" width="600"></text>
+  <text class="card-copyright" x="860" y="1150" text-anchor="end">{{copyright}}</text>
+
+  {{#if set}}
+  <path class="card-set-background" fill="{{setBackgroundColor}}"/>
+  <text class="card-set-text" text-anchor="end" x="750" y="1545" transform="scale(1 0.75)" style='fill: {{setTextColor}}'>{{set}}</text>
+  {{/if}}
+
+<!--</svg>-->

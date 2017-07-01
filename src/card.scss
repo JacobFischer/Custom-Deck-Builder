@@ -93,6 +93,22 @@
         }
     }
 
+    &.oversized {
+        & .card-text, & .card-copyright {
+            fill: #ffffff;
+        }
+
+        & .card-name {
+            fill: #ffc70e !important;
+            font-size: 108.33px !important;
+        }
+
+        & .card-subtype {
+            fill: #ffc70e;
+            font-size: 60px;
+        }
+    }
+
     &.main-type-hero, &.main-type-super-hero {
         & .card-name {
             fill: #00a5e3;

@@ -17,8 +17,8 @@ const END_TAG = '</tspan>';
  * 
  * @param wrapper the
  */
-export function wrapText(textElement: SVGTextElement, text: string, height: number, xStart: number=0, newParagraphHeight?: number): void {
-    const width = Number(textElement.getAttribute('width'));
+export function wrapText(textElement: SVGTextElement, text: string, height: number, xStart: number=0, newParagraphHeight?: number, center?: boolean, textSize?: number): void {
+    const MAX_WIDTH = Number(textElement.getAttribute('width'));
     newParagraphHeight = Number(newParagraphHeight) || height*2;
 
     text = text.trim(); // remove whitespace on the ends to be nice
@@ -42,7 +42,10 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
         }
 
         // check to start/end the bolding/italics
-        let  word = words[i];
+        let word = words[i];
+
+        let wasBolding = bolding;
+        let wasItalics = italics;
         if (word.indexOf(BOLD_START) !== -1) {
             word = replaceAll(word, BOLD_START, BOLD_TAG);
             bolding = true;
@@ -79,7 +82,7 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
 
             currentWidth = tspan.getBBox().width;
 
-            newline = currentWidth >= width;
+            newline = currentWidth >= MAX_WIDTH;
             if (newline) { // it can't fit
                 dy = height;
 
@@ -90,9 +93,15 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
         }
 
         if (newline) {
-            if (bolding || italics) {
-                // stop bolding or italics
+            if (bolding || italics || wasBolding || wasItalics) {
+                // stop bolding or italics on this line
                 line[line.length - 1] = line[line.length - 1] + END_TAG;
+
+                if ((word.indexOf(BOLD_TAG) === -1 && word.indexOf(ITALIC_TAG) === -1) || wasBolding || wasItalics)  {
+                    words[i + 1] = ((bolding || wasBolding) ? BOLD_START : ITALIC_START) + words[i + 1];
+                }
+
+                // and resume on the next
                 bolding = false;
                 italics = false;
             }
@@ -111,8 +120,39 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
         tspans.push(tspan);
     }
 
+    if (center) {
+        for (const tspan of tspans) {
+            // append it so bounding box dimensions are correct and not 0
+            textElement.appendChild(tspan);
+
+            let oldX = xStart;
+            let width = tspan.getBBox().width;
+
+            const newX = oldX + (MAX_WIDTH - width)/2;
+
+            tspan.setAttribute('x', String(newX));
+
+            // now remove it so other dimensions don't scale it neighbors
+            textElement.removeChild(tspan);
+        }
+    }
+
+    // add all children to the card
     for (const tspan of tspans) {
         textElement.appendChild(tspan);
+    }
+
+    if (textElement.hasAttribute('height')) {
+        // then horizontally center it
+        const MAX_HEIGHT = Number(textElement.getAttribute('height'));
+        const height = textElement.getBBox().height;
+
+        const oldY = Number(textElement.getAttribute('y'));
+        const newY = textSize + oldY + (MAX_HEIGHT - height)/2;
+
+        console.log("height", MAX_HEIGHT, height, 'y', oldY, newY)
+
+        textElement.setAttribute('y', String(newY));
     }
 };
 

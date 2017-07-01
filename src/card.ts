@@ -3,7 +3,8 @@ import { replaceAll, surroundText } from './utils';
 import './card.scss';
 import 'normalize.css';
 
-const template: (args: Object) => string = require('./card.hbs');
+const regularTemplate: (args: Object) => string = require('./card.hbs');
+const oversizedTemplate: (args: Object) => string = require('./card-oversized.hbs');
 const DEFAULT_TEXT_SIZE = 38;
 
 /**
@@ -21,6 +22,7 @@ export class Card {
         readonly name: string,
         readonly baseType: 'Equipment' | 'Hero' | 'Location' | 'Starter' | 'Super Power' | 'Villain' | 'Weakness',
         readonly variant: boolean = false,
+        readonly oversized: boolean = false,
         readonly typePrefix: string = '',
         readonly victoryPoints: '*' | number = 1,
         readonly cost: number = 1,
@@ -34,6 +36,7 @@ export class Card {
         readonly set: string = null,
         readonly setTextColor = '#ffffff',
         readonly setBackgroundColor = '#000000',
+        readonly alsoBold: string[] = [],
     ) {
         if (!copyright) {
             this.copyright = String(new Date().getFullYear());
@@ -52,14 +55,22 @@ export class Card {
         if (this.variant && (this.baseType === 'Hero' || this.baseType === 'Villain')) {
             variantType = `Super ${variantType}`;
         }
+        else if (this.oversized) {
+            variantType = `oversized-${this.baseType}`;
+        }
         variantType = variantType.replace(' ', '-').toLowerCase();
 
         // TODO: extract this from the template?
-        svgElement.setAttribute('width', '750px');
-        svgElement.setAttribute('height', '1050px');
-        svgElement.setAttribute('viewBox', '0 0 750 1050');
-        svgElement.setAttribute('class', `custom-card main-type-${this.baseType.replace(' ', '-').toLowerCase()} ${this.variant ? 'variant' : 'normal'}`);
+        const width = this.oversized ? 900 : 750;
+        const height = this.oversized ? 1200 : 1050;
+
+        svgElement.setAttribute('width', `${width}px`);
+        svgElement.setAttribute('height', `${height}px`);
+        svgElement.setAttribute('viewBox', `0 0 ${width} ${height}`);
+        svgElement.setAttribute('class', `custom-card main-type-${this.baseType.replace(' ', '-').toLowerCase()} ${this.variant ? 'variant' : this.oversized ? 'oversized' : 'normal'}`);
         svgElement.setAttribute('style', 'display: block;');
+
+        const template = this.oversized ? oversizedTemplate : regularTemplate;
 
         svgElement.innerHTML = template({
             name: this.name.toUpperCase(),
@@ -86,14 +97,15 @@ export class Card {
 
         // we assume the template has a .text-wrapper with 1 child .text.
         // We will extract those and manually wrap them
-        const cardText = <any>svgElement.getElementsByClassName('card-text')[0];
-        const cardLegal = <any>svgElement.getElementsByClassName('card-legal')[0];
+        const cardText = <SVGTextElement>svgElement.getElementsByClassName('card-text')[0];
+        const cardLegal = <SVGTextElement>svgElement.getElementsByClassName('card-legal')[0];
 
         const formattedText = this.formatText();
 
         setTimeout(() => {
-            wrapText(cardText, formattedText, this.textSize * 36/DEFAULT_TEXT_SIZE, 40, this.textSize * 50/DEFAULT_TEXT_SIZE);
-            wrapText(cardLegal, this.legal, 20, 224, 30);
+            console.log(this.name, 'delayed');
+            wrapText(cardText, formattedText, this.textSize * 36/DEFAULT_TEXT_SIZE, 40, this.textSize * 50/DEFAULT_TEXT_SIZE, Boolean(this.oversized), this.textSize);
+            wrapText(cardLegal, this.legal, 20, Number(cardLegal.getAttribute('x')), 30);
 
             if (this.set) {
                 const setText = <any>svgElement.getElementsByClassName('card-set-text')[0];
@@ -110,8 +122,9 @@ export class Card {
 
         formattedText = surroundText(formattedText, /\+(.*?)\ Power/g, '[b]', '[/b]');
         formattedText = surroundText(formattedText,  /\(([^)]+)\)/g, '[i]', '[/i]');
+        formattedText = surroundText(formattedText, /(Stack)\ Ongoing/g, '[b]', '[/b]');
 
-        for (const toBold of ['+Power', ':', 'Attack', 'Defense', 'Ongoing', 'Weakness']) {
+        for (const toBold of ['+Power', ':', 'Attack', 'Defense', 'Ongoing', 'Weakness', this.name].concat(this.alsoBold)) {
             formattedText = replaceAll(formattedText, toBold, `[b]${toBold}[/b]`);
         }
 
