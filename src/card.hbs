@@ -25,7 +25,7 @@
   {{/if}}
 
   <!-- Main body text -->
-  <text class="card-text" x="40" y="764" width="670" style="font-size: {{textSize}}px;"></text>
+  <text class="card-text" x="40" y="764" width="670" height="170"></text>
 
   <!-- Bottom -->
   <text class="card-copyright" x="224" y="937">{{copyright}}</text>
@@ -35,6 +35,7 @@
   <path class="card-set-background" fill="{{setBackgroundColor}}"/>
   <text class="card-set-text" text-anchor="end" x="542" y="1248" transform="scale(1 0.75)" style='fill: {{setTextColor}}'>{{set}}</text>
   {{/if}}
+  <rect class="card-vp-rect" x="566" y="870" width="154" height="164" fill-opacity="0"></rect>
 
   {{#if vpVariableImage}}
   <image xlink:href="{{vpVariableImage}}" x="0" y="0" width="750px" height="1050"/>

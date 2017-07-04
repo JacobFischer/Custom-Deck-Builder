@@ -13,13 +13,153 @@ const BOLD_TAG = '<tspan style="font-weight: bold;">';
 const ITALIC_TAG = '<tspan style="font-style: italic;">';
 const END_TAG = '</tspan>';
 
+function doBoundingBoxesOverlap(r1: SVGRect, r2: SVGRect): boolean {
+    let a =  !(
+        r2.x > (r1.x + r1.width) || 
+        (r2.x + r2.width) < r1.x || 
+        r2.y > (r1.y + r1.height) ||
+        (r2.y + r2.height) < r1.y
+    );
+
+    //console.log(r1, r2, a);
+    return a;
+}
+
+document.drawBox = function(o) {
+    let svg = document.getElementsByTagName('svg')[0];
+
+    let rect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+    svg.appendChild(rect);
+
+    rect.setAttribute('x', o.x);
+    rect.setAttribute('y', o.y);
+    rect.setAttribute('width', o.width);
+    rect.setAttribute('height', o.height);
+    rect.setAttribute('fill', 'red');
+}
+
+export interface WrapTextOptions {
+    textSize?: number,
+    lineHeight?: number,
+    newParagraphHeight?: number,
+    center?: boolean,
+    middle?: boolean,
+    resize?: boolean,
+    onResize?: (options: WrapTextOptions) => void,
+    resizeStep?: number,
+    collisions?: SVGRect[],
+};
+
+export function wrapSVGText(textElement: SVGTextElement, text: string, options?: WrapTextOptions): boolean {
+    options = options || {};
+
+    options = Object.assign(<WrapTextOptions>{
+        textSize: 16,
+        lineHeight: 20,
+        newParagraphHeight: (options.lineHeight * 2) || 32,
+        center: false,
+        middle: false,
+        onResize: null,
+        resizeStep: 1,
+        collisions: [],
+    }, options);
+
+    let resizing = true;
+    while (resizing) {
+        if (options.onResize) {
+            options = options.onResize(options);
+        }
+
+        // now wrap the text
+        const tspans = wrapText(textElement, text, options);
+        tspans.forEach((tspan) => textElement.appendChild(tspan));
+        const textElementBox = textElement.getBBox()
+
+        resizing = false; // assume it fits
+
+        const oldY = middleAlign(textElement, options);
+
+        if (options.resize) {
+            // we need to check to see if we need to resize the text
+            if (options.collisions.length) {
+                // we need to check for collisions
+                textElement.innerHTML = '';
+
+                let rollingDY = 0;
+                for (const tspan of tspans) {
+                    textElement.appendChild(tspan);
+                    const oldDY = Number(tspan.getAttribute('dy'));
+                    tspan.setAttribute('dy', String(oldDY + rollingDY));
+                    rollingDY += oldDY;
+
+                    const tspanBox = tspan.getBBox();
+
+                    for (const collide of options.collisions) {
+                        //console.log("checking", tspanBox, '!@');
+                        if (doBoundingBoxesOverlap(tspanBox, collide)) {
+                            //console.log('collision on', tspan.getAttribute('class'), tspanBox);
+                            resizing = true;
+                            break;
+                        }
+                    }
+
+                    tspan.setAttribute('dy', String(oldDY));
+                    textElement.innerHTML = '';
+                }
+            }
+
+            if (textElementBox.height > Number(textElement.getAttribute('height'))) {
+                resizing = true;
+            }
+
+            if (resizing) {
+                options.textSize = options.textSize - options.resizeStep;
+                if (options.textSize <= 0) {
+                    return false; // couldn't fit the text
+                }
+            }
+        }
+
+        if (resizing && oldY !== undefined) {
+            textElement.innerHTML = '';
+            textElement.setAttribute('y', String(oldY));
+        }
+        else {
+            // not resizing, yay!
+            tspans.forEach((tspan, i) => {
+                textElement.appendChild(tspan);
+            });
+        }
+    }
+
+    return true;
+};
+
+function middleAlign(textElement: SVGTextElement, options: WrapTextOptions): undefined | Number {
+    if (options.middle) {
+        // then horizontally center it
+        const MAX_HEIGHT = Number(textElement.getAttribute('height'));
+        const height = textElement.getBBox().height;
+
+        const oldY = Number(textElement.getAttribute('y'));
+        const newY = options.textSize + oldY + (MAX_HEIGHT - height)/2;
+
+        textElement.setAttribute('y', String(newY));
+
+        return oldY;
+    }
+};
+
 /**
  * 
  * @param wrapper the
  */
-export function wrapText(textElement: SVGTextElement, text: string, height: number, xStart: number=0, newParagraphHeight?: number, center?: boolean, textSize?: number): void {
+function wrapText(textElement: SVGTextElement, text: string, options: WrapTextOptions): SVGTSpanElement[] {
+    textElement.innerHTML = ''; // empty the text element, we will be filling it in with wrapped text
+    textElement.setAttribute('style', `font-size: ${options.textSize}px;`)
+
     const MAX_WIDTH = Number(textElement.getAttribute('width'));
-    newParagraphHeight = Number(newParagraphHeight) || height*2;
+    const X_START = Number(textElement.getAttribute('x'));
 
     text = text.trim(); // remove whitespace on the ends to be nice
     text = replaceAll(text, '\n\n', ` ${NEW_PARAGRAPH} `);
@@ -36,8 +176,9 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
     for (let i = 0; i < words.length; i++) {
         if (!tspan) {
             tspan = document.createElementNS("http://www.w3.org/2000/svg", 'tspan');
-            tspan.setAttribute('x', String(xStart));
+            tspan.setAttribute('x', String(X_START));
             tspan.setAttribute('dy', String(dy));
+            tspan.setAttribute('class', `wrapped-text-${tspans.length}`);
             textElement.appendChild(tspan);
         }
 
@@ -71,10 +212,10 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
         let newline = true;
 
         if (word === LINE_BREAK) {
-            dy = height;
+            dy = options.lineHeight;
         }
         else if (word === NEW_PARAGRAPH) {
-            dy = newParagraphHeight;
+            dy = options.newParagraphHeight;
         }
         else { // it's a normal word
             line.push(word);
@@ -84,7 +225,7 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
 
             newline = currentWidth >= MAX_WIDTH;
             if (newline) { // it can't fit
-                dy = height;
+                dy = options.lineHeight;
 
                 // redo this word in the loop
                 line.pop();
@@ -120,12 +261,12 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
         tspans.push(tspan);
     }
 
-    if (center) {
+    if (options.center) {
         for (const tspan of tspans) {
             // append it so bounding box dimensions are correct and not 0
             textElement.appendChild(tspan);
 
-            let oldX = xStart;
+            let oldX = X_START;
             let width = tspan.getBBox().width;
 
             const newX = oldX + (MAX_WIDTH - width)/2;
@@ -137,23 +278,7 @@ export function wrapText(textElement: SVGTextElement, text: string, height: numb
         }
     }
 
-    // add all children to the card
-    for (const tspan of tspans) {
-        textElement.appendChild(tspan);
-    }
-
-    if (textElement.hasAttribute('height')) {
-        // then horizontally center it
-        const MAX_HEIGHT = Number(textElement.getAttribute('height'));
-        const height = textElement.getBBox().height;
-
-        const oldY = Number(textElement.getAttribute('y'));
-        const newY = textSize + oldY + (MAX_HEIGHT - height)/2;
-
-        console.log("height", MAX_HEIGHT, height, 'y', oldY, newY)
-
-        textElement.setAttribute('y', String(newY));
-    }
+    return tspans;
 };
 
 export function roundedRectangle(path: SVGPathElement, text: SVGTextElement, rounding: number = 5): void {

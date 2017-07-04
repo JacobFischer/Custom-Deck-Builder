@@ -1,4 +1,4 @@
-import { wrapText, roundedRectangle } from './svg-text-helper';
+import { wrapSVGText, roundedRectangle } from './svg-text-helper';
 import { replaceAll, surroundText } from './utils';
 import './card.scss';
 import 'normalize.css';
@@ -17,6 +17,7 @@ export class Card {
     private backgroundVPSprite: PIXI.Sprite;
 
     private nameText: PIXI.Text;
+    private manualTextSize: boolean = false;
 
     constructor(
         readonly name: string,
@@ -29,7 +30,7 @@ export class Card {
         readonly text: string,
         readonly imageURL: string,
         readonly logoURL: string,
-        readonly textSize: number = DEFAULT_TEXT_SIZE,
+        readonly textSize: number,
         readonly copyright: string = '',
         readonly legal: string = '',
         readonly subtype: string = null,
@@ -42,6 +43,13 @@ export class Card {
             this.copyright = String(new Date().getFullYear());
         }
         this.copyright = `©${this.copyright}`;
+
+        if (textSize) {
+            this.manualTextSize = true;
+        }
+        else {
+            this.textSize = DEFAULT_TEXT_SIZE;
+        }
     }
 
     toSVG(): SVGSVGElement {
@@ -68,7 +76,7 @@ export class Card {
         svgElement.setAttribute('height', `${height}px`);
         svgElement.setAttribute('viewBox', `0 0 ${width} ${height}`);
         svgElement.setAttribute('class', `custom-card main-type-${this.baseType.replace(' ', '-').toLowerCase()} ${this.variant ? 'variant' : this.oversized ? 'oversized' : 'normal'}`);
-        svgElement.setAttribute('style', 'display: block;');
+        svgElement.setAttribute('style', 'display: inline-block;');
 
         const template = this.oversized ? oversizedTemplate : regularTemplate;
 
@@ -84,7 +92,6 @@ export class Card {
             cost: this.cost,
             imageURL: this.imageURL,
             logoURL: this.logoURL,
-            textSize: this.textSize,
             copyright: this.copyright,
             legal: this.legal,
             subtype: this.baseType !== 'Weakness' && this.subtype && this.subtype.toUpperCase(),
@@ -99,13 +106,31 @@ export class Card {
         // We will extract those and manually wrap them
         const cardText = <SVGTextElement>svgElement.getElementsByClassName('card-text')[0];
         const cardLegal = <SVGTextElement>svgElement.getElementsByClassName('card-legal')[0];
+        const cardVPRect = <SVGRectElement>svgElement.getElementsByClassName('card-vp-rect')[0];
 
         const formattedText = this.formatText();
 
         setTimeout(() => {
             console.log(this.name, 'delayed');
-            wrapText(cardText, formattedText, this.textSize * 36/DEFAULT_TEXT_SIZE, 40, this.textSize * 50/DEFAULT_TEXT_SIZE, Boolean(this.oversized), this.textSize);
-            wrapText(cardLegal, this.legal, 20, Number(cardLegal.getAttribute('x')), 30);
+            wrapSVGText(cardText, formattedText, {
+                center: this.oversized,
+                middle: this.oversized,
+
+                textSize: this.textSize,
+                resize: !this.manualTextSize,
+                onResize: (options) => {
+                    options.lineHeight = options.textSize * 36/DEFAULT_TEXT_SIZE;
+                    options.newParagraphHeight = options.textSize * 50/DEFAULT_TEXT_SIZE
+                    return options;
+                },
+                collisions: this.oversized ? [] : [cardVPRect.getBBox()],
+            });
+
+            wrapSVGText(cardLegal, this.legal, {
+                textSize: 20,
+                lineHeight: 21,
+                newParagraphHeight: 22,
+            });
 
             if (this.set) {
                 const setText = <any>svgElement.getElementsByClassName('card-set-text')[0];
@@ -120,11 +145,13 @@ export class Card {
     private formatText(): string {
         let formattedText = this.text;
 
+
         formattedText = surroundText(formattedText, /\+(.*?)\ Power/g, '[b]', '[/b]');
+        formattedText = surroundText(formattedText, /(\d)\ Power/g, '[b]', '[/b]');
         formattedText = surroundText(formattedText,  /\(([^)]+)\)/g, '[i]', '[/i]');
         formattedText = surroundText(formattedText, /(Stack)\ Ongoing/g, '[b]', '[/b]');
 
-        for (const toBold of ['+Power', ':', 'Attack', 'Defense', 'Ongoing', 'Weakness', this.name].concat(this.alsoBold)) {
+        for (const toBold of ['+Power', ':', 'Attacked', 'Attack', 'Defense', 'Ongoing', 'Weakness', this.name].concat(this.alsoBold)) {
             formattedText = replaceAll(formattedText, toBold, `[b]${toBold}[/b]`);
         }
 
