@@ -8,10 +8,6 @@ import * as csvParse from 'csv-parse';
 import { replaceAll } from './utils';
 import { data as csvTest } from './data';
 
-const vertDog = 'https://i.redd.it/1c0nxwtpgu4z.png';
-const mercyHor = 'https://s-media-cache-ak0.pinimg.com/originals/5a/d2/3c/5ad23c7af1d008c68d875c41c294e5ca.jpg';
-const oldLogo = 'https://i.imgur.com/UM1GVo9.png';
-
 function buildCard(cardIndex: number = 0, data: any[], baseCard: Object = {}, baseOversizedCard: Object = {}): void {
     const cardData = data[cardIndex];
 

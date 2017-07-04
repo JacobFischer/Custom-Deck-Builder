@@ -23,7 +23,7 @@ export function surroundText(search: string, regex: RegExp, front: string, end: 
                 start: result.index,
                 end: result.index + result[0].length,
                 str: result[0]
-            }); // we care about the first returned result, '+X Power'
+            }); // we care about the first returned result
         }
         else {
             break; // no more matches

@@ -14,28 +14,12 @@ const ITALIC_TAG = '<tspan style="font-style: italic;">';
 const END_TAG = '</tspan>';
 
 function doBoundingBoxesOverlap(r1: SVGRect, r2: SVGRect): boolean {
-    let a =  !(
+    return !(
         r2.x > (r1.x + r1.width) || 
         (r2.x + r2.width) < r1.x || 
         r2.y > (r1.y + r1.height) ||
         (r2.y + r2.height) < r1.y
     );
-
-    //console.log(r1, r2, a);
-    return a;
-}
-
-document.drawBox = function(o) {
-    let svg = document.getElementsByTagName('svg')[0];
-
-    let rect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
-    svg.appendChild(rect);
-
-    rect.setAttribute('x', o.x);
-    rect.setAttribute('y', o.y);
-    rect.setAttribute('width', o.width);
-    rect.setAttribute('height', o.height);
-    rect.setAttribute('fill', 'red');
 }
 
 export interface WrapTextOptions {
@@ -67,7 +51,7 @@ export function wrapSVGText(textElement: SVGTextElement, text: string, options?:
     let resizing = true;
     while (resizing) {
         if (options.onResize) {
-            options = options.onResize(options);
+            options.onResize(options);
         }
 
         // now wrap the text
@@ -95,9 +79,7 @@ export function wrapSVGText(textElement: SVGTextElement, text: string, options?:
                     const tspanBox = tspan.getBBox();
 
                     for (const collide of options.collisions) {
-                        //console.log("checking", tspanBox, '!@');
                         if (doBoundingBoxesOverlap(tspanBox, collide)) {
-                            //console.log('collision on', tspan.getAttribute('class'), tspanBox);
                             resizing = true;
                             break;
                         }
@@ -285,4 +267,4 @@ export function roundedRectangle(path: SVGPathElement, text: SVGTextElement, rou
     const b = text.getBBox();
     const r = rounding;
     path.setAttribute('d', `M${b.x},${b.y*0.75 - 2} h${b.width} a${r},${r} 0 0 1 ${r},${r} v${b.height-18} a${r},${r} 0 0 1 -${r},${r} h-${b.width} a${r},${r} 0 0 1 -${r},-${r} v-${b.height-18} a${r},${r} 0 0 1 ${r},-${r} z`);
-}
+};

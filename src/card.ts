@@ -120,8 +120,7 @@ export class Card {
                 resize: !this.manualTextSize,
                 onResize: (options) => {
                     options.lineHeight = options.textSize * 36/DEFAULT_TEXT_SIZE;
-                    options.newParagraphHeight = options.textSize * 50/DEFAULT_TEXT_SIZE
-                    return options;
+                    options.newParagraphHeight = options.textSize * 50/DEFAULT_TEXT_SIZE;
                 },
                 collisions: this.oversized ? [] : [cardVPRect.getBBox()],
             });
