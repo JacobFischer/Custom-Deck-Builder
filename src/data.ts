@@ -96,19 +96,22 @@ Ongoing: Once during each of your turns, if you have played a Starter, then next
 ,,,,,,,,,,,,,,,,,,,
 Doomfist,Doomfist,Super Villain,"You start the game with Punch cards instead of Shot cards.
 
-Each time you play a Super Power during your turn, you may put a Punch from your discard pile into your hand.",,,5 Health,,X,https://i.imgur.com/61JQnU8.png,,,,,,,,,,
+Each time before you play a Super Power, you may put a Punch from your discard pile into play.",,,5 Health,,X,https://i.imgur.com/61JQnU8.png,,,,,,,,,,
 ,Punch,Starter,+1 Power,0,0,,,,https://i.imgur.com/6zh7IcN.png,,,,,,,,,,
 ,Akande Ogundimu,Villain,"Put two Starter cards from your discard pile into play.
 
-+Power equal to the number of Starter cards you have played this turn.",5,1,Doomfist,,,https://i.imgur.com/Varz1Lb.jpg,,,,,,,,,,
-,Seismic Slam,Super Power,+2 Power. If playing this card triggers your character's ability then Attack: All foes discard a card.,4,1,Doomfist,,,https://i.imgur.com/6PDlvOE.png,,,,,,,,,,
++Power equal to the number of Starter cards you control this turn.",5,1,Doomfist,,,https://i.imgur.com/Varz1Lb.jpg,,,,,,,,,,
+,Seismic Slam,Super Power,"+2 Power.
+
+If playing this card triggers your character's ability then Attack: All foes discard a card.",4,1,Doomfist,,,https://i.imgur.com/6PDlvOE.png,,,,,,,,,,
 ,Rising Uppercut,Super Power,+2 Power and if you control a Punch choose a foe. That foe cannot avoid your next Attack this turn.,3,1,Doomfist,,,https://i.imgur.com/JmMEzYt.png,,,,,,,,,,
 ,Rocket Punch,Super Power,"+2 Power and choose a foe.
 
-Attack: This attack cannot be avoided if you control a Punch.
+Attack: This Attack cannot be avoided if you control a Punch.
 That foe discards an Attack card, or two cards.",5,2,Doomfist,,,https://i.imgur.com/0M8Jnj3.png,,,,,,,,,,
-,Meteor Strike,Super Power,"Place all Punch cards from your discard pile into your hand.
-Attack: Each foe revleals their hand and discards a card for each Punch you control.",8,3,Doomfist Ultimate,X,,https://i.imgur.com/RWGi2cY.png,,,,,,,,,,
+,Meteor Strike,Super Power,"+1 Power for each Punch you control.
+
+Attack: Each foe reveals their hand and discards a card for each Punch you control.",8,3,Doomfist Ultimate,X,,https://i.imgur.com/RWGi2cY.png,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,
 Genji,Genji,Super Hero,+1 Power for each foe you successfully attack during each of your turns.,,,4 Health,,X,https://i.imgur.com/V9UJzW2.png,,,,,,,,,,
 ,Genji Shimada,Hero,+2 Power and an additional +2 Power if you have successfully attacked a player this turn.,5,1,Genji,,,https://i.imgur.com/KKbQjQQ.png,,,,,,,,,,
@@ -214,7 +217,7 @@ Attack: If that foe has 3 or more DP on their character, they discard a card. Ot
 That foe reveals their hand. You may discard and play a card revealed this way. (This is not an Attack)",6,2,Sombra,,,https://i.imgur.com/S9hjMOl.png,,,,,,,,,,
 ,Stealth,Super Power,"Draw 2 cards, then discard 2 cards.
 
-Defense: Discard this card to avoid an attack, then draw 2 cards",3,1,Sombra,,,https://i.imgur.com/aVY85rq.png,,,,,,,,,,
+Defense: You may discard this card to avoid an Attack. If you do draw 2 cards.",3,1,Sombra,,,https://i.imgur.com/aVY85rq.png,,,,,,,,,,
 ,Translocator,Equipment,"If this is the first card you have played this turn, put aside your hand. Draw up to four cards from your discard pile to make a new hand, where the new hand's total cost does not exceed the total cost of the old hand. Then discard your old hand.
 
 Otherwise, +2 Power.",5,1,Sombra,,,https://i.imgur.com/lfWWVzV.png,,32,,,,,,,,
@@ -354,8 +357,8 @@ Attack: This Attack cannot be avoided.
 All foes must reveal their hands and top of their decks to all players throughout this entire turn.",7,3,Widowmaker Ultimate,X,,https://i.imgur.com/QIIRlYn.png,,31,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,
 D.Va,D.Va,Super Hero,"When this card is not rotated D.Va is in Mech Mode. When it is rotated D.Va is in Pilot Mode.
-When you would flip this card face down while in Mech Mode, instead keep this card face up, rotate D.Va to Pilot Mode, remove all DP except 3, and draw back up to 4 cards.
-At the end of each of your turns draw an additional card if D.Va is in Mech Mode.",,,8 Health,,X,https://i.imgur.com/FANUG0m.png,,29,,,,,,,,
+When you would flip this card face down while in Mech Mode, instead keep this card face up, rotate D.Va to Pilot Mode, remove three DP, and draw back up to 4 cards.
+At the end of each of your turns draw an additional card if D.Va is in Mech Mode. Otherwise rotate to Mech Mode and remove all DP when your have 4 or less DP on Pilot Mode D.Va.",,,8 Health,,X,https://i.imgur.com/FANUG0m.png,,29,,,,,,,,
 ,Hana Song,Hero,"+3 Power
 
 If you control D.Va in Pilot Mode switch her to Mech Mode and draw back up to 5 cards.",6,2,D.Va,,,https://i.imgur.com/cNCcdmM.png,,,,D.Va,,,,,,

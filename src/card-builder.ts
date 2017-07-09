@@ -2,11 +2,12 @@
 
 import * as Handlebars from 'handlebars';
 import * as csvParse from 'csv-parse';
-import { replaceAll, loadTextures } from './utils';
+import { replaceAll, loadTextures, outline } from './utils';
+import { getInitialTextures, InitialTexture } from './initialize';
 import { Card } from './card';
 import * as PIXI from 'pixi.js';
 
-const MAX_TEXTURE_LENGTH = 4096; // in px
+const MAX_TEXTURE_LENGTH = 1024*4; // in px
 
 function parseCards(data: any[]): Card[] {
     const baseCard: Object = {};
@@ -18,8 +19,12 @@ function parseCards(data: any[]): Card[] {
     }
 
     for (let i = 0; i < data.length; i++) {
+        if (i === 2) {
+            //i = 187;
+        }
         const cardData = data[i];
         let sanitized: any = {};
+
         for (let key in cardData) {
             let value = cardData[key];
             key = replaceAll(key.toLowerCase(), ' ', '');
@@ -58,6 +63,9 @@ function parseCards(data: any[]): Card[] {
         }
 
         if (sanitized.name !== '__defaults__' && sanitized.name !== '__oversized_defaults__') {
+            if (!sanitized.oversized) {
+                //continue;
+            }
             const card = new Card(
                 sanitized.name,
                 sanitized.type,
@@ -80,17 +88,7 @@ function parseCards(data: any[]): Card[] {
                 sanitized.alsobold,
             );
 
-            //document.getElementById('main').appendChild(card.toSVG());
-
             cards.push(card);
-
-            let wanted = -2 + 2;
-            if (wanted && i < wanted) {
-                i = wanted - 1;
-            }
-            if (cards.length > 100 || i == wanted) {
-                return cards;
-            }
         }
     }
 
@@ -126,94 +124,156 @@ export function buildCards(csvText: string): void {
     let oversizedCards: Card[] = [];
 
     parse(csvText).then(cards => {
+        const oversizedCards = cards.filter(card => card.oversized);
+        const normalCards = cards.filter(card => !card.oversized);
+        //const app = new PIXI.Application(MAX_TEXTURE_LENGTH, MAX_TEXTURE_LENGTH, {antialias: true});
+        //document.body.appendChild(app.view);
+        //app.view.style.display = 'none';
+
+        let initalTextures = getInitialTextures();
+
+        renderAllCards(normalCards, oversizedCards, initalTextures);
+    }).catch(console.error);
+};
+
+function renderAllCards(normalCards: Card[], oversizedCards: Card[], textures: InitialTexture[]): void {
+    PIXI.loader.reset();
+
+    // now create a new app, we'll need to reload a few textures, but otherwise all memory should be cleared
+    for (const texture of textures) {
+        PIXI.loader.add(texture);
+    }
+
+    renderCards(normalCards, oversizedCards).then((app: PIXI.Application) => {
+        if (!app) {
+            return; // done
+        }
+
+        app.render();
+
+        let img = document.createElement('img');
+        img.src = app.view.toDataURL();
+        document.body.appendChild(img);
+
+        app.destroy(true);
+
+        console.log('rendered cards', normalCards.length, oversizedCards.length);
+
+        if (normalCards.length || oversizedCards.length) {
+            setTimeout(() => {
+                renderAllCards(normalCards, oversizedCards, textures);
+            }, 1000);
+        }
+    });
+}
+
+function renderCards(normalCards: Card[], oversizedCards: Card[]): Promise<PIXI.Application> {
+    return new Promise((resolve, reject) => {
+        let cards = normalCards.length ? normalCards : oversizedCards;
+        if (cards.length === 0) {
+            resolve(null);
+        }
+
         const textures: Set<string> = new Set();
         for (const card of cards) {
             textures.add(card.imageURL);
             textures.add(card.logoURL);
         }
 
-        const oversizedCards = cards.filter(card => card.oversized);
-        const normalCards = cards.filter(card => !card.oversized);
-
         loadTextures(Array.from(textures), () => {
-            renderCards(normalCards, oversizedCards);
-        })
-    }).catch(console.error);
-};
+            let maxWidth = 10; // these numbers are defined by table top simulator.
+            let maxHeight = 7; // a deck can be at most 4096px X 4096 consisting of 10 cards X 7 cards
 
-function renderCards(normalCards: Card[], oversizedCards: Card[]): void {
-    const maxWidth = 10;
-    const maxHeight = 7;
+            const cardWidth = cards[0].pxWidth;
+            const cardHeight = cards[0].pxHeight;
 
-    let cards = normalCards;
-    if (normalCards.length === 0) {
-        if (oversizedCards.length === 0) {
-            return; // we are done
-        }
+            const renders: PIXI.Container[] = [];
+            let i = 0;
+            while (cards.length) {
+                i++;
+                const card = cards.shift();
+                renders.push(card.renderSync());
 
-        cards = oversizedCards;
-    }
+                if (i === (maxWidth * maxHeight)) {
+                    break;
+                }
+            }
 
-    const cardWidth = cards[0].pxWidth;
-    const cardHeight = cards[0].pxHeight;
+            // Note: packing cards into a optimal rectangle is a variant of the bin packing problem
+            // optimal solutions exist, but I'll just still with a greedy algorithm
+            let width = 2;
+            let height = 1;
 
-    const renders: PIXI.Container[] = [];
-    let i = 0;
-    while (cards.length) {
-        i++;
-        const card = cards.shift();
-        renders.push(card.renderSync());
+            while((width * height) < renders.length) {
+                if (width < maxWidth) {
+                    width++;
+                }
+                if (height < maxHeight && (width * height) < renders.length) {
+                    height++;
+                }
+            }
 
-        if (i === (maxWidth * maxHeight)) {
-            break;
-        }
-    }
+            // once we get here, we know a decent width and height to use
+            maxWidth = width;
+            maxHeight = height;
 
-    let optimalAspectRatio = maxHeight/maxWidth;
-    let ourAspectRatio = cardHeight/cardWidth;
+            let resizedWidth = cardWidth;
+            let resizedHeight = cardHeight;
+            let ourAspectRatio = cardHeight/cardWidth;
 
-    let resizedWidth = 1;
-    let resizedHeight = 1;
+            if ((resizedWidth*maxWidth) > (resizedHeight*maxHeight)) {
+                // width first, some of the height will be wasted
+                resizedWidth = Math.floor(MAX_TEXTURE_LENGTH / maxWidth);
+                resizedHeight = Math.round(resizedWidth * ourAspectRatio);
+            }
+            else {
+                // height first, some of the width will be wasted
+                resizedHeight = Math.floor(MAX_TEXTURE_LENGTH / maxHeight);
+                resizedWidth = Math.round(resizedHeight * (1/ourAspectRatio));
+            }
 
-    if (ourAspectRatio >= optimalAspectRatio) {
-        // width first, some of the height will be wasted
-        resizedWidth = Math.floor(MAX_TEXTURE_LENGTH / maxWidth);
-        resizedHeight = Math.round(resizedWidth * ourAspectRatio);
-    }
-    else {
-        // height first, some of the width will be wasted
-        resizedHeight = Math.floor(MAX_TEXTURE_LENGTH / maxHeight);
-        resizedWidth = Math.round(resizedHeight * (1/ourAspectRatio));
-    }
+            if (resizedWidth > cardWidth) {
+                resizedWidth = cardWidth;
+                resizedHeight = cardHeight;
+            }
 
-    let app = new PIXI.Application(resizedWidth * maxWidth, resizedHeight * maxHeight, {antialias: true});
-    document.body.appendChild(app.view);
+            console.log('w x h', maxWidth, maxHeight, renders.length);
 
-    const scale = resizedWidth/cardWidth;
+            console.log('we want', resizedWidth * maxWidth, resizedHeight * maxHeight);
+            const app = new PIXI.Application(resizedWidth * maxWidth, resizedHeight * maxHeight, {antialias: true});
+            //app.renderer.resize(resizedWidth * maxWidth, resizedHeight * maxHeight);
 
-    for (let i = 0; i < renders.length; i++) {
-        const x = i % maxWidth;
-        const y = Math.floor(i / maxWidth);
-        let render = renders[i];
-        render.cacheAsBitmap = true;
+            const scale = resizedWidth/cardWidth;
 
-        app.stage.addChild(render);
+            for (let i = 0; i < renders.length; i++) {
+                const x = i % maxWidth;
+                const y = Math.floor(i / maxWidth);
+                let render = renders[i];
+                render.cacheAsBitmap = true;
 
-        /*
-        let brt = new PIXI.BaseRenderTexture(cardWidth, cardHeight, PIXI.SCALE_MODES.LINEAR, 1);
-        let rt = new PIXI.RenderTexture(brt);
+                app.stage.addChild(render);
 
-        let sprite = new PIXI.Sprite(rt);
-        app.renderer.render(render, rt);
-        app.stage.addChild(sprite);
-        sprite.position.set(cardWidth, cardHeight);
-        app.renderer.render(render, rt);
-        */
+                /*
+                let brt = new PIXI.BaseRenderTexture(cardWidth, cardHeight, PIXI.SCALE_MODES.LINEAR, 1);
+                let rt = new PIXI.RenderTexture(brt);
 
-        render.scale.set(scale);
+                let sprite = new PIXI.Sprite(rt);
+                app.renderer.render(render, rt);
+                app.stage.addChild(sprite);
+                sprite.position.set(cardWidth, cardHeight);
+                app.renderer.render(render, rt);
+                */
 
-        render.position.set(x * resizedWidth, y * resizedHeight);
-        app.stage.addChild(render);
-        console.log(`rendered ${x}, ${y} ${render.width} ${render.height}`);
-    }
+                if (scale !== 1) {
+                    render.scale.set(scale);
+                }
+
+                render.pivot.set(0, 0);
+                render.position.set(x * resizedWidth,  y * resizedHeight);
+                app.stage.addChild(render);
+            }
+
+            resolve(app);
+        });
+    });
 }

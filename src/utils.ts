@@ -343,7 +343,6 @@ export function autoSizeAndWrapStyledText(text: string, width: number, height: n
             for (const collision of collisions) {
                 for (const child of container.children) {
                     const textbox = child.getBounds();
-                    console.log('checking collision on', textbox);
 
                     if (collision instanceof PIXI.Rectangle) {
                         if (doRectanglesOverlap(collision, textbox)) {
@@ -366,7 +365,6 @@ export function autoSizeAndWrapStyledText(text: string, width: number, height: n
         }
 
         if (resizing) {
-            console.log('going down', normalStyle.fontSize);
             // step down the font size to see if that one fits
             normalStyle.fontSize = Number(normalStyle.fontSize) - autosizeStep;
         }
