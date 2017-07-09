@@ -1,36 +1,51 @@
 "use strict";
 
+import { onFontsLoaded } from './fonts';
 import { basename } from 'path';
 import * as PIXI from 'pixi.js';
-import * as FontFaceObserver from 'fontfaceobserver';
 
-const app = new PIXI.Application(800, 1100, {backgroundColor : 0x1099bb});
-document.body.appendChild(app.view);
+const wrapper: any = {
+    fontsLoaded: false,
+    pixiLoaded: false,
+    callback: false,
+};
 
-export function initialize(callback: (app: PIXI.Application) => void): void {
+function checkIfInitialized(): void {
+    if (wrapper.fontsLoaded && wrapper.pixiLoaded && wrapper.callback) {
+        wrapper.callback();
+    }
+};
+
+export function initialize(callback: () => void): void {
+    wrapper.callback = callback;
+
+    PIXI.utils.skipHello();
+    PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.LINEAR;
+
     function requireAll(r: __WebpackModuleApi.RequireContext) {
-        for(let key of r.keys()) {
+        for (let key of r.keys()) {
             let textureName: string = basename(key, '.png');
             let texturePath: string = <string>r(key); // requiring an image here, which will return a string
 
             PIXI.loader.add(textureName, texturePath);
         }
-        
-        PIXI.loader.load(() => {
-            // now load the fonts we will need
-            const font = new FontFaceObserver('CompactaBT', {
-                style: 'italic',
-            })
 
-            font.load().then(() => {
-                // all images and fonts should be ready
-                callback(app);
-            }, () => {
-                console.error('could not load font');
-            });
+        PIXI.loader.load(() => {
+            wrapper.pixiLoaded = true;
+            checkIfInitialized();
         });
     }
 
     // require all the images in the templates folder
     requireAll(require.context('../resources/card-templates/', true, /\.png$/));
-}
+};
+
+onFontsLoaded((error) => {
+    if (error) {
+        console.error(error);
+    }
+    else {
+        wrapper.fontsLoaded = true;
+        checkIfInitialized();
+    }
+});

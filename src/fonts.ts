@@ -22,7 +22,7 @@ function checkIfReady(): void {
     }
 
     if (ready && _onReady.callback) {
-        _onReady.callback(true);
+        _onReady.callback();
     }
 }
 
@@ -42,8 +42,9 @@ for (const fontFamily of Object.keys(fonts)) {
             _ready[fontFamily + fontType] = true;
             checkIfReady();
         }, (...args: Array<any>) => {
-            console.error(`${fontFamily} ${fontType} could not be loaded`, args);
-            _onReady.callback(false);
+            const message = `${fontFamily} ${fontType} could not be loaded`;
+            console.error(message, args);
+            _onReady.callback(new Error(message));
         });
     }
 }
