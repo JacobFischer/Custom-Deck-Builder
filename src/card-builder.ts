@@ -3,11 +3,17 @@
 import * as Handlebars from 'handlebars';
 import * as csvParse from 'csv-parse';
 import { replaceAll, loadTextures, outline } from './utils';
-import { getInitialTextures, InitialTexture } from './initialize';
+import { initialTextures } from './initialize';
 import { Card } from './card';
 import * as PIXI from 'pixi.js';
+import * as JSZip from 'jszip';
+const filesaver = require('file-saver');
 
 const MAX_TEXTURE_LENGTH = 1024*4; // in px
+
+interface CardImages {
+    [key: string]: Blob
+}
 
 function parseCards(data: any[]): Card[] {
     const baseCard: Object = {};
@@ -130,40 +136,61 @@ export function buildCards(csvText: string): void {
         //document.body.appendChild(app.view);
         //app.view.style.display = 'none';
 
-        let initalTextures = getInitialTextures();
-
-        renderAllCards(normalCards, oversizedCards, initalTextures);
+        renderAllCards(normalCards, oversizedCards, {}, 1, (cardImages) => {
+            console.log('gonna zip iy up');
+            zipCards(cardImages);
+        });
     }).catch(console.error);
 };
 
-function renderAllCards(normalCards: Card[], oversizedCards: Card[], textures: InitialTexture[]): void {
-    PIXI.loader.reset();
+function renderAllCards(normalCards: Card[], oversizedCards: Card[], cardImages: CardImages, batch: number, callback: (cardImages: CardImages) => void) {
+    return new Promise((resolve, reject) => {
+        console.log(`Rendering card batch ${batch}`);
 
-    // now create a new app, we'll need to reload a few textures, but otherwise all memory should be cleared
-    for (const texture of textures) {
-        PIXI.loader.add(texture);
-    }
-
-    renderCards(normalCards, oversizedCards).then((app: PIXI.Application) => {
-        if (!app) {
-            return; // done
+        for (let key in initialTextures) {
+            if (!PIXI.loader.resources[key]) {
+                PIXI.loader.add(key, initialTextures[key]);
+            }
         }
 
-        app.render();
+        renderCards(normalCards, oversizedCards).then((app: PIXI.Application) => {
+            if (!app) {
+                console.log('waht');
+                callback(cardImages);
+            }
 
-        let img = document.createElement('img');
-        img.src = app.view.toDataURL();
-        document.body.appendChild(img);
+            app.render();
+            app.view.toBlob((blob: Blob) => {
+                cardImages[`card-${batch}.png`] = blob;
 
-        app.destroy(true);
+                //app.stage.destroy(true);
+                // we are done with these images, destroy their textures from memory
+                // there is a slight chance cards will resize images, but it is way more memory efficient to dump it now than keep it all in memory
 
-        console.log('rendered cards', normalCards.length, oversizedCards.length);
+                /*
+                for (let textureKey in PIXI.loader.resources) {
+                    if (!initialTextures.hasOwnProperty(textureKey)) {
+                        console.log('destroying texture', textureKey);
+                        PIXI.loader.resources[textureKey].texture.destroy(true);
+                    }
+                }
+                */
 
-        if (normalCards.length || oversizedCards.length) {
-            setTimeout(() => {
-                renderAllCards(normalCards, oversizedCards, textures);
-            }, 1000);
-        }
+                app.destroy(true);
+
+                console.log('rendered cards', normalCards.length, oversizedCards.length);
+
+                if (normalCards.length || oversizedCards.length) {
+                    setTimeout(() => {
+                        renderAllCards(normalCards, oversizedCards, cardImages, batch + 1, callback);
+                    }, 1000);
+                }
+                else {
+                    console.log('hio');
+                    callback(cardImages);
+                }
+            })
+        });
     });
 }
 
@@ -174,30 +201,30 @@ function renderCards(normalCards: Card[], oversizedCards: Card[]): Promise<PIXI.
             resolve(null);
         }
 
+        let maxWidth = 7; // these numbers are defined by table top simulator.
+        let maxHeight = 5; // a deck can be at most 4096px X 4096 consisting of 10 cards X 7 cards
+
+        let i = 0;
         const textures: Set<string> = new Set();
-        for (const card of cards) {
+        let currentCards: Card[] = [];
+        while (cards.length) {
+            i++;
+            const card = cards.shift();
+            currentCards.push(card);
+
             textures.add(card.imageURL);
             textures.add(card.logoURL);
+
+            if (i === (maxWidth * maxHeight)) {
+                break;
+            }
         }
 
         loadTextures(Array.from(textures), () => {
-            let maxWidth = 10; // these numbers are defined by table top simulator.
-            let maxHeight = 7; // a deck can be at most 4096px X 4096 consisting of 10 cards X 7 cards
+            const cardWidth = currentCards[0].pxWidth;
+            const cardHeight = currentCards[0].pxHeight;
 
-            const cardWidth = cards[0].pxWidth;
-            const cardHeight = cards[0].pxHeight;
-
-            const renders: PIXI.Container[] = [];
-            let i = 0;
-            while (cards.length) {
-                i++;
-                const card = cards.shift();
-                renders.push(card.renderSync());
-
-                if (i === (maxWidth * maxHeight)) {
-                    break;
-                }
-            }
+            const renders: PIXI.Container[] = currentCards.map(card => card.renderSync());
 
             // Note: packing cards into a optimal rectangle is a variant of the bin packing problem
             // optimal solutions exist, but I'll just still with a greedy algorithm
@@ -237,9 +264,6 @@ function renderCards(normalCards: Card[], oversizedCards: Card[]): Promise<PIXI.
                 resizedHeight = cardHeight;
             }
 
-            console.log('w x h', maxWidth, maxHeight, renders.length);
-
-            console.log('we want', resizedWidth * maxWidth, resizedHeight * maxHeight);
             const app = new PIXI.Application(resizedWidth * maxWidth, resizedHeight * maxHeight, {antialias: true});
             //app.renderer.resize(resizedWidth * maxWidth, resizedHeight * maxHeight);
 
@@ -275,5 +299,21 @@ function renderCards(normalCards: Card[], oversizedCards: Card[]): Promise<PIXI.
 
             resolve(app);
         });
+    });
+}
+
+function zipCards(cardImages: CardImages) {
+    console.log('zipping cards');
+    const zip = new JSZip();
+    for (const key in cardImages) {
+        if (Object.hasOwnProperty.call(cardImages, key)) {
+            const blob = cardImages[key];
+
+            zip.file(key, blob);
+        }
+    }
+
+    zip.generateAsync({type: 'blob'}).then((content) => {
+        filesaver.saveAs(content, 'cards.zip');
     });
 }

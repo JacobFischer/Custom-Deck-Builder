@@ -99,6 +99,7 @@ export function newSprite(textureKey: string, container?: PIXI.Container): PIXI.
 }
 
 export function loadTextures(textures: string[], callback: () => void) {
+    console.log('downloading textures');
     const texturesToAyncLoad = textures.filter((t) => !PIXI.loader.resources[t]);
 
     if (texturesToAyncLoad.length === 0) {
@@ -117,6 +118,7 @@ export function loadTextures(textures: string[], callback: () => void) {
         }
 
         PIXI.loader.load(() => {
+            console.log('textures done downloading');
             for (const texture of texturesToAyncLoad) {
                 const baseTexture = PIXI.loader.resources[texture].texture.baseTexture;
                 baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;

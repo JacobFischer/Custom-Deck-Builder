@@ -16,28 +16,20 @@ function checkIfInitialized(): void {
     }
 };
 
-export interface InitialTexture {
-    key: string,
-    url: string,
-};
+const textures: {[key: string]: string} = {};
 
-export function getInitialTextures() {
-    function requireAll(r: __WebpackModuleApi.RequireContext): InitialTexture[] {
-        let textures: InitialTexture[] = [];
+function requireAll(r: __WebpackModuleApi.RequireContext) {
+    for (let key of r.keys()) {
+        let textureName: string = basename(key, '.png');
+        let texturePath: string = <string>r(key); // requiring an image here, which will return a string
 
-        for (let key of r.keys()) {
-            textures.push({
-                key: basename(key, '.png'),
-                url: <string>r(key), // requiring an image here, which will return a string
-            });
-        }
-
-        return textures;
+        textures[textureName] = texturePath;
     }
-
-    // require all the images in the templates folder
-    return requireAll(require.context('../resources/card-templates/', true, /\.png$/));
 }
+// require all the images in the templates folder
+requireAll(require.context('../resources/card-templates/', true, /\.png$/));
+
+export const initialTextures = textures;
 
 export function initialize(callback: () => void): void {
     wrapper.callback = callback;
@@ -45,8 +37,17 @@ export function initialize(callback: () => void): void {
     PIXI.utils.skipHello();
     PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.LINEAR;
 
-    wrapper.pixiLoaded = true;
-    checkIfInitialized();
+    for (let key in initialTextures) {
+        PIXI.loader.add(key, initialTextures[key]);
+    }
+
+    PIXI.loader.load(() => {
+        wrapper.pixiLoaded = true;
+        checkIfInitialized();
+    });
+
+    // require all the images in the templates folder
+    requireAll(require.context('../resources/card-templates/', true, /\.png$/));
 };
 
 onFontsLoaded((error) => {
