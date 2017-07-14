@@ -3,7 +3,7 @@
 import * as Handlebars from 'handlebars';
 import * as csvParse from 'csv-parse';
 import { replaceAll, loadTextures, outline } from './utils';
-import { initialTextures } from './initialize';
+import { initialTextures, initialTexturesToKey } from './initialize';
 import { Card } from './card';
 import * as PIXI from 'pixi.js';
 import * as JSZip from 'jszip';
@@ -163,18 +163,19 @@ function renderAllCards(normalCards: Card[], oversizedCards: Card[], cardImages:
             app.view.toBlob((blob: Blob) => {
                 cardImages[`card-${batch}.png`] = blob;
 
-                //app.stage.destroy(true);
                 // we are done with these images, destroy their textures from memory
-                // there is a slight chance cards will resize images, but it is way more memory efficient to dump it now than keep it all in memory
+                // there is a slight chance cards will reuse images, but it is way more memory efficient to dump it now than keep it all in memory
+                destroyPIXITextures(app.stage);
 
-                /*
                 for (let textureKey in PIXI.loader.resources) {
                     if (!initialTextures.hasOwnProperty(textureKey)) {
                         console.log('destroying texture', textureKey);
                         PIXI.loader.resources[textureKey].texture.destroy(true);
+                        delete PIXI.loader.resources[textureKey];
+                        delete PIXI.utils.TextureCache[textureKey];
+                        delete PIXI.utils.BaseTextureCache[textureKey];
                     }
                 }
-                */
 
                 app.destroy(true);
 
@@ -192,6 +193,20 @@ function renderAllCards(normalCards: Card[], oversizedCards: Card[], cardImages:
             })
         });
     });
+}
+
+function destroyPIXITextures(obj: PIXI.DisplayObject): void {
+    if (obj instanceof PIXI.Sprite) {
+        if (!initialTexturesToKey.has(obj.texture)) {
+            obj.destroy(true);
+        }
+    }
+
+    if (obj instanceof PIXI.Container) {
+        for (const child of obj.children) {
+            destroyPIXITextures(child);
+        }
+    }
 }
 
 function renderCards(normalCards: Card[], oversizedCards: Card[]): Promise<PIXI.Application> {

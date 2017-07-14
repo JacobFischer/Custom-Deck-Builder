@@ -30,6 +30,7 @@ function requireAll(r: __WebpackModuleApi.RequireContext) {
 requireAll(require.context('../resources/card-templates/', true, /\.png$/));
 
 export const initialTextures = textures;
+export const initialTexturesToKey = new Map<PIXI.Texture, string>();
 
 export function initialize(callback: () => void): void {
     wrapper.callback = callback;
@@ -43,6 +44,9 @@ export function initialize(callback: () => void): void {
 
     PIXI.loader.load(() => {
         wrapper.pixiLoaded = true;
+        for (let key in initialTextures) {
+            initialTexturesToKey.set(PIXI.loader.resources[key].texture, key);
+        }
         checkIfInitialized();
     });
 
