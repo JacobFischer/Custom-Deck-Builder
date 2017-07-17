@@ -378,3 +378,18 @@ export function autoSizeAndWrapStyledText(text: string, width: number, height: n
 
     return null; // nothing fits :(
 }
+
+function createNodeFromTemplate(required: (args: object) => string, args?: object) {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = required(args);
+    const node = tempDiv.firstChild;
+    node.parentElement.removeChild(node);
+
+    return node;
+}
+
+export function template(required: (args: object) => string): (args?: object) => Node {
+    return (args: object): Node => {
+        return createNodeFromTemplate(required, args);
+    };
+}

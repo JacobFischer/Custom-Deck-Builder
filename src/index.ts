@@ -3,6 +3,7 @@
 import { initialize } from './initialize';
 import { buildCards } from './card-builder';
 import { csvData } from './data';
+import { UI } from './ui';
 
 initialize(() => {
     /*document.getElementById('submit').addEventListener('click', () => {
@@ -13,5 +14,6 @@ initialize(() => {
 
     parse(csvTest);*/
 
-    buildCards(csvData);
+    //buildCards(csvData);
+    new UI(document.body);
 });

@@ -73,7 +73,7 @@ module.exports = {
       },
       {
         test: /\.hbs$/,
-        use: { 
+        use: {
           loader: "handlebars-loader",
           options: {
             helperDirs: [ __dirname + '/src/handlebars-helpers' ],

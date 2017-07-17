@@ -147,12 +147,6 @@ function renderAllCards(normalCards: Card[], oversizedCards: Card[], cardImages:
     return new Promise((resolve, reject) => {
         console.log(`Rendering card batch ${batch}`);
 
-        for (let key in initialTextures) {
-            if (!PIXI.loader.resources[key]) {
-                PIXI.loader.add(key, initialTextures[key]);
-            }
-        }
-
         renderCards(normalCards, oversizedCards).then((app: PIXI.Application) => {
             if (!app) {
                 console.log('waht');
