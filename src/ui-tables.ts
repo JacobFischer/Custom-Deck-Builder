@@ -38,20 +38,20 @@ export const defaultsHeadings: ColumnData[] = [
 export const defaultsRows: RowValues[] = [
     {
         name: '__defaults__',
-        logoURL: 'https://i.imgur.com/ovWF3PC.png',
-        set: 'Overwatch 1',
-        setTextColor: '#566059',
-        setBackgroundColor: '#FBC82F',
-        copyright: '2017 ATVI',
-        legal: 'All Overwatch characters and\nelements © and ™ Blizzard.\n(s01)',
+        logoURL: 'https://i.imgur.com/J6SuXcE.png',
+        set: 'Teen Titans',
+        setTextColor: '#ffec34',
+        setBackgroundColor: '#ed1c24',
+        copyright: '2015 CZE',
+        legal: 'TEEN TITANS and all related character and elements are trademarks and © DC Comics\n(s15)',
         logoScale: 0.6,
     },
     {
         name: '__oversized_defaults__',
-        legal: 'All Overwatch characters and elements © and ™ Blizzard.\n(s01)',
-        logoScale: 1,
-        setTextColor: '#566059',
-        setBackgroundColor: '#FBC82F',
+        //legal: 'All Overwatch characters and elements © and ™ Blizzard.\n(s01)',
+        logoScale: 0.85,
+        setTextColor: '#ffec34',
+        setBackgroundColor: '#ed1c24',
     },
 ];
 
@@ -103,4 +103,11 @@ export const cardsRows: RowValues[] = [
         text: '+1 Power',
         imageURL: 'https://i.imgur.com/sFmPfjn.png',
     },
+    {
+        name: "Wonder Girl",
+        type: 'Hero',
+        oversized: true,
+        imageURL: 'https://i.imgur.com/RjNwCAX.png',
+        text: 'Once during each of your turns, if you control two or more Equipment, draw two cards and then discard a card.'
+    }
 ];

@@ -1,3 +1,4 @@
+import { camelize } from './utils';
 import { EventEmitter } from 'events';
 
 export type RowValue = number | string | Node | boolean;
@@ -30,13 +31,6 @@ export const TableEventSymbols = {
     cellChanged: Symbol('cellChanged'),
     rowDeleted: Symbol('rowDeleted'),
 };
-
-function camelize(str: string) {
-    return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
-        if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
-        return index == 0 ? match.toLowerCase() : match.toUpperCase();
-    });
-}
 
 /**
  * @class A simple wrapper around a <table> that emits events on editing
@@ -247,11 +241,13 @@ export class EditableTable extends EventEmitter {
                         if (checkbox) {
                             newValue = (<HTMLInputElement>child).checked;
                         }
-                        newValue = String(column.transform(newValue));
+                        newValue = column.transform(newValue);
 
                         if (lastValue !== newValue) {
-                            this.emit(TableEventSymbols.cellChanged, row, column, newValue);
                             row.values[column.id] = column.transform(newValue);
+                            this.emit(TableEventSymbols.cellChanged, row, column, newValue);
+                            console.log('new value', newValue);
+
                             if (!checkbox) {
                                 child.value = newValue;
                             }
@@ -269,9 +265,9 @@ export class EditableTable extends EventEmitter {
         }
     }
 
-    public getRow(index: number): RowValues {
+    public getRow(index: number): RowData {
         if (index > -1 && index < this.rows.length) {
-            return this.rows[index].values;
+            return this.rows[index];
         }
 
         throw new RangeError(`${index} not in range of table with ${this.rows.length} rows.`);

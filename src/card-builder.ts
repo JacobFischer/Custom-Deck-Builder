@@ -2,7 +2,7 @@
 
 import * as Handlebars from 'handlebars';
 import * as csvParse from 'csv-parse';
-import { replaceAll, loadTextures, outline } from './utils';
+import { replaceAll, loadTextures, outline, camelize, tryToCast } from './utils';
 import { initialTextures, initialTexturesToKey } from './initialize';
 import { Card } from './card';
 import * as PIXI from 'pixi.js';
@@ -33,7 +33,7 @@ function parseCards(data: any[]): Card[] {
 
         for (let key in cardData) {
             let value = cardData[key];
-            key = replaceAll(key.toLowerCase(), ' ', '');
+            key = camelize(key);
 
             if (key.startsWith('#')) {
                 // skip this column
@@ -48,11 +48,16 @@ function parseCards(data: any[]): Card[] {
                 value = Boolean(value);
             }
 
-            if (key === 'alsobold' && value !== '') {
+            if (key === 'alsoBold' && value !== '') {
                 value = value.split(',');
             }
 
             if (value !== '') {
+                if (typeof(value) === 'string') {
+                    // try to cast it to a boolean or number
+                    value = tryToCast(value);
+                }
+
                 sanitized[key] = value;
             }
         }
@@ -69,31 +74,7 @@ function parseCards(data: any[]): Card[] {
         }
 
         if (sanitized.name !== '__defaults__' && sanitized.name !== '__oversized_defaults__') {
-            if (!sanitized.oversized) {
-                //continue;
-            }
-            const card = new Card(
-                sanitized.name,
-                sanitized.type,
-                sanitized.variant,
-                sanitized.oversized,
-                sanitized.typeprefix,
-                sanitized.victorypoints,
-                sanitized.cost,
-                sanitized.text,
-                sanitized.imageurl,
-                sanitized.logourl,
-                Number(sanitized.logoscale),
-                sanitized.textsize,
-                sanitized.copyright,
-                sanitized.legal,
-                sanitized.subtype,
-                sanitized.set,
-                sanitized.settextcolor,
-                sanitized.setbackgroundcolor,
-                sanitized.alsobold,
-            );
-
+            const card = new Card(sanitized);
             cards.push(card);
         }
     }

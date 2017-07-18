@@ -12,43 +12,55 @@ const DEFAULT_TEXT_SIZE = 38;
  * @class represents a custom card
  */
 export class Card {
+    [key: string]: any;
+
     private container: PIXI.Container;
-    private imageSprite: PIXI.Sprite;
-    private logoSprite: PIXI.Sprite;
 
-    private nameText: PIXI.Text;
     private manualTextSize: boolean = false;
-
     public pxWidth = 750;
     public pxHeight = 1050;
 
-    constructor(
-        readonly name: string,
-        readonly baseType: 'Equipment' | 'Hero' | 'Location' | 'Starter' | 'Super Power' | 'Villain' | 'Weakness',
-        readonly variant: boolean = false,
-        readonly oversized: boolean = false,
-        readonly typePrefix: string = '',
-        readonly victoryPoints: '*' | number = 1,
-        readonly cost: number = 1,
-        readonly text: string,
-        readonly imageURL: string,
-        readonly logoURL: string,
-        readonly logoScale: number,
-        readonly textSize: number,
-        readonly copyright: string = '',
-        readonly legal: string = '',
-        readonly subtype: string = null,
-        readonly set: string = null,
-        readonly setTextColor = '#ffffff',
-        readonly setBackgroundColor = '#000000',
-        readonly alsoBold: string[] = [],
-    ) {
-        if (!copyright) {
+    public name: string = 'Card Name';
+    public type: 'Equipment' | 'Hero' | 'Location' | 'Starter' | 'Super Power' | 'Villain' | 'Weakness' = 'Starter';
+    public variant: boolean = false;
+    public oversized: boolean = false;
+    public typePrefix: string = '';
+    public victoryPoints: '*' | number = 1;
+    public cost: number = 1;
+    public text: string = 'Card text';
+    public imageURL: string = '';
+    public logoURL: string = '';
+    public logoScale: number = 1;
+    public textSize: number = 38;
+    public copyright: string = '';
+    public legal: string = '';
+    public subtype: string = '';
+    public set: string = '';
+    public setTextColor = '#ffffff';
+    public setBackgroundColor = '#000000';
+    public alsoBold: string[] = [];
+
+    constructor(args?: {[key: string]: any}) {
+        if (args) {
+            this.setFrom(args);
+        }
+    }
+
+    public setFrom(args: {[key: string]: any}) {
+        args = Object.assign({}, args);
+        args.victoryPoints = args.vp || args.VP || 0;
+
+        for (let key in args) {
+            if (Object.prototype.hasOwnProperty.call(this, key)) {
+                this[key] = args[key];
+            }
+        }
+
+        if (!this.copyright) {
             this.copyright = String(new Date().getFullYear());
         }
-        this.copyright = `©${this.copyright}`;
 
-        if (textSize) {
+        if (this.textSize) {
             this.manualTextSize = true;
         }
         else {
@@ -59,6 +71,10 @@ export class Card {
             this.pxWidth = 900;
             this.pxHeight = 1200;
         }
+
+        if (this.oversized && !(this.type == 'Hero' || this.type === 'Villain')) {
+            this.oversized = false;
+        }
     }
 
     toSVG(): SVGSVGElement {
@@ -68,12 +84,12 @@ export class Card {
         }
 
         const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        let variantType: string = this.baseType;
-        if (this.variant && (this.baseType === 'Hero' || this.baseType === 'Villain')) {
+        let variantType: string = this.type;
+        if (this.variant && (this.type === 'Hero' || this.type === 'Villain')) {
             variantType = `Super ${variantType}`;
         }
         else if (this.oversized) {
-            variantType = `oversized-${this.baseType}`;
+            variantType = `oversized-${this.type}`;
         }
         variantType = variantType.replace(' ', '-').toLowerCase();
 
@@ -84,14 +100,14 @@ export class Card {
         svgElement.setAttribute('width', `${width}px`);
         svgElement.setAttribute('height', `${height}px`);
         svgElement.setAttribute('viewBox', `0 0 ${width} ${height}`);
-        svgElement.setAttribute('class', `custom-card main-type-${this.baseType.replace(' ', '-').toLowerCase()} ${this.variant ? 'variant' : this.oversized ? 'oversized' : 'normal'}`);
+        svgElement.setAttribute('class', `custom-card main-type-${this.type.replace(' ', '-').toLowerCase()} ${this.variant ? 'variant' : this.oversized ? 'oversized' : 'normal'}`);
         svgElement.setAttribute('style', 'display: inline-block;');
 
         const template = this.oversized ? oversizedTemplate : regularTemplate;
 
         svgElement.innerHTML = template({
             name: this.name.toUpperCase(),
-            type: this.baseType !== 'Weakness' && this.baseType.toUpperCase(),
+            type: this.type !== 'Weakness' && this.type.toUpperCase(),
             backgroundTypeImage: require(`../resources/card-templates/${variantType}.png`),
             backgroundVPImage: require(`../resources/card-templates/background-vp-${vpKey}.png`),
             backgroundCostImage: require(`../resources/card-templates/background-cost.png`),
@@ -103,7 +119,7 @@ export class Card {
             logoURL: this.logoURL,
             copyright: this.copyright,
             legal: this.legal,
-            subtype: this.baseType !== 'Weakness' && this.subtype && this.subtype.toUpperCase(),
+            subtype: this.type !== 'Weakness' && this.subtype && this.subtype.toUpperCase(),
             set: this.set && this.set.toUpperCase(),
             setTextColor: this.setTextColor,
             setBackgroundColor: this.setBackgroundColor,
@@ -165,7 +181,7 @@ export class Card {
     }
 
     private getStyle(part: string): PIXI.TextStyle {
-        return getStyle(this.baseType, part, this.oversized);
+        return getStyle(this.type, part, this.oversized);
     }
 
     public render(): Promise<PIXI.Container> {
@@ -179,6 +195,10 @@ export class Card {
     }
 
     public renderSync(): PIXI.Container {
+        if (this.container) {
+            this.container.removeChild(this.container);
+        }
+
         this.container = new PIXI.Container();
 
         this.renderImage();
@@ -203,6 +223,10 @@ export class Card {
     };
 
     private renderImage(): void {
+        if (!this.imageURL) {
+            return;
+        }
+
         let imageMaxWidth = 750;
         let imageMaxHeight = 523;
         let imageTop = 117;
@@ -239,10 +263,14 @@ export class Card {
     }
 
     private renderBackground(): void {
-        let backgroundType: string = this.baseType;
-        if (this.variant) {
-            if (this.baseType === 'Hero' || this.baseType === 'Villain') {
-                backgroundType = `Super-${this.baseType}`;
+        if (!this.type) {
+            return;
+        }
+
+        let backgroundType: string = this.type;
+        if (this.variant || this.oversized) {
+            if (this.type === 'Hero' || this.type === 'Villain') {
+                backgroundType = `Super-${this.type}`;
             }
         }
         if (this.oversized) {
@@ -261,6 +289,10 @@ export class Card {
     }
 
     private renderLogo(): void {
+        if (!this.logoURL) {
+            return;
+        }
+
         const maxLogoWidth = 175;
         const maxLogoHeight = 175;
         const logoSprite = newSprite(this.logoURL, this.container);
@@ -313,7 +345,7 @@ export class Card {
             return;
         }
 
-        let cardTypeText = new PIXI.Text(this.baseType.toUpperCase(), this.getStyle('type'));
+        let cardTypeText = new PIXI.Text(this.type.toUpperCase(), this.getStyle('type'));
         cardTypeText.x = 45;
         cardTypeText.y = 666;
 
@@ -439,6 +471,10 @@ export class Card {
     }
 
     private renderSet(): void {
+        if (!this.set) {
+            return;
+        }
+
         const style = this.getStyle('set');
         style.fill = this.setTextColor || '#ffffff';
         let set = new PIXI.Text(this.set.toUpperCase(), style);
@@ -480,7 +516,7 @@ export class Card {
             style.fill = '#ffffff';
         }
 
-        let copyright = wrapStyledText(this.copyright, maxWidth, style);
+        let copyright = wrapStyledText(`©${this.copyright}`, maxWidth, style);
 
         if (this.oversized) {
             copyright.pivot.x = copyright.width;

@@ -1,3 +1,32 @@
+export function camelize(str: string) {
+    return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
+        if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
+        return index == 0 ? match.toLowerCase() : match.toUpperCase();
+    });
+}
+
+export function tryToCast(value: string | number | boolean): string | number | boolean {
+    if (typeof(value) === 'string') {
+        // try to make it a number
+        const asNum = Number(value);
+        if (!isNaN(asNum)) {
+            value = asNum;
+        }
+        else {
+            // try to make it a boolean
+            const lowered = value.toLowerCase();
+            if (lowered === 'false') {
+                value = false;
+            }
+            else if (lowered === 'true') {
+                value = true;
+            }
+        }
+    }
+
+    return value;
+}
+
 export function escapeRegExp(str: string) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
@@ -89,7 +118,11 @@ export function surroundText(search: string, regex: RegExp, front: string, end: 
 }
 
 export function newSprite(textureKey: string, container?: PIXI.Container): PIXI.DisplayObject {
-    const sprite = new PIXI.Sprite(PIXI.loader.resources[textureKey].texture);
+    const resource = PIXI.loader.resources[textureKey];
+    if (!resource) {
+        throw new Error(`No resource found for key ${textureKey}`);
+    }
+    const sprite = new PIXI.Sprite(resource.texture);
 
     if (container) {
         container.addChild(sprite);
@@ -98,18 +131,32 @@ export function newSprite(textureKey: string, container?: PIXI.Container): PIXI.
     return sprite;
 }
 
-export function loadTextures(textures: string[], callback: () => void) {
+const backlogTextures = new Set<string>();
+const backlogCallbacks: (() => void)[] = [];
+export function loadTextures(textures: string[], callback?: () => void) {
     console.log('downloading textures');
-    const texturesToAyncLoad = textures.filter((t) => !PIXI.loader.resources[t]);
-
-    if (texturesToAyncLoad.length === 0) {
-        // nothing to load, just invoke the callback function now
-        if (callback) {
-            callback();
-        }
+    const filtered = new Set<string>(textures.filter((t) => t && !PIXI.loader.resources[t]));
+    for (const texture of filtered) {
+        backlogTextures.add(texture);
     }
-    else {
-        for (const texture of texturesToAyncLoad) {
+
+    if (callback) {
+        backlogCallbacks.push(callback);
+    }
+
+    if (backlogTextures.size) {
+        // we have textures to load
+        if (PIXI.loader.loading) {
+            return; // we'll get to them later
+        }
+        // else nothing is loading, so let's load the backlog now
+
+        const nowLoading = new Set(backlogTextures);
+        const nowCallbacks = backlogCallbacks.slice();
+        backlogTextures.clear();
+        backlogCallbacks.length = 0;
+
+        for (const texture of nowLoading) {
             PIXI.loader.add({
                 url: texture,
                 key: texture,
@@ -117,9 +164,9 @@ export function loadTextures(textures: string[], callback: () => void) {
             });
         }
 
-        PIXI.loader.load(() => {
+         PIXI.loader.load(() => {
             console.log('textures done downloading');
-            for (const texture of texturesToAyncLoad) {
+            for (const texture of nowLoading) {
                 const baseTexture = PIXI.loader.resources[texture].texture.baseTexture;
                 baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
                 baseTexture.mipmap = true;
@@ -128,7 +175,11 @@ export function loadTextures(textures: string[], callback: () => void) {
                 baseTexture.update();
             }
 
-            callback();
+            for (const nowCallback of nowCallbacks) {
+                nowCallback();
+            }
+
+            loadTextures([]);
         });
     }
 }
@@ -392,4 +443,17 @@ export function template(required: (args: object) => string): (args?: object) =>
     return (args: object): Node => {
         return createNodeFromTemplate(required, args);
     };
+}
+
+export function cloneExceptEmpty(...args: any[]): any {
+    const result: any = {};
+    for (const arg of args) {
+        for (const key in arg) {
+            if (Object.prototype.hasOwnProperty.call(arg, key) && arg[key] !== '') {
+                result[key] = arg[key];
+            }
+        }
+    }
+
+    return result;
 }
