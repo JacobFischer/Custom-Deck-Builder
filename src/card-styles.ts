@@ -101,6 +101,9 @@ const styles: {
             fill: '#ffffff',
             fontSize: 21.5,
         },
+        set: {
+            fontSize: 22,
+        }
     },
 
     // specific card types

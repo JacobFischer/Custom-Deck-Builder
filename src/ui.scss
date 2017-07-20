@@ -1,0 +1,173 @@
+@import "./colors.scss";
+@import "./utils.scss";
+@import "./range";
+
+@mixin font-defaults() {
+    font-family: TradeGothic, Verdana, Geneva, sans-serif;
+    font-size: 1em;
+    letter-spacing: -0.025em;
+}
+
+body {
+    background: url(../resources/images/background.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.custom-deck-builder {
+    background-color: $white;
+    padding: 1em;
+    width: calc(1280px - 2em);
+    margin: 2em auto 1em auto;
+    @include font-defaults();
+
+    a, a:visited {
+        color: $primary;
+        text-decoration: underline;
+
+        &:hover, &:focus {
+            color: $secondary-dark;
+        }
+    }
+
+    & h1, & h2, & h3, & h4, & h5, & h6 {
+        font-size: 3em;
+        font-family: CompactaBT, Impact, Charcoal, sans-serif;
+        letter-spacing: -0.025em;
+        margin: 0;
+        color: $secondary;
+        text-shadow: 3px 3px #000000;
+        text-transform: uppercase;
+        transform: skewX(-15deg) scaleY(0.75);
+        -webkit-transform: skewX(-15deg) scaleY(0.75);
+        -ms-transform: skewX(-15deg) scaleY(0.75);
+        -moz-transform: skewX(-15deg) scaleY(0.75);
+        -o-transform: skewX(-15deg) scaleY(0.75);
+    }
+
+    & h1 {
+        font-size: 4.5em;
+        text-shadow: 5px 5px #000000;
+        display: block;
+        text-align: center;
+    }
+
+    & input, & textarea, & select, & option, & button {
+        @include font-defaults();
+        border: 1px solid $dark-gray;
+        color: $black;
+
+        &:hover, &:focus {
+            outline: none;
+            border-color: $primary-lightest;
+        }
+
+        &:focus {
+            background-color: $light-gray;
+        }
+    }
+
+    & textarea {
+        height: 1.875em;
+    }
+
+    & button {
+        background-color: $primary-lightest;
+        border: none;
+        box-shadow: 3px 3px $black;
+        color: $white;
+        padding: 0.375em 0.5em;
+
+        &:hover, &:focus {
+            background-color: $primary-dark;
+        }
+    }
+
+    & .add-row-button {
+        font-weight: bold;
+        cursor: pointer;
+        float: right;
+        margin: 0.5em 0.375em 0 0;
+    }
+
+    & .canvases-scale {
+        margin-top: 0.375em;
+
+        & .canvases-scale-percent {
+            margin-left: 0.5em;
+            color: $primary-light;
+        }
+    }
+
+    & table {
+        width: 100%;
+
+        & input, & select, & textarea {
+            font-size: 1em;
+            width: 100%;
+            padding: 0.25em;
+
+            &[type=number] {
+                text-align: right;
+            }
+
+            @include notBrowser(Trident) {
+                &[type=color] {
+                    padding: 0;
+                    background: transparent;
+                    border: 0;
+                    cursor: pointer;
+                }
+            }
+        }
+
+        & .column-logoScale {
+            width: 4.5em;
+        }
+
+        & .column-copyright, .column-set, .column-name {
+            width: 8.75em;
+        }
+
+        & .column-cost, & .column-victoryPoints {
+            width: 2.5em;
+        }
+
+        & .column-text {
+            width: 30em;
+
+            & textarea {
+                width: 100%;
+            }
+        }
+
+        & .column-delete > button {
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        & td {
+            text-align: center;
+
+            & input[type=color] {
+                width: 5em;
+            }
+        }
+    }
+
+    & .canvases {
+        text-align: center;
+
+        & canvas {
+            margin: 0.75em;
+            display: inline;
+        }
+    }
+
+    & footer {
+        text-align: center;
+        font-size: 0.875em;
+    }
+}

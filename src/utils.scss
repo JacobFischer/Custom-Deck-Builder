@@ -1,0 +1,15 @@
+@mixin browser($browsers: Mozilla) {
+  @each $browser in $browsers {
+    html[data-browser*="#{$browser}"] & {
+      @content;
+    }
+  }
+}
+
+@mixin notBrowser($browsers: Mozilla) {
+  @each $browser in $browsers {
+    html:not([data-browser*="#{$browser}"]) & {
+      @content;
+    }
+  }
+}

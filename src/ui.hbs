@@ -4,9 +4,17 @@
 		<div class="defaults-table">
 			<h2>Card Defaults</h2>
 		</div>
-		<div class="cards-table">
+		<div class="custom cards">
 			<h2>Custom Cards</h2>
+			<div class="cards-table"></div>
+			<button class="add-row-button">&#65291; Add Row</button>
 		</div>
 	</div>
+	<div class="canvases-scale">
+		<label for="canvases-scale-slider">Card Scale: </label>
+		<input id="canvases-scale-slider" class="canvases-scale-slider" type="range" min="0.05" max="1" step="any" value="0.5"/>
+		<span class="canvases-scale-percent"></span>
+	</div>
 	<div class="canvases"></div>
+	<footer>Cryptozoic engine &copy; {{currentYear}} <a href="https://www.cryptozoic.com/">Cryptozoic Entertainment</a>. This is a fan project by <a href="https://github.com/JacobFischer">Jacob Fischer</a>. Source availible on <a href="https://github.com/JacobFischer/Custom-Deck-Builder">Github</a>.</footer>
 </div>

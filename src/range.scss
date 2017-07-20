@@ -1,0 +1,167 @@
+// Styling Cross-Browser Compatible Range Inputs with Sass
+// Github: https://github.com/darlanrod/input-range-sass
+// Author: Darlan Rod https://github.com/darlanrod
+// Adapted by Jacob Fischer
+// Version 1.0.1
+// MIT License
+
+@import "./colors.scss";
+
+$track-color: $gray;
+$thumb-color: $primary;
+
+$disabled-track-color: $light-gray;
+$disabled-thumb-color: $primary-light;
+
+$thumb-radius: 0;
+$thumb-height: 22px;
+$thumb-width: 7px;
+$thumb-shadow-size: 0;
+$thumb-shadow-blur: 0;
+$thumb-shadow-color: transparent;
+$thumb-border-width: 0;
+$thumb-border-color: transparent;
+
+$track-height: 8px;
+$track-shadow-size: 0;
+$track-shadow-blur: 0;
+$track-shadow-color: transparent;
+$track-border-width: 0;
+$track-border-color: transparent;
+
+$track-radius: 0;
+$contrast: 10%;
+
+@mixin shadow($shadow-size, $shadow-blur, $shadow-color) {
+    box-shadow: $shadow-size $shadow-size $shadow-blur $shadow-color, 0 0 $shadow-size darken($shadow-color, 5%);
+}
+
+@mixin track() {
+    height: $track-height;
+    cursor: pointer;
+    transition: all .2s ease;
+
+    &:disabled {
+        cursor: default;
+        background: $disabled-track-color;
+        opacity: 0.5;
+    }
+}
+
+@mixin thumb() {
+    @include shadow($thumb-shadow-size, $thumb-shadow-blur, $thumb-shadow-color);
+    border: $thumb-border-width solid $thumb-border-color;
+    height: $thumb-height;
+    width: $thumb-width;
+    border-radius: $thumb-radius;
+    background: $thumb-color;
+    cursor: pointer;
+
+    &:disabled {
+        cursor: default;
+        background: $disabled-thumb-color;
+        opacity: 0.5;
+    }
+}
+
+input[type=range] {
+    -webkit-appearance: none;
+    //margin: $thumb-height / 2 0;
+
+    &:focus {
+        outline: none;
+    }
+
+    &::-webkit-slider-runnable-track {
+        @include track();
+        @include shadow($track-shadow-size, $track-shadow-blur, $track-shadow-color);
+        background: $track-color;
+        border: $track-border-width solid $track-border-color;
+        border-radius: $track-radius;
+    }
+
+    &::-webkit-slider-thumb {
+        @include thumb();
+        -webkit-appearance: none;
+        margin-top: ((-$track-border-width * 2 + $track-height) / 2) - ($thumb-height / 2);
+        &:disabled {
+            cursor: default;
+            background: $disabled-thumb-color;
+            opacity: 0.5;
+        }
+    }
+
+    &:focus::-webkit-slider-runnable-track {
+        background: darken($track-color, $contrast);
+    }
+
+    &::-moz-range-track {
+        @include track();
+        @include shadow($track-shadow-size, $track-shadow-blur, $track-shadow-color);
+        background: $track-color;
+        border: $track-border-width solid $track-border-color;
+        border-radius: $track-radius;
+    }
+
+    &::-moz-range-thumb {
+        @include thumb();
+        &:disabled {
+            cursor: default;
+            background: $disabled-thumb-color;
+            opacity: 0.5;
+        }
+    }
+
+    &::-ms-track {
+        @include track();
+        background: transparent;
+        border-color: transparent;
+        border-width: $thumb-width 0;
+        color: transparent;
+    }
+
+    &::-ms-fill-lower {
+        @include shadow($track-shadow-size, $track-shadow-blur, $track-shadow-color);
+        background: darken($track-color, $contrast);
+        border: $track-border-width solid $track-border-color;
+        border-radius: $track-radius * 2;
+    }
+
+    &::-ms-fill-upper {
+        @include shadow($track-shadow-size, $track-shadow-blur, $track-shadow-color);
+        background: $track-color;
+        border: $track-border-width solid $track-border-color;
+        border-radius: $track-radius * 2;
+
+        &:disabled {
+            background: $disabled-track-color;
+        }
+    }
+
+    &::-ms-thumb {
+        @include thumb();
+        &:disabled {
+            cursor: default;
+            background: $disabled-thumb-color;
+            opacity: 0.5;
+        }
+    }
+
+    &:focus::-ms-fill-lower {
+        background: $track-color;
+
+        &:disabled {
+            background: $disabled-track-color;
+        }
+    }
+
+    &:focus::-ms-fill-upper {
+        background: darken($track-color, $contrast);
+    }
+
+    &:disabled {
+        cursor: default;
+        background: $disabled-track-color;
+        opacity: 0.5;
+    }
+}

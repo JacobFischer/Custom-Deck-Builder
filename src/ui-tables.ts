@@ -1,4 +1,4 @@
-import { ColumnData, RowValues, RowData } from './table';
+import { ColumnData, RowValues, RowData, RowValue } from './table';
 
 const deleteButton = document.createElement('button');
 deleteButton.innerHTML = '&#x2716;';
@@ -44,15 +44,14 @@ export const defaultsRows: RowValues[] = [
         setBackgroundColor: '#ed1c24',
         copyright: '2015 CZE',
         legal: 'TEEN TITANS and all related character and elements are trademarks and © DC Comics\n(s15)',
-        logoScale: 0.6,
+        logoScale: 0.975,
     },
-    {
+    /*{
         name: '__oversized_defaults__',
-        //legal: 'All Overwatch characters and elements © and ™ Blizzard.\n(s01)',
-        logoScale: 0.85,
+        logoScale: 0.975,
         setTextColor: '#ffec34',
         setBackgroundColor: '#ed1c24',
-    },
+    },*/
 ];
 
 export const cardsHeadings: ColumnData[] = [
@@ -73,6 +72,7 @@ export const cardsHeadings: ColumnData[] = [
     },
     {
         name: 'VP',
+        id: 'victoryPoints',
         type: 'number'
     },
     {
@@ -85,6 +85,12 @@ export const cardsHeadings: ColumnData[] = [
     {
         name: 'Oversized',
         type: 'boolean',
+        transform: (checked: RowValue, row: RowData) => {
+            if (checked && row.values.type !== 'Hero' && row.values.type !== 'Villain') {
+                return false;
+            }
+            return checked;
+        }
     },
     {
         name: 'Image URL',
@@ -98,10 +104,12 @@ export const cardsHeadings: ColumnData[] = [
 
 export const cardsRows: RowValues[] = [
     {
-        name: 'Shot',
+        name: 'Vulnerability',
         type: 'Starter',
-        text: '+1 Power',
-        imageURL: 'https://i.imgur.com/sFmPfjn.png',
+        text: '',
+        imageURL: 'https://i.imgur.com/em2ZPJG.png',
+        vp: 0,
+        cost: 0,
     },
     {
         name: "Wonder Girl",

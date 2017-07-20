@@ -13,7 +13,7 @@ export interface ColumnData {
     type?: 'number' | 'string' | 'node' | 'boolean',
     defaultValue?: RowValue,
     allowedValues?: RowValue[],
-    transform?: (originalValue: RowValue) => RowValue,
+    transform?: (originalValue: RowValue, row?: RowData) => RowValue,
     notEditable?: boolean,
     longText?: boolean,
     color?: boolean,
@@ -70,12 +70,12 @@ export class EditableTable extends EventEmitter {
         for (const row of rows) {
             this.formatRow(row);
         }
-        this.updateRows();
+        this.updateRows(true);
     }
 
     public addRow(values: any): void {
         this.formatRow(values);
-        this.updateRows();
+        this.updateRows(true);
     }
 
     private formatColumn(column: string | ColumnData) {
@@ -98,14 +98,14 @@ export class EditableTable extends EventEmitter {
         switch (column.type) {
             case 'string':
                 column.defaultValue = '';
-                column.transform = String;
+                column.transform = column.transform || String;
                 break;
             case 'number':
                 column.defaultValue = 0;
-                column.transform = Number;
+                column.transform = column.transform || Number;
                 break;
             case 'boolean':
-                column.transform = Boolean;
+                column.transform = column.transform || Boolean;
                 if (column.defaultValue === undefined) {
                     column.defaultValue = Boolean(column.defaultValue);
                 }
@@ -132,7 +132,7 @@ export class EditableTable extends EventEmitter {
                 this.headings.set(column.id, hr);
             }
 
-            this.updateRows();
+            this.updateRows(false);
         }
     }
 
@@ -174,13 +174,13 @@ export class EditableTable extends EventEmitter {
                 row.values[column.id] = column.defaultValue;
             }
 
-            row.values[column.id] = column.transform(row.values[column.id]);
+            row.values[column.id] = column.transform(row.values[column.id], row);
         }
 
         this.emit(TableEventSymbols.rowAdded, row.values, row);
     }
 
-    private updateRows(): void {
+    private updateRows(added: boolean): void {
         for (const row of this.rows) {
             if (!row.tr.parentElement) {
                 this.table.appendChild(row.tr);
@@ -189,6 +189,7 @@ export class EditableTable extends EventEmitter {
             for (let i = row.tds.length; i < this.columns.length; i++) {
                 const column = this.columns[i];
                 const td = document.createElement('td');
+                td.setAttribute('class', `column-${column.id}`);
 
                 if (column.type === 'node') {
                     td.appendChild(<Node>row.values[column.id]);
@@ -232,7 +233,12 @@ export class EditableTable extends EventEmitter {
                         }
                         child.setAttribute('type', inputType);
                     }
-                    child.value = String(row.values[column.id]);
+                    if (checkbox) {
+                        (<any>child).checked = row.values[column.id];
+                    }
+                    else {
+                        child.value = String(row.values[column.id]);
+                    }
                     td.appendChild(child);
 
                     let lastValue: any = child.value;
@@ -241,17 +247,25 @@ export class EditableTable extends EventEmitter {
                         if (checkbox) {
                             newValue = (<HTMLInputElement>child).checked;
                         }
-                        newValue = column.transform(newValue);
+
+                        const untransformed = newValue;
+                        newValue = column.transform(newValue, row);
 
                         if (lastValue !== newValue) {
-                            row.values[column.id] = column.transform(newValue);
+                            row.values[column.id] = column.transform(newValue, row);
                             this.emit(TableEventSymbols.cellChanged, row, column, newValue);
                             console.log('new value', newValue);
 
-                            if (!checkbox) {
+                            lastValue = newValue;
+                        }
+
+                        if (newValue !== untransformed) {
+                            if (checkbox) {
+                                (<any>child).checked = newValue;
+                            }
+                            else {
                                 child.value = newValue;
                             }
-                            lastValue = newValue;
                         }
                     });
                 }
@@ -261,6 +275,8 @@ export class EditableTable extends EventEmitter {
 
                 row.tds.push(td);
                 row.tr.appendChild(td);
+
+                //this.emit(TableEventSymbols.rowAdded, row.values, row);
             }
         }
     }

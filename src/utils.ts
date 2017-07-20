@@ -182,6 +182,18 @@ export function loadTextures(textures: string[], callback?: () => void) {
             loadTextures([]);
         });
     }
+    else {
+        if (!PIXI.loader.loading) {
+            console.log('hi my yohiz');
+            // nothing to load and nothing is loading, means all textures are
+            // already loaded, just invoke the callbacks
+            const nowCallbacks = backlogCallbacks.slice();
+            backlogCallbacks.length = 0;
+            for (const nowCallback of nowCallbacks) {
+                nowCallback();
+            }
+        }
+    }
 }
 
 export function outline(obj: PIXI.DisplayObject): void {

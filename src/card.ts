@@ -4,6 +4,9 @@ import { getStyle } from './card-styles';
 import './card.scss';
 import 'normalize.css';
 
+export const CARD_MAX_WIDTH = 900;
+export const CARD_MAX_HEIGHT = 1200;
+
 const regularTemplate: (args: Object) => string = require('./card.hbs');
 const oversizedTemplate: (args: Object) => string = require('./card-oversized.hbs');
 const DEFAULT_TEXT_SIZE = 38;
@@ -16,9 +19,8 @@ export class Card {
 
     private container: PIXI.Container;
 
-    private manualTextSize: boolean = false;
-    public pxWidth = 750;
-    public pxHeight = 1050;
+    public pxWidth = CARD_MAX_WIDTH;
+    public pxHeight = CARD_MAX_HEIGHT;
 
     public name: string = 'Card Name';
     public type: 'Equipment' | 'Hero' | 'Location' | 'Starter' | 'Super Power' | 'Villain' | 'Weakness' = 'Starter';
@@ -31,14 +33,14 @@ export class Card {
     public imageURL: string = '';
     public logoURL: string = '';
     public logoScale: number = 1;
-    public textSize: number = 38;
     public copyright: string = '';
     public legal: string = '';
     public subtype: string = '';
     public set: string = '';
-    public setTextColor = '#ffffff';
-    public setBackgroundColor = '#000000';
+    public setTextColor = '#cccccc';
+    public setBackgroundColor = '#333333';
     public alsoBold: string[] = [];
+    public roundCorners: boolean = true;
 
     constructor(args?: {[key: string]: any}) {
         if (args) {
@@ -48,7 +50,7 @@ export class Card {
 
     public setFrom(args: {[key: string]: any}) {
         args = Object.assign({}, args);
-        args.victoryPoints = args.vp || args.VP || 0;
+        args.victoryPoints = args.victoryPoints || args.vp || args.VP || args.vP || 0;
 
         for (let key in args) {
             if (Object.prototype.hasOwnProperty.call(this, key)) {
@@ -67,13 +69,17 @@ export class Card {
             this.textSize = DEFAULT_TEXT_SIZE;
         }
 
-        if (this.oversized) {
-            this.pxWidth = 900;
-            this.pxHeight = 1200;
-        }
-
         if (this.oversized && !(this.type == 'Hero' || this.type === 'Villain')) {
             this.oversized = false;
+        }
+
+        if (this.oversized) {
+            this.pxWidth = CARD_MAX_WIDTH;
+            this.pxHeight = CARD_MAX_HEIGHT;
+        }
+        else {
+            this.pxWidth = 750;
+            this.pxHeight = 1050;
         }
     }
 
@@ -214,10 +220,11 @@ export class Card {
 
         this.renderText();
 
-        this.renderCopyright();
-        this.renderLegal();
+        const copyright = this.renderCopyright();
+        const set = this.renderSet(copyright);
+        this.renderLegal(set, copyright);
 
-        this.renderSet();
+        this.renderBleed();
 
         return this.container;
     };
@@ -239,16 +246,7 @@ export class Card {
         const backgroundImage = newSprite(this.imageURL, this.container);
         backgroundImage.position.set(imageMaxWidth/2, imageTop + imageMaxHeight/2);
         let backgroundBounds = backgroundImage.getBounds();
-
-        let scale = 1;
-        if (backgroundBounds.width > backgroundBounds.height) {
-            // bind height to max height
-            scale = imageMaxHeight/backgroundBounds.height;
-        }
-        else {
-            // bind width to max width
-            scale = imageMaxWidth/backgroundBounds.width;
-        }
+        const scale = Math.max(imageMaxWidth/backgroundBounds.width, imageMaxHeight/backgroundBounds.height);
 
         backgroundImage.scale.set(scale, scale);
         backgroundBounds = backgroundImage.getLocalBounds();
@@ -280,6 +278,7 @@ export class Card {
         let cardBackgroundSprite = newSprite(backgroundType.replace(' ', '-').toLowerCase(), this.container);
 
         if (this.variant && !this.oversized) {
+            // draw a black box behind the text
             const graphics = new PIXI.Graphics();
             graphics.beginFill(0x000000); // black
             graphics.drawRect(0, 719, 750, 224);
@@ -313,8 +312,8 @@ export class Card {
         let x = 714;
         let y = 26;
         if (this.oversized) {
-            x = 900 - 25;
-            y = 40;
+            x = CARD_MAX_WIDTH - 40;
+            y = 25;
         }
 
         bounds = logoSprite.getLocalBounds();
@@ -341,11 +340,15 @@ export class Card {
     }
 
     private renderType(): void {
-        if (this.oversized) {
+        if (this.oversized || this.type === 'Weakness') {
             return;
         }
 
-        let cardTypeText = new PIXI.Text(this.type.toUpperCase(), this.getStyle('type'));
+        let text = this.type.toUpperCase();
+        if (this.typePrefix) {
+            text = `${this.typePrefix} ${text}`;
+        }
+        let cardTypeText = new PIXI.Text(text, this.getStyle('type'));
         cardTypeText.x = 45;
         cardTypeText.y = 666;
 
@@ -466,11 +469,9 @@ export class Card {
         textContainer.position.set(x, y);
 
         this.container.addChild(textContainer);
-
-        //outlineCircle(vpCircle).setParent(textContainer);
     }
 
-    private renderSet(): void {
+    private renderSet(copyright: PIXI.Container): PIXI.Container {
         if (!this.set) {
             return;
         }
@@ -482,7 +483,7 @@ export class Card {
         set.scale.y *= 0.75;
         set.pivot.set(set.width, set.height);
         if (this.oversized) {
-            set.position.set(696, 1161);
+            set.position.set(copyright.x - copyright.width - 16, 1171 - set.height);
         }
         else {
             set.position.set(550, 934);
@@ -499,9 +500,11 @@ export class Card {
 
         this.container.addChild(graphics);
         this.container.addChild(set);
+
+        return set;
     }
 
-    private renderCopyright(): void {
+    private renderCopyright(): PIXI.Container {
         let maxWidth = 332;
         let x = 223;
         let y = 941;
@@ -527,22 +530,57 @@ export class Card {
 
         copyright.position.set(x, y);
         this.container.addChild(copyright);
+        return copyright;
     }
 
-    private renderLegal(): void {
+    private renderLegal(set: PIXI.Container, copyright: PIXI.Container): void {
         let maxWidth = 332;
         let x = 223;
         let y = 954;
+        const style = this.getStyle('legal');
+        let legal: PIXI.Container;
         if (this.oversized) {
-            maxWidth = 560;
+            maxWidth = 824;
             x = 37;
             y = 1136;
+
+            //const collisions: PIXI.Rectangle[] = [];
+            if (set) {
+                //collisions.push(set.getLocalBounds());
+                maxWidth -= set.width + 16;
+            }
+            if (copyright) {
+                //collisions.push(copyright.getLocalBounds());
+                maxWidth -= copyright.width + 16;
+            }
+
+            legal = autoSizeAndWrapStyledText(this.legal, maxWidth, Number(style.fontSize)*2, style, 0.25);
+        }
+        else {
+            legal = wrapStyledText(this.legal, maxWidth, this.getStyle('legal'));
         }
 
-        const legal = wrapStyledText(this.legal, maxWidth, this.getStyle('legal'));
+        if (legal) {
+            legal.position.set(x, y);
+            this.container.addChild(legal);
+        }
+    }
 
-        legal.position.set(x, y);
-        this.container.addChild(legal);
+    private renderBleed(): void {
+        if (!this.roundCorners) {
+            return;
+        }
+
+        const borderRadius = this.oversized
+            ? 45
+            : 37;
+
+        const bleedMask = new PIXI.Graphics();
+        bleedMask.beginFill(0, 1)
+        bleedMask.drawRoundedRect(0, 0, this.pxWidth, this.pxHeight, borderRadius);
+        bleedMask.endFill();
+        this.container.addChild(bleedMask);
+        this.container.mask = bleedMask;
     }
 
     public toString(): string {

@@ -1,7 +1,8 @@
+import './ui.scss';
 import { template, loadTextures, tryToCast, cloneExceptEmpty } from './utils';
 import { EditableTable, TableEventSymbols, RowValues, RowData } from './table';
 import { cardsHeadings, cardsRows, defaultsHeadings, defaultsRows } from './ui-tables';
-import { Card } from './card';
+import { Card, CARD_MAX_WIDTH, CARD_MAX_HEIGHT } from './card';
 import * as PIXI from 'pixi.js';
 
 
@@ -14,6 +15,8 @@ export class UI {
     readonly parent: HTMLElement;
     private element: HTMLElement;
     private canvasesElement: Element;
+    private scaleSlider: HTMLInputElement;
+    private scaleSliderPercent: HTMLElement;
 
     private defaultsTable: EditableTable;
     private cardsTable: EditableTable;
@@ -25,7 +28,6 @@ export class UI {
     private canvases = new Map<RowData, HTMLCanvasElement>();
 
     private defaultsRow: RowData;
-    private defaultsOversizedRow: RowData;
 
     constructor(element: HTMLElement) {
         this.parent = element;
@@ -33,13 +35,20 @@ export class UI {
         this.parent.appendChild(this.element);
         this.canvasesElement = this.element.getElementsByClassName('canvases')[0];
 
+        // adds the user agent to the document for css styling per browser
+        document.documentElement.setAttribute("data-browser", navigator.userAgent);
+        document.title = this.element.getElementsByTagName('h1')[0].innerHTML;
+
+        this.scaleSlider = <HTMLInputElement>this.element.getElementsByClassName('canvases-scale-slider')[0];
+        this.scaleSlider.addEventListener('input', () => this.resizeCanvases());
+        this.scaleSliderPercent = <HTMLElement>this.element.getElementsByClassName('canvases-scale-percent')[0];
+
         // Defaults Table \\
         this.defaultsTable = new EditableTable(this.element.getElementsByClassName('defaults-table')[0]);
         this.defaultsTable.addColumns(defaultsHeadings);
         this.defaultsTable.addRows(defaultsRows);
 
         this.defaultsRow = this.defaultsTable.getRow(0);
-        this.defaultsOversizedRow = this.defaultsTable.getRow(1);
 
         // Custom Cards Table \\
         const cardsElement = this.element.getElementsByClassName('cards-table')[0];
@@ -57,7 +66,7 @@ export class UI {
             this.rowDeleted(row);
         });
 
-        this.app = new PIXI.Application(900, 1200, {antialias: true, backgroundColor: 0xFF0000});
+        this.app = new PIXI.Application(CARD_MAX_WIDTH, CARD_MAX_HEIGHT, {antialias: true, transparent: true});
         //document.body.appendChild(this.app.view);
 
         this.pixiGraphics = new PIXI.Graphics();
@@ -66,17 +75,9 @@ export class UI {
         this.cardsTable.addColumns(cardsHeadings);
         this.cardsTable.addRows(cardsRows);
 
-        const button = document.createElement('button');
-        cardsElement.appendChild(button);
-        button.innerHTML = 'Add Row';
-        button.addEventListener('click', () => {
-            this.cardsTable.addRow({
-                name: 'Kick',
-                text: '+2 Power',
-                cost: 3,
-                vp: 1,
-                type: 'Super Power',
-            });
+        const addRowButton = <HTMLButtonElement>this.element.getElementsByClassName('add-row-button')[0];
+        addRowButton.addEventListener('click', () => {
+            this.cardsTable.addRow(cardsRows[0]);
         });
     }
 
@@ -107,14 +108,10 @@ export class UI {
         const canvas = this.canvases.get(row);
 
         // clear the renderer
-        this.pixiGraphics.beginFill(0x000000, 1);
+        this.pixiGraphics.beginFill(0x000000, 0);
         this.pixiGraphics.drawRect(0, 0, card.pxWidth, card.pxHeight);
 
-        const defaults = cloneExceptEmpty(this.defaultsRow.values, row.values.oversized
-            ? this.defaultsOversizedRow.values
-            : {}
-        );
-
+        const defaults = cloneExceptEmpty(this.defaultsRow.values);
         const args = cloneExceptEmpty(defaults, row.values);
 
         card.setFrom(args);
@@ -127,6 +124,28 @@ export class UI {
             canvas.height = card.pxHeight;
             canvas.getContext('2d').drawImage(this.app.view, 0, 0);
             this.app.stage.removeChild(container);
+
+            this.resizeCanvases(canvas);
         });
     }
+
+    private resizeCanvases(canvas?: HTMLCanvasElement) {
+        const scale = Number(this.scaleSlider.value);
+        this.scaleSliderPercent.innerHTML = `${Math.round(scale * 10000) / 100}%`;
+
+        let elements;
+        if (canvas) {
+            elements = [canvas];
+        }
+        else {
+            elements = this.canvasesElement.getElementsByTagName('canvas');
+        }
+
+        for (const element of elements) {
+            const width = Number(element.getAttribute('width'));
+            const height = Number(element.getAttribute('height'));
+            element.style.width = String(width * scale);
+            element.style.height = String(height * scale);
+        }
+    };
 }
