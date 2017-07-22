@@ -8,10 +8,11 @@
 @import "./colors.scss";
 
 $track-color: $gray;
-$thumb-color: $primary;
+$thumb-color: $primary-dark;
+$hover-thumb-color: $primary-light;
 
 $disabled-track-color: $light-gray;
-$disabled-thumb-color: $primary-light;
+$disabled-thumb-color: $primary-lightest;
 
 $thumb-radius: 0;
 $thumb-height: 22px;
@@ -61,6 +62,10 @@ $contrast: 10%;
         cursor: default;
         background: $disabled-thumb-color;
         opacity: 0.5;
+    }
+
+    &:hover {
+        background: $hover-thumb-color;
     }
 }
 

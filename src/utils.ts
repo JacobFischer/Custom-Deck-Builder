@@ -28,7 +28,11 @@ export function tryToCast(value: string | number | boolean): string | number | b
 }
 
 export function escapeRegExp(str: string) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+export function removeTags(str: string, replacement: string = '') {
+    return str.replace(/(<([^>]+)>)/ig, replacement);
 }
 
 export function replaceAll(target: string, search: string, replacement: string): string {

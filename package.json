@@ -15,6 +15,7 @@
     "@types/jszip": "0.0.33",
     "@types/node": "^7.0.31",
     "@types/pixi.js": "^4.5.0",
+    "@types/uuid": "^3.4.0",
     "@types/webpack-env": "^1.13.0",
     "ag-grid": "^11.0.0",
     "babel-core": "^6.23.1",
@@ -35,6 +36,7 @@
     "style-loader": "^0.18.2",
     "ts-loader": "2.0.1",
     "typescript": "2.2.1",
+    "uuid": "^3.1.0",
     "webpack": "^2.2.1"
   },
   "directories": {},
@@ -43,6 +45,7 @@
     "webpack": "webpack --progress --colors"
   },
   "devDependencies": {
+    "raw-loader": "^0.5.1",
     "webpack-dev-server": "^2.4.5"
   }
 }

@@ -1,5 +1,5 @@
-import { wrapSVGText, roundedRectangle } from './svg-text-helper';
-import { replaceAll, surroundText, newSprite, outline, outlineCircle, wrapStyledText, autoSizeAndWrapStyledText, wrapStyledTextCharacters, loadTextures } from './utils';
+//import { wrapSVGText, roundedRectangle } from 'src/svg-text-helper';
+import { replaceAll, surroundText, newSprite, outline, outlineCircle, wrapStyledText, autoSizeAndWrapStyledText, wrapStyledTextCharacters, loadTextures } from 'src/utils';
 import { getStyle } from './card-styles';
 import './card.scss';
 import 'normalize.css';
@@ -62,11 +62,15 @@ export class Card {
             this.copyright = String(new Date().getFullYear());
         }
 
-        if (this.textSize) {
-            this.manualTextSize = true;
+        // special cases, we can take "Super Hero/Villain" as a type
+        // (which is invalid) and make it the oversized version
+        if (<any>this.type === 'Super Hero') {
+            this.type = 'Hero';
+            this.oversized = true;
         }
-        else {
-            this.textSize = DEFAULT_TEXT_SIZE;
+        else if (<any>this.type === 'Super Villain') {
+            this.type = 'Villain';
+            this.oversized = true;
         }
 
         if (this.oversized && !(this.type == 'Hero' || this.type === 'Villain')) {
@@ -83,6 +87,7 @@ export class Card {
         }
     }
 
+    /*
     toSVG(): SVGSVGElement {
         let vpKey = 'normal';
         if (this.victoryPoints < 0) {
@@ -170,6 +175,7 @@ export class Card {
 
         return svgElement;
     }
+    */
 
     private formatText(): string {
         let formattedText = this.text;

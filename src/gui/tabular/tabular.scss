@@ -1,0 +1,9 @@
+.tabular {
+    & .tabluar-tabs li {
+        cursor: pointer;
+    }
+
+    & .tab-contents:not(.current) {
+        display: none;
+    }
+}

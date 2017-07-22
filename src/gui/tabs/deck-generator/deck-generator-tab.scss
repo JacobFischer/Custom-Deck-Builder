@@ -1,0 +1,166 @@
+@import "src/styles/colors.scss";
+
+.deck-generator-tab {
+    & .file-uploader-wrapper {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+
+    & .csv-file-selector:disabled + .csv-file-selector-label {
+        & .file-name, & .file-button {
+            background-color: $dark-gray;
+            border-color: $light-black;
+            cursor: default;
+        }
+
+        & .file-name {
+            background-color: $light-gray;
+
+            & .none-selected {
+                color: $dark-gray;
+            }
+        }
+    }
+
+    // we will style the label to appear as a better file selector
+    & .csv-file-selector-label {
+        cursor: pointer;
+        display: inline-block;
+
+        &:hover, &:focus {
+            & .file-name, & .file-button {
+                background-color: $primary;
+                border-color: $primary;
+            }
+
+            & .file-name {
+                background-color: $white;
+            }
+        }
+
+        & .file-name, & .file-button {
+            //display: inline-block;
+            float: left;
+            width: 10em;
+            height: 1em;
+            padding: 1em 0;
+            border: 0.125em solid $primary-dark;
+            color: $white;
+            box-shadow: 3px 3px $black;
+        }
+
+        & .file-name {
+            width: 35em;
+            border-radius: 0.75em 0 0 0.75em;
+            color: $black;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+
+            & .none-selected {
+                font-weight: normal;
+                color: $primary;
+            }
+        }
+
+        & .file-button {
+            background: $primary-dark;
+            text-align: center;
+            border-radius: 0 0.75em 0.75em 0;
+
+            & svg {
+                fill: $white;
+                margin-right: 0.25em;
+                height: 0.8em;
+            }
+        }
+    }
+
+    & .csv-file-selector {
+        display: none;
+    }
+
+    // progress section
+
+
+    & .generate-button {
+        font-size: 2em;
+        padding: 1rem 2rem;
+        display: block;
+        margin: 0 auto;
+    }
+
+    & .max-cards-x, & .max-cards-y {
+        display: inline-block;
+        margin: 1em;
+    }
+
+    & .generation-options {
+        text-align: center;
+
+        & .max-cards-x {
+            margin-right: 0.25em;
+        }
+
+        & .max-cards-y {
+            margin-left: 0.25em;
+        }
+
+        & input[type=number] {
+            width: 2.5em;
+            text-align: right;
+        }
+    }
+
+    & .progress-bar-background {
+        width: 75%;
+        margin: 0 auto;
+        min-height: 2em;
+        border: 0.25em solid $light-black;
+        background: $dark-gray;
+        border-radius: 0.75em;
+
+        & .progress-bar-foreground {
+            min-width: 0%;
+            max-width: 100%;
+            display: inline-block;
+            background: $secondary;
+            border-radius: 0.5em;
+            min-height: 1em;
+            padding: 0.5em 0;
+            text-align: center;
+        }
+    }
+
+    & .generation-log {
+        display: block;
+        border: 0.25em solid $primary-dark;
+        padding: 1em;
+        border-radius: 0.75em;
+        background-color: $light-gray;
+        box-shadow: 3px 3px $black;
+        list-style-type: none;
+
+        & li {
+            & + li {
+                margin-top: 1em;
+            }
+
+            &:nth-child(odd) {
+                color: $primary-darkest;
+            }
+        }
+    }
+
+    & .download-button {
+        font-size: 4em;
+        display: block;
+        margin: 1rem auto 0 auto;
+
+        & svg {
+            width: 0.8em;
+            height: 0.8em;
+        }
+    }
+}

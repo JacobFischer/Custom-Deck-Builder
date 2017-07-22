@@ -1,5 +1,6 @@
-import { camelize } from './utils';
+import { camelize } from 'src/utils';
 import { EventEmitter } from 'events';
+import * as uuid from 'uuid/v4';
 
 export type RowValue = number | string | Node | boolean;
 export type RowValues = {[key: string]: RowValue};
@@ -187,6 +188,7 @@ export class EditableTable extends EventEmitter {
             }
 
             for (let i = row.tds.length; i < this.columns.length; i++) {
+                const id = `cell-${uuid()}`;
                 const column = this.columns[i];
                 const td = document.createElement('td');
                 td.setAttribute('class', `column-${column.id}`);
@@ -222,6 +224,9 @@ export class EditableTable extends EventEmitter {
                                 inputType = 'checkbox';
                                 event = 'click';
                                 checkbox = true;
+                                const label = document.createElement('label');
+                                label.setAttribute('for', id);
+                                td.appendChild(label);
                                 break;
                             case 'number':
                                 inputType = 'number';
@@ -233,13 +238,16 @@ export class EditableTable extends EventEmitter {
                         }
                         child.setAttribute('type', inputType);
                     }
+
                     if (checkbox) {
                         (<any>child).checked = row.values[column.id];
                     }
                     else {
                         child.value = String(row.values[column.id]);
                     }
-                    td.appendChild(child);
+
+                    child.id = id;
+                    td.insertBefore(child, td.firstChild);
 
                     let lastValue: any = child.value;
                     child.addEventListener(event, () => {

@@ -77,6 +77,7 @@ module.exports = {
           loader: "handlebars-loader",
           options: {
             helperDirs: [ __dirname + '/src/handlebars-helpers' ],
+            inlineRequires: '\/images\/',
           },
         },
       },
@@ -93,6 +94,14 @@ module.exports = {
             loader: "sass-loader" // compiles Sass to CSS
           }
         ]
+      },
+      {
+        test: /\.txt$/,
+        use: [
+          {
+            loader: "raw-loader"
+          }
+        ]
       }
     ]
   },
@@ -100,13 +109,18 @@ module.exports = {
     extensions: [".tsx", ".ts", ".js"],
     alias: {
        //handlebars: 'handlebars/dist/handlebars.min.js' // allows handlebars to work without the need for 'fs'
-    }
+    },
+     alias: {
+      '~': path.resolve(__dirname, 'src/'),
+      'src': path.resolve(__dirname, 'src/'),
+     }
   },
   node: {
     fs: "empty"
   },
-  devtool: 'source-map',
   plugins: [
+    // provides a great speedup in both module use and development debugging
+    // https://webpack.js.org/plugins/commons-chunk-plugin/
     new webpack.optimize.CommonsChunkPlugin({
       names: ['node_modules'],
       minChunks: function (module, count) {
@@ -115,6 +129,7 @@ module.exports = {
       }
     })
   ],
+  devtool: 'source-map',
   devServer: {
     historyApiFallback: true,
     watchOptions: { aggregateTimeout: 300, poll: 1000 },

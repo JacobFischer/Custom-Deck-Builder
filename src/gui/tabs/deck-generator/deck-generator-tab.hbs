@@ -1,0 +1,43 @@
+<div class="deck-generator-tab">
+	<p>This tool is intended to convert a spreadsheet of cards into a few images of the generated cards. These images can then be imported and played in a game such as <a href="http://store.steampowered.com/app/286160/Tabletop_Simulator/">Tabletop Simulator</a>.</p>
+	<p>Select a <a href="https://en.wikipedia.org/wiki/Comma-separated_values">CSV file</a> to parse into a deck of custom cards to download.</p>
+	<div class="file-uploader-wrapper">
+		<input id="{{uuid "file"}}" class="csv-file-selector" type="file"/>
+		<label for="{{uuid "file"}}" class="csv-file-selector-label">
+			<span class="file-name">
+				<em class="none-selected">None Selected</em>
+			</span>
+			<span class="file-button">
+				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="17" viewBox="0 0 20 17">
+					<path d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"></path>
+					</svg>
+				 Choose a file
+			</span>
+		</label>
+	</div>
+	<p>For more information on the format your CSV file should be in, check out the Help section.</p>
+	<p><em>Note:</em> Generation cards can be memory intensive. Every image you set for your card will be loaded into memory and combined to form high resolution 4K textures of cards. For main deck sized spreadsheets (150 cards) this can take ~600 MB to 1 GB of memory. If you encounter bottlenecks due to your computer please consider splitting up your sheet into multiple files.</p>
+	<button class="generate-button">Generate</button>
+	<div class="generation-options">
+		<span class="max-cards-x">
+			<label title="The maximum number of cards to pack into an image along the (horizontal) X-axis." for="{{uuid "x"}}">Max Cards X:</label> <input type="number" class="max-cards-x-input" id="{{uuid "x"}}" min="1" max="10" value="7" />
+		</span>
+		<span class="max-cards-y">
+			<label title="The maximum number of cards to pack into an image along the (vertical) Y-axis." for="{{uuid "y"}}">Max Cards Y:</label> <input type="number" class="max-cards-y-input" id="{{uuid "y"}}" min="1" max="7" value="5" />
+		</span>
+	</div>
+	<div class="progress-bar-background">
+		<div class="progress-bar-foreground">0%</div>
+	</div>
+	<ul class="generation-log">
+	</ul>
+	<button class="download-button" disabled>
+		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" width="512px" height="512px" viewBox="0 0 554.625 554.625" xml:space="preserve">
+			<path d="M267.75,153h95.625L248.625,19.125v114.75C248.625,145.35,258.188,153,267.75,153z" fill="#FFFFFF"/>
+			<path d="M133.875,401.625V267.75c0-32.513,24.862-57.375,57.375-57.375h172.125v-38.25H267.75c-21.038,0-38.25-17.212-38.25-38.25    V19.125H38.25C17.212,19.125,0,36.337,0,57.375V497.25c0,21.037,17.212,38.25,38.25,38.25h286.875    c21.037,0,38.25-17.213,38.25-38.25V459H191.25C158.737,459,133.875,434.138,133.875,401.625z" fill="#FFFFFF"/>
+			<path d="M516.375,229.5H191.25c-21.038,0-38.25,17.212-38.25,38.25v133.875c0,21.037,17.212,38.25,38.25,38.25h325.125    c21.037,0,38.25-17.213,38.25-38.25V267.75C554.625,246.712,537.412,229.5,516.375,229.5z M306,286.875L229.5,382.5H306v19.125    h-95.625V382.5l76.5-95.625h-76.5V267.75H306V286.875z M382.5,286.875h-19.125V382.5H382.5v19.125h-57.375V382.5h19.125v-95.625    h-19.125V267.75H382.5V286.875z M459,344.25h-38.25v57.375h-19.125V306v-38.25H459c21.037,0,38.25,17.213,38.25,38.25    S480.037,344.25,459,344.25z" fill="#FFFFFF"/>
+			<path d="M459,286.875h-38.25v38.25H459c11.475,0,19.125-7.65,19.125-19.125S470.475,286.875,459,286.875z" fill="#FFFFFF"/>
+		</svg>
+		Download Deck
+	</button>
+</div>

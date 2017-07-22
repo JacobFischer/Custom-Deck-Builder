@@ -1,6 +1,6 @@
 "use strict";
 
-import { onFontsLoaded } from './fonts';
+import { onFontsLoaded } from 'src/styles/fonts';
 import { basename } from 'path';
 import * as PIXI from 'pixi.js';
 

@@ -1,3 +1,5 @@
+@import "./colors.scss";
+
 @mixin browser($browsers: Mozilla) {
   @each $browser in $browsers {
     html[data-browser*="#{$browser}"] & {
@@ -12,4 +14,27 @@
       @content;
     }
   }
+}
+
+@mixin transition($args...) {
+    -webkit-transition: $args;
+    -moz-transition: $args;
+    -ms-transition: $args;
+    -o-transition: $args;
+    transition: $args;
+}
+
+.input-like {
+    border: 1px solid $dark-gray;
+    color: $black;
+    border-radius: 0.375em;
+
+    &:hover, &:focus {
+        outline: none;
+        border-color: $primary-lightest;
+    }
+
+    &:focus {
+        background-color: $light-gray;
+    }
 }

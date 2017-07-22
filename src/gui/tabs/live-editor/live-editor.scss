@@ -1,0 +1,113 @@
+@import "src/styles/colors.scss";
+@import "src/styles/utils.scss";
+
+.live-editor {
+    & .custom-cards-bottom {
+        float: left;
+        width: 100%;
+    }
+
+    & .canvases-scale {
+        margin-top: 0.375em;
+        float: left;
+
+        & .canvases-scale-percent {
+            margin-left: 0.5em;
+            color: $primary-dark;
+        }
+    }
+
+    & .add-row-button {
+        font-weight: bold;
+        cursor: pointer;
+        float: right;
+        margin: 0.5em 0.375em 0 0;
+    }
+
+    & table {
+        width: 100%;
+
+        & input, & select, & textarea {
+            font-size: 1em;
+            width: 100%;
+            padding: 0.25em;
+
+            &[type=number] {
+                text-align: right;
+            }
+
+            &[type=color] {
+                padding: 0;
+                background: transparent;
+                border: 0;
+                cursor: pointer;
+            }
+        }
+
+        & input[type=checkbox] {
+            display: none;
+
+            & + label:before {
+                font-weight: bold;
+                content: ' '; // checkmark
+                cursor: pointer;
+                //font-size: 0.75em;
+                min-width: 1.5em;
+                min-height: 1.5em;
+                padding: 0.125em;
+                display: inline-block;
+                @extend .input-like;
+            }
+
+            &:checked + label:before {
+                content: '\2713';
+            }
+        }
+
+        & textarea {
+            height: 3.5em;
+        }
+
+        & .column-logoScale {
+            width: 4.5em;
+        }
+
+        & .column-copyright, .column-set, .column-name {
+            width: 8.75em;
+        }
+
+        & .column-cost, & .column-victoryPoints {
+            width: 2.5em;
+        }
+
+        & .column-text {
+            width: 30em;
+
+            & textarea {
+                width: 100%;
+            }
+        }
+
+        & .column-delete > button {
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        & td {
+            text-align: center;
+
+            & input[type=color] {
+                width: 5em;
+            }
+        }
+    }
+
+    & .canvases {
+        text-align: center;
+
+        & canvas {
+            margin: 0.75em;
+            display: inline;
+        }
+    }
+}

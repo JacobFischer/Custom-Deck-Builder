@@ -1,19 +1,8 @@
 "use strict";
 
-import { initialize } from './initialize';
-import { buildCards } from './card-builder';
-import { csvData } from './data';
-import { UI } from './ui';
+import 'src/styles/style.scss';
 
-initialize(() => {
-    /*document.getElementById('submit').addEventListener('click', () => {
-        const text = csvTest || document.getElementById('csv').innerText;
+import { initialize } from 'src/initialize';
+import { UI } from 'src/gui/ui';
 
-        parse(text);
-    });
-
-    parse(csvTest);*/
-
-    //buildCards(csvData);
-    new UI(document.body);
-});
+initialize(() => new UI(document.body));
