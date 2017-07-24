@@ -56,6 +56,13 @@ export class LiveEditorTab extends Tab {
             this.rowDeleted(row);
         });
 
+        // if the defaults rows are edited, update all custom cards
+        this.defaultsTable.on(TableEventSymbols.cellChanged, (): void => {
+            for (const row of this.cardsTable.getAllRows()) {
+                this.renderCard(row);
+            }
+        });
+
         this.app = new PIXI.Application(CARD_MAX_WIDTH, CARD_MAX_HEIGHT, {antialias: true, transparent: true});
         //document.body.appendChild(this.app.view);
 

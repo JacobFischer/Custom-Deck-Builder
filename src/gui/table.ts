@@ -297,6 +297,10 @@ export class EditableTable extends EventEmitter {
         throw new RangeError(`${index} not in range of table with ${this.rows.length} rows.`);
     }
 
+    public getAllRows(): RowData[] {
+        return this.rows.slice();
+    }
+
     public deleteRow(index: number | RowData): void {
         if (typeof(index) === 'object') {
             index = index.index;
