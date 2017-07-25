@@ -1,4 +1,4 @@
-import { camelize } from 'src/utils';
+import { toCamelCase } from 'src/utils';
 import { EventEmitter } from 'events';
 import * as uuid from 'uuid/v4';
 
@@ -92,7 +92,7 @@ export class EditableTable extends EventEmitter {
         }
 
         if (!column.id) {
-            column.id = camelize(column.name);
+            column.id = toCamelCase(column.name);
         }
 
         column.type = column.type || 'string';
@@ -263,7 +263,6 @@ export class EditableTable extends EventEmitter {
                         if (lastValue !== newValue) {
                             row.values[column.id] = column.transform(newValue, row);
                             this.emit(TableEventSymbols.cellChanged, row, column, newValue);
-                            console.log('new value', newValue);
 
                             lastValue = newValue;
                         }

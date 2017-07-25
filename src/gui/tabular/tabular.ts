@@ -1,28 +1,45 @@
-import { template, loadTextures, tryToCast, cloneExceptEmpty } from '../../utils';
+import { template, loadTextures, tryToCast, cloneExceptEmpty, toDashCase } from 'src/utils';
+import { EventEmitter } from 'events';
 
 const tabularTemplate = template(require('./tabular.hbs'));
 
-export const TabularEventSymbols = {
-    tabChanged: Symbol('tabChanged'),
-};
-
 export abstract class Tab {
+    readonly id: string;
     constructor(
         readonly name: string,
         readonly element: HTMLElement,
-    ) {}
+    ) {
+        this.id = toDashCase(this.name);
+    }
 }
 
-export class Tabular {
+export class Tabular extends EventEmitter {
     private parent: HTMLElement;
     private element: HTMLElement;
     private tabsList: HTMLUListElement;
-    readonly tabs: Tab[];
+    public tabs: Tab[];
     private tabToContent = new Map<Tab, HTMLElement>();
 
-    constructor(tabs: Tab[], parent?: HTMLElement) {
+    static EventSymbols = {
+        tabChanged: Symbol('tabChanged'),
+    };
+
+    constructor(tabs?: Tab[], parent?: HTMLElement) {
+        super();
+
         this.element = <HTMLElement>tabularTemplate();
         this.tabsList = <HTMLUListElement>this.element.getElementsByTagName('ul')[0];
+
+        if (tabs) {
+            this.setTabs(tabs);
+        }
+
+        if (parent) {
+            this.setParent(parent);
+        }
+    }
+
+    public setTabs(tabs: Tab[]) {
         this.tabs = tabs;
 
         const tabsContents = <HTMLElement>this.element.getElementsByClassName('tabular-contents')[0];
@@ -39,11 +56,7 @@ export class Tabular {
             this.tabToContent.set(tab, div);
         }
 
-        this.changeTab(tabs[1]);
-
-        if (parent) {
-            this.setParent(parent);
-        }
+        this.changeTab(tabs[0]);
     }
 
     public setParent(parent: HTMLElement): void {
@@ -51,7 +64,16 @@ export class Tabular {
         parent.appendChild(this.element);
     }
 
+    public getTabByID(id: string) {
+        return this.tabs.find((tab: Tab) => tab.id === id);
+    }
+
     public changeTab(toTab: Tab): void {
+        const found = this.tabs.find((aTab: Tab) => aTab === toTab);
+        if (!found) {
+            throw new Error(`Cannot change to Tab ${toTab} because it is not a tab of ours.`);
+        }
+
         for (let i = 0; i < this.tabs.length; i++) {
             const tab = this.tabs[i];
             const li = <HTMLLIElement>this.tabsList.getElementsByTagName('li')[i];
@@ -66,5 +88,7 @@ export class Tabular {
                 contents.classList.remove('current');
             }
         }
+
+        this.emit(Tabular.EventSymbols.tabChanged, toTab);
     }
 }

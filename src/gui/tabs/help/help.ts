@@ -10,7 +10,7 @@ const typeTitles: {[key: string]: string} = {
     checkbox: 'If the cell is empty that counts as unchecked (false). Any other value, such as "X" indicate that cell is checked.',
     url: 'Text that is a valid URL to an image',
     color: 'A hexadecimal color in the format #FF0000 (red)',
-    'text list': 'A list of words or text items. Indicate a new text in the list via a comma and space ", "',
+    'text list': 'A list of words or text items. Indicate a new text in the list via a comma and space ", ". E.g. "Some Card Name, Some Special Term, Bold This too"',
 };
 
 export class HelpTab extends Tab {

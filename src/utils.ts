@@ -1,8 +1,22 @@
-export function camelize(str: string) {
+export function toCamelCase(str: string) {
     return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
         if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
         return index == 0 ? match.toLowerCase() : match.toUpperCase();
     });
+}
+
+export function toDashCase(str: string) {
+    if (!str) {
+        return '';
+    }
+
+    //ensure the first character is lower-cased
+    str = str[0].toLowerCase() + str.substr(1);
+
+    // and there are no spaces
+    str = replaceAll(str, ' ', '');
+
+	return str.replace(/([A-Z])/g, function(s){return '-' + s.toLowerCase();});
 }
 
 export function tryToCast(value: string | number | boolean): string | number | boolean {
@@ -138,7 +152,6 @@ export function newSprite(textureKey: string, container?: PIXI.Container): PIXI.
 const backlogTextures = new Set<string>();
 const backlogCallbacks: (() => void)[] = [];
 export function loadTextures(textures: string[], callback?: () => void) {
-    console.log('downloading textures');
     const filtered = new Set<string>(textures.filter((t) => t && !PIXI.loader.resources[t]));
     for (const texture of filtered) {
         backlogTextures.add(texture);
@@ -169,7 +182,6 @@ export function loadTextures(textures: string[], callback?: () => void) {
         }
 
          PIXI.loader.load(() => {
-            console.log('textures done downloading');
             for (const texture of nowLoading) {
                 const baseTexture = PIXI.loader.resources[texture].texture.baseTexture;
                 baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
@@ -188,7 +200,6 @@ export function loadTextures(textures: string[], callback?: () => void) {
     }
     else {
         if (!PIXI.loader.loading) {
-            console.log('hi my yohiz');
             // nothing to load and nothing is loading, means all textures are
             // already loaded, just invoke the callbacks
             const nowCallbacks = backlogCallbacks.slice();

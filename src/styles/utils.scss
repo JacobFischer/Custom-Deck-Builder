@@ -36,6 +36,11 @@
     }
 
     &:focus {
-        background-color: $light-gray;
+        background-color: $white;
+    }
+
+    &:disabled {
+        background-color: $dark-gray;
+        cursor: default;
     }
 }

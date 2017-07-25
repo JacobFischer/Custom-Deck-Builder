@@ -1,7 +1,7 @@
 "use strict";
 
 import * as csvParse from 'csv-parse';
-import { replaceAll, loadTextures, outline, camelize, tryToCast } from 'src/utils';
+import { replaceAll, loadTextures, outline, toCamelCase, tryToCast } from 'src/utils';
 import { initialTextures, initialTexturesToKey } from 'src/initialize';
 import { Card } from './card';
 import { EventEmitter } from 'events';
@@ -100,7 +100,7 @@ export class DeckBuilder extends EventEmitter {
 
             for (let key in cardData) {
                 let value = cardData[key];
-                key = camelize(key);
+                key = toCamelCase(key);
 
                 if (key.startsWith('#')) {
                     // skip this column

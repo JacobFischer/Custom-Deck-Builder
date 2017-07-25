@@ -93,6 +93,11 @@ body {
         }
     }
 
+    & abbr[title] {
+        text-decoration: none;
+        cursor: help;
+    }
+
     // tabs
 
     & .tabular {

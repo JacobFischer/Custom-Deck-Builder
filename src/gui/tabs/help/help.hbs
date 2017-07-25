@@ -1,8 +1,8 @@
 <div class="help-tab">
-	<p>This tab is intended for help with using this tool, specifically uding the Deck Generator functionality.</p>
+	<p>This tab is intended for help with using this tool, specifically uding the <a href="#deck-generator">Deck Generator</a> functionality.</p>
 	<section class="availible-options">
 		<h2>Your Custom Spreadsheet</h2>
-		<p>Most of the funtionality of this tool is in creating your down <abbr="Cryptozoic Game Engine">CGE</abbr> deck. To do that all you need to create is a spreadsheet in your office sheet of choice, and follow these rules when formatting it.</p>
+		<p>Most of the funtionality of this tool is in creating your down <abbr title="Cryptozoic Game Engine">CGE</abbr> deck. To do that all you need to create is a spreadsheet in your office sheet of choice, and follow these rules when formatting it.</p>
 		<p>The first row of your spreadsheet <strong>must</strong> be the headers for each column of options. The list of availible options is below:</p>
 		<table>
 			<tr>
@@ -93,7 +93,7 @@
 			<tr>
 				<td>Set Background Color</td>
 				<td>color</td>
-				<td>The hex color to use for the background rectangle for the set indication</td>
+				<td>The hex color to use for the background rectangle for the set indication.</td>
 			</tr>
 			<tr>
 				<td>Preferred Text Size</td>
@@ -103,7 +103,7 @@
 			<tr>
 				<td>Also Bold</td>
 				<td>text list</td>
-				<td>List of words seperated by commas and a space &quot;, &quot; of words to bold even if they lack bold tags ([b]word[/b])</td>
+				<td>List of words seperated by commas and a space &quot;, &quot; of words to bold even if they lack bold tags ([b]word[/b]).</td>
 			</tr>
 			<tr>
 				<td>Round Corners</td>
@@ -112,11 +112,12 @@
 			</tr>
 		</table>
 		<p>After you make your first row, all entries after count as a card. You can create blank rows and they will be skipped over. Columns that do not match one of the above options are skipped as well, so feel free to add columns to help you organize your cards.</p>
+		<p>Additionally there are two special rows. If you name your card <code>__defaults__</code>, then <strong>all</strong> cards after it will default to the values of that row. This is useful for setting all the values for shared options such as Set, Legal, Copyright, etc. Additionally <code>__oversized_defaults__</code> exists but will only be applied to Oversized cards.</p>
 	</section>
 	<section>
 		<h2>Examples</h2>
 		<p>Below are some examples of valid what to expect and valid spreadsheets to use.</p>
-		<p>For an example spreadsheet for use with this tool, check out my <a href="https://docs.google.com/spreadsheets/d/1C4sG2btMuTEaFaTlKtoSytHsuSTmM2uhnR2j-IEhsKk/edit?usp=sharing">Overwatch Deck Building Game spreadsheet here</a>.</p>
+		<p>For an example spreadsheet for use with this tool, check out my <a href="https://docs.google.com/spreadsheets/d/1C4sG2btMuTEaFaTlKtoSytHsuSTmM2uhnR2j-IEhsKk/edit?usp=sharing">Overwatch Deck Building Game spreadsheet here</a>. You can download the first sheet as a CSV file and import it using this tool to generate your own copy of the deck.</p>
 		<img src="../../../../resources/images/card-help.png" alt="card example" title="Example of what column names effect what parts of the card."/>
 		<p>For any issues, especially technical ones, create an <a href="https://github.com/JacobFischer/Custom-Deck-Builder/issues">issue on GitHub</a>.</p>
 	</section>

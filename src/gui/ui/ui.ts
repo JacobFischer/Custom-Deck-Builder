@@ -1,6 +1,6 @@
 import './ui.scss';
 import { template, removeTags } from 'src/utils';
-import { Tabular } from 'src/gui/tabular/';
+import { Tabular, Tab } from 'src/gui/tabular/';
 import { getTabs } from 'src/gui/tabs/';
 
 const uiTemplate = template(require('./ui.hbs'));
@@ -26,6 +26,29 @@ export class UI {
         document.documentElement.setAttribute("data-browser", navigator.userAgent);
         document.title = removeTags(this.element.getElementsByTagName('h1')[0].innerHTML, ' - ');
 
-        this.tabular = new Tabular(getTabs(), this.mainElement);
+        this.tabular = new Tabular();
+
+        let changing = false;
+        (<any>document.body).onhashchange = () => {
+            if (changing) {
+                return;
+            }
+
+            const hash = window.location.hash.substr(1); // get the hash without the #
+
+            const tab = this.tabular.getTabByID(hash);
+            if (tab) {
+                changing = true;
+                this.tabular.changeTab(tab);
+                changing = false;
+            }
+        };
+
+        this.tabular.on(Tabular.EventSymbols.tabChanged, (tab: Tab) => {
+            window.location.hash = tab.id;
+        });
+
+        this.tabular.setTabs(getTabs());
+        this.tabular.setParent(this.mainElement);
     }
 }
