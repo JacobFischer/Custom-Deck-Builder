@@ -3,3 +3,17 @@
 *, *:before, *:after {
     @include transition(all 0.35s ease-in-out);
 }
+
+p {
+    margin: 0 0 1em 0;
+}
+
+* + p {
+    margin-top: 1em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    & + p {
+        margin-top: 0;
+    }
+}

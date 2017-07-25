@@ -1,6 +1,9 @@
+'use strict';
+
 import { Tab } from '../tabular';
 import { LiveEditorTab } from './live-editor/';
 import { DeckGeneratorTab } from './deck-generator/';
+import { HelpTab } from './help/';
 import { template } from 'src/utils';
 
 class SimpleTab extends Tab {
@@ -22,7 +25,7 @@ export function getTabs(): Tab[] {
     return [
         new LiveEditorTab(),
         new DeckGeneratorTab(),
-        new SimpleTab('Help', require('./help.hbs')),
+        new HelpTab(),
         new SimpleTab('About'),
     ];
 };

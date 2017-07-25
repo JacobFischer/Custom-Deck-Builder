@@ -1,0 +1,40 @@
+@import "src/styles/colors.scss";
+
+.help-tab {
+    & table {
+        & tr:first-child {
+            & th {
+                text-align: left;
+
+                &:nth-child(1) {
+                    width: 10em;
+                }
+
+                &:nth-child(2) {
+                    width: 5em;
+                }
+
+                &:nth-child(3) {
+                    padding-left: 0.5em;
+                }
+            }
+        }
+
+        & tr:not(first-child) {
+            & td:nth-child(1) {
+                font-family: monospace;
+            }
+
+            & td:nth-child(2) {
+                color: $primary-dark;
+                font-style: italic;
+                cursor: help;
+            }
+        }
+    }
+
+    & img {
+        display: block;
+        margin: 0 auto;
+    }
+}

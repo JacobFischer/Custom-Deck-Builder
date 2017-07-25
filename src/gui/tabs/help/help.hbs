@@ -1,0 +1,123 @@
+<div class="help-tab">
+	<p>This tab is intended for help with using this tool, specifically uding the Deck Generator functionality.</p>
+	<section class="availible-options">
+		<h2>Your Custom Spreadsheet</h2>
+		<p>Most of the funtionality of this tool is in creating your down <abbr="Cryptozoic Game Engine">CGE</abbr> deck. To do that all you need to create is a spreadsheet in your office sheet of choice, and follow these rules when formatting it.</p>
+		<p>The first row of your spreadsheet <strong>must</strong> be the headers for each column of options. The list of availible options is below:</p>
+		<table>
+			<tr>
+				<th>Column Name</th>
+				<th>Cell Type</th>
+				<th>Description</th>
+			</tr>
+			<tr>
+				<td>Name</td>
+				<td>text</td>
+				<td>The name of the card.</td>
+			</tr>
+			<tr>
+				<td>Type</td>
+				<td>text</td>
+				<td>The card type. Must be &quot;Equipment&quot;, &quot;Hero&quot;, &quot;Location&quot;, &quot;Starter&quot;, &quot;Super Power&quot;, &quot;Villain&quot;, or &quot;Weakness&quot;. Alternatively &quot;Super Hero&quot; or &quot;Super Villain&quot; are shorthand for their oversized versions</td>
+			</tr>
+			<tr>
+				<td>Variant</td>
+				<td>checkbox</td>
+				<td>If enabled, the card's textbox will be black instead of white, such as for the Villain Stack. If the type is &quot;Hero&quot; or &quot;Villain&quot;, then they also gain the special &quot;Super Hero/Villain&quot; subtype. This option has no effect on Oversized cartd</td>
+			</tr>
+			<tr>
+				<td>Oversized</td>
+				<td>checkbox</td>
+				<td>If enabled, the card becomes an oversized player card. This option is only valid for &quot;Hero&quot; and &quot;Villain&quot; types, and Sub Type, Cost, and Victory Points are ignored.</td>
+			</tr>
+			<tr>
+				<td>Type Prefix</td>
+				<td>text</td>
+				<td>Some text to place in front of the card's type. Ignored on oversized cards.</td>
+			</tr>
+			<tr>
+				<td>Victory Points</td>
+				<td>number</td>
+				<td>The number of Victory Points this is worth at the end. Can be negative or &quot;*&quot;. Ignored on Oversized cards.</td>
+			</tr>
+			<tr>
+				<td>Cost</td>
+				<td>number</td>
+				<td>How much this card costs. Ignored on Oversized cards.</td>
+			</tr>
+			<tr>
+				<td>Text</td>
+				<td>text</td>
+				<td>The card text describing what this card does. It will auto format in both font size and bold/italics. Words like &quot;+2 Power&quot;, &quot;Attack&quot;, and other common <abbr title="Cryptozoic Game Engine">CGE</abbr> terms will automatically be bolded or italizized. To manually bold text use [b]bold this[/b], and to italic us [i]italic this[/i]. Newlines can be used, and two sequential newlines indicate a break between sections of text.</td>
+			</tr>
+			<tr>
+				<td>Image URL</td>
+				<td>url</td>
+				<td>URL to the image for this card. We recommend uding a site like <a href="https://imgur.com/">imgur</a> to manage your images. The image will be automatically centered on the card. Normal cards will be 750px &times; 523px in size, and Oversized ones will be 900px &times; 741px.</td>
+			</tr>
+			<tr>
+				<td>Logo URL</td>
+				<td>url</td>
+				<td>URL to the image for the logo in the top right of this card. For both sizes of cards the image will be rendered at 175px &times; 175px.</td>
+			</tr>
+			<tr>
+				<td>Logo Scale</td>
+				<td>number</td>
+				<td>A number between 0.00 to 1.00 that scales the logo down so it better fits on cards.</td>
+			</tr>
+			<tr>
+				<td>Copyright</td>
+				<td>text</td>
+				<td>The year and company the card is Copyright from. The &copy; symbol is added automatically, and if this is omitted just the year will be displayed, e.g. &quot;&copy;{{currentYear}}&quot;.</td>
+			</tr>
+			<tr>
+				<td>Legal</td>
+				<td>text</td>
+				<td>The legal disclaimer at the bottom of the card. Often has a set notation such as &quot;(s01)&quot;.</td>
+			</tr>
+			<tr>
+				<td>Subtype</td>
+				<td>text</td>
+				<td>An additional type describing the card, such as its owner in the Street Fighter Deck Building Game.</td>
+			</tr>
+			<tr>
+				<td>Set</td>
+				<td>text</td>
+				<td>The set this card is a part of.</td>
+			</tr>
+			<tr>
+				<td>Set Text Color</td>
+				<td>color</td>
+				<td>The hex color to use for the text on the set indicator.</td>
+			</tr>
+			<tr>
+				<td>Set Background Color</td>
+				<td>color</td>
+				<td>The hex color to use for the background rectangle for the set indication</td>
+			</tr>
+			<tr>
+				<td>Preferred Text Size</td>
+				<td>number</td>
+				<td>The text size to start at when fitting text on the card. Defaults to 38. <em>Note</em>: if the text does not fit at this size it will be downsized until it fits.</td>
+			</tr>
+			<tr>
+				<td>Also Bold</td>
+				<td>text list</td>
+				<td>List of words seperated by commas and a space &quot;, &quot; of words to bold even if they lack bold tags ([b]word[/b])</td>
+			</tr>
+			<tr>
+				<td>Round Corners</td>
+				<td>checkbox</td>
+				<td>If the corners should be rounded. By default disabled for the deck building tool, and enabled for the live editor.</td>
+			</tr>
+		</table>
+		<p>After you make your first row, all entries after count as a card. You can create blank rows and they will be skipped over. Columns that do not match one of the above options are skipped as well, so feel free to add columns to help you organize your cards.</p>
+	</section>
+	<section>
+		<h2>Examples</h2>
+		<p>Below are some examples of valid what to expect and valid spreadsheets to use.</p>
+		<p>For an example spreadsheet for use with this tool, check out my <a href="https://docs.google.com/spreadsheets/d/1C4sG2btMuTEaFaTlKtoSytHsuSTmM2uhnR2j-IEhsKk/edit?usp=sharing">Overwatch Deck Building Game spreadsheet here</a>.</p>
+		<img src="../../../../resources/images/card-help.png" alt="card example" title="Example of what column names effect what parts of the card."/>
+		<p>For any issues, especially technical ones, create an <a href="https://github.com/JacobFischer/Custom-Deck-Builder/issues">issue on GitHub</a>.</p>
+	</section>
+</div>

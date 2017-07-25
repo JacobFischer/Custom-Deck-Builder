@@ -1,4 +1,4 @@
-import { ColumnData, RowValues, RowData, RowValue } from './table';
+import { ColumnData, RowValues, RowData, RowValue } from 'src/gui/table';
 
 const deleteButton = document.createElement('button');
 deleteButton.innerHTML = '&#x2716;';
@@ -25,6 +25,7 @@ export const defaultsHeadings: ColumnData[] = [
     },
     {
         name: 'Legal',
+        longText: true,
     },
     {
         name: 'Logo URL',

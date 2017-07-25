@@ -138,6 +138,46 @@ body {
         }
     }
 
+    & dl {
+        & dt {
+            font-weight: bold;
+            color: $primary-dark;
+
+            & + dd {
+                margin-left: 1em;
+                & + dt {
+                    margin-top: 1em;
+                }
+            }
+        }
+    }
+
+    & table {
+        border: none;
+        border-collapse: collapse;
+        border-spacing: 0;
+
+        & tr:nth-child(even) {
+            background-color: $light-gray;
+        }
+
+        & td {
+            padding: 0.5em;
+        }
+    }
+
+    & tr:first-child {
+        background-color: $secondary-lightest;
+        border-bottom: 0.25em solid $secondary;
+
+        & > th {
+            padding: 0.5em 0.5em 0.25em 0.5em;
+        }
+    }
+
+    & table, & tr, & th, & td {
+        border: none;
+    }
 
 
     // footer

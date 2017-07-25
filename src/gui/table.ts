@@ -51,6 +51,7 @@ export class EditableTable extends EventEmitter {
         this.parent = parent;
         this.columns = [];
         this.rows = [];
+        this.table.classList.add('gui-table');
         this.table.appendChild(this.headingsRow);
         this.parent.appendChild(this.table);
     }

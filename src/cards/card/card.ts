@@ -9,7 +9,6 @@ export const CARD_MAX_HEIGHT = 1200;
 
 const regularTemplate: (args: Object) => string = require('./card.hbs');
 const oversizedTemplate: (args: Object) => string = require('./card-oversized.hbs');
-const DEFAULT_TEXT_SIZE = 38;
 
 /**
  * @class represents a custom card
@@ -29,7 +28,7 @@ export class Card {
     public typePrefix: string = '';
     public victoryPoints: '*' | number = 1;
     public cost: number = 1;
-    public text: string = 'Card text';
+    public text: string = '';
     public imageURL: string = '';
     public logoURL: string = '';
     public logoScale: number = 1;
@@ -39,6 +38,7 @@ export class Card {
     public set: string = '';
     public setTextColor = '#cccccc';
     public setBackgroundColor = '#333333';
+    public preferredTextSize: number = 0;
     public alsoBold: string[] = [];
     public roundCorners: boolean = true;
 
@@ -470,6 +470,10 @@ export class Card {
             style.fill = '#ffffff';
         }
 
+        if (this.preferredTextSize > 0) {
+            style.fontSize = this.preferredTextSize;
+        }
+
         let textContainer = autoSizeAndWrapStyledText(formattedText, maxWidth - x*2, maxHeight, style, 1, collisions, this.oversized, this.oversized);
 
         textContainer.position.set(x, y);
@@ -550,13 +554,10 @@ export class Card {
             x = 37;
             y = 1136;
 
-            //const collisions: PIXI.Rectangle[] = [];
             if (set) {
-                //collisions.push(set.getLocalBounds());
                 maxWidth -= set.width + 16;
             }
             if (copyright) {
-                //collisions.push(copyright.getLocalBounds());
                 maxWidth -= copyright.width + 16;
             }
 
