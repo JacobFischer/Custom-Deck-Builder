@@ -18,6 +18,9 @@ export interface ColumnData {
     notEditable?: boolean,
     longText?: boolean,
     color?: boolean,
+    rowsTitle?: string,
+    title?: string,
+    inputAttributes?: {[key: string]: any},
 };
 
 export interface RowData {
@@ -54,6 +57,14 @@ export class EditableTable extends EventEmitter {
         this.table.classList.add('gui-table');
         this.table.appendChild(this.headingsRow);
         this.parent.appendChild(this.table);
+
+        if (columns) {
+            this.addColumns(columns);
+        }
+
+        if (rows) {
+            this.addRows(rows);
+        }
     }
 
     public addColumns(columns: (string | ColumnData)[]): void {
@@ -247,6 +258,12 @@ export class EditableTable extends EventEmitter {
                         child.value = String(row.values[column.id]);
                     }
 
+                    if (column.inputAttributes) {
+                        for (const attribute of Object.keys(column.inputAttributes)) {
+                            child.setAttribute(attribute, String(column.inputAttributes[attribute]));
+                        }
+                    }
+
                     child.id = id;
                     td.insertBefore(child, td.firstChild);
 
@@ -279,6 +296,10 @@ export class EditableTable extends EventEmitter {
                 }
                 else if (column.type !== 'node') {
                     td.innerHTML = String(row.values[column.id]);
+                }
+
+                if (column.rowsTitle) {
+                    td.title = column.rowsTitle;
                 }
 
                 row.tds.push(td);

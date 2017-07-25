@@ -1,4 +1,22 @@
 import { ColumnData, RowValues, RowData, RowValue } from 'src/gui/table';
+import { CardOptions } from 'src/cards/card/card-options';
+import { stripTagsFromString } from 'src/utils';
+
+function addTitlesTo(columns: ColumnData[]): void {
+    for (const column of columns) {
+        let name: string = column.name;
+
+        if (name === 'Delete') {
+            continue; // skip, special column we add that is not a normal option
+        }
+
+        if (name === 'VP') {
+            name = 'Victory Points';
+        }
+
+        column.rowsTitle = stripTagsFromString(CardOptions[name].description);
+    }
+}
 
 const deleteButton = document.createElement('button');
 deleteButton.innerHTML = '&#x2716;';
@@ -33,8 +51,15 @@ export const defaultsHeadings: ColumnData[] = [
     {
         name: 'Logo Scale',
         type: 'number',
+        inputAttributes: {
+            min: 0.010,
+            max: 2,
+            step: 0.001,
+        }
     }
 ];
+
+addTitlesTo(defaultsHeadings);
 
 export const defaultsRows: RowValues[] = [
     {
@@ -102,6 +127,8 @@ export const cardsHeadings: ColumnData[] = [
         defaultValue: deleteButton,
     },
 ];
+
+addTitlesTo(cardsHeadings);
 
 export const cardsRows: RowValues[] = [
     {

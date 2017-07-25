@@ -484,3 +484,9 @@ export function cloneExceptEmpty(...args: any[]): any {
 
     return result;
 }
+
+export function stripTagsFromString(str: string): string {
+    const div = document.createElement('div');
+    div.innerHTML = str;
+    return div.textContent || div.innerText || '';
+}

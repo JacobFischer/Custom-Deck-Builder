@@ -1,3 +1,3 @@
 module.exports = function(...args) {
-    return new Date().getFullYear()
+    return new Date().getFullYear();
 };
