@@ -2,7 +2,7 @@ import './live-editor.scss';
 import * as PIXI from 'pixi.js';
 import { template, loadTextures, tryToCast, cloneExceptEmpty } from 'src/utils';
 import { EditableTable, TableEventSymbols, RowValues, RowData } from 'src/gui/table';
-import { cardsHeadings, cardsRows, defaultsHeadings, defaultsRows } from './tables';
+import { cardsHeadings, cardsRows, defaultsHeadings, defaultsRows } from './live-editor-tables';
 import { Card, CARD_MAX_WIDTH, CARD_MAX_HEIGHT } from 'src/cards/card/';
 import { Tab } from 'src/gui/tabular/';
 
