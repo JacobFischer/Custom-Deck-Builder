@@ -16,18 +16,19 @@ interface CardImages {
     [key: string]: Blob
 }
 
-export const DeckBuilderSymbols = {
-    parsed: Symbol('parsed'),
-    doneRendering: Symbol('doneRendering'),
-    batchStart: Symbol('batchStart'),
-    batchTexturesLoaded: Symbol('batchTexturesLoaded'),
-    batchComplete: Symbol('batchComplete'),
-    zipped: Symbol('zipped'),
-};
-
 export class DeckBuilder extends EventEmitter {
     private generatedZip: Blob;
     private csvText: string;
+
+    static EventSymbols = {
+        error: Symbol('error'),
+        parsed: Symbol('parsed'),
+        doneRendering: Symbol('doneRendering'),
+        batchStart: Symbol('batchStart'),
+        batchTexturesLoaded: Symbol('batchTexturesLoaded'),
+        batchComplete: Symbol('batchComplete'),
+        zipped: Symbol('zipped'),
+    };
 
     constructor(
         readonly maxWidth: number = 10, // these numbers are defined by table top simulator.
@@ -49,10 +50,10 @@ export class DeckBuilder extends EventEmitter {
                 const oversizedCards = cards.filter(card => card.oversized);
                 const normalCards = cards.filter(card => !card.oversized);
 
-                this.emit(DeckBuilderSymbols.parsed, normalCards.length, oversizedCards.length);
+                this.emit(DeckBuilder.EventSymbols.parsed, normalCards.length, oversizedCards.length);
 
                 this.renderAllCards(normalCards, oversizedCards, {}, 1, (cardImages: CardImages) => {
-                    this.emit(DeckBuilderSymbols.doneRendering);
+                    this.emit(DeckBuilder.EventSymbols.doneRendering);
                     this.zipCards(cardImages).then(resolve);
                 });
             }).catch(console.error);
@@ -151,7 +152,7 @@ export class DeckBuilder extends EventEmitter {
 
     private renderAllCards(normalCards: Card[], oversizedCards: Card[], cardImages: CardImages, batch: number, callback: (cardImages: CardImages) => void) {
         return new Promise((resolve, reject) => {
-            this.emit(DeckBuilderSymbols.batchStart, batch);
+            this.emit(DeckBuilder.EventSymbols.batchStart, batch);
             this.renderCards(normalCards, oversizedCards).then((app: PIXI.Application) => {
                 if (!app) {
                     callback(cardImages);
@@ -159,7 +160,7 @@ export class DeckBuilder extends EventEmitter {
 
                 app.render();
                 app.view.toBlob((blob: Blob) => {
-                    this.emit(DeckBuilderSymbols.batchComplete, batch);
+                    this.emit(DeckBuilder.EventSymbols.batchComplete, batch);
                     cardImages[`card-${batch}.png`] = blob;
 
                     // we are done with these images, destroy their textures from memory
@@ -239,7 +240,21 @@ export class DeckBuilder extends EventEmitter {
             }
 
             loadTextures(Array.from(textures), () => {
-                this.emit(DeckBuilderSymbols.batchTexturesLoaded);
+                let unloadedTextures: string[] = [];
+                for (const texture of textures) {
+                    const resource = PIXI.loader.resources[texture];
+
+                    if (!resource || resource.error) {
+                        unloadedTextures.push(texture);
+                    }
+                }
+
+                if (unloadedTextures.length) {
+                    // some cards will not render correctly. We will keep trying put let's notify anyone who cares
+                    this.emit(DeckBuilder.EventSymbols.error, `Could not load textures: ${unloadedTextures.join(', ')}`);
+                }
+
+                this.emit(DeckBuilder.EventSymbols.batchTexturesLoaded);
 
                 const cardWidth = currentCards[0].pxWidth;
                 const cardHeight = currentCards[0].pxHeight;
@@ -331,7 +346,7 @@ export class DeckBuilder extends EventEmitter {
 
             zip.generateAsync({type: 'blob'}).then((content: Blob) => {
                 this.generatedZip = content;
-                this.emit(DeckBuilderSymbols.zipped);
+                this.emit(DeckBuilder.EventSymbols.zipped);
                 resolve(this.generatedZip);
             });
         });

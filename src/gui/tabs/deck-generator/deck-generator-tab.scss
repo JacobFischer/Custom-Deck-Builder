@@ -10,7 +10,7 @@
     & .csv-file-selector:disabled + .csv-file-selector-label {
         & .file-name, & .file-button {
             background-color: $dark-gray;
-            border-color: $light-black;
+            border-color: $dark-gray;
             cursor: default;
         }
 
@@ -143,6 +143,10 @@
         list-style-type: none;
 
         & li {
+            &.error {
+                color: $error;
+            }
+
             & + li {
                 margin-top: 1em;
             }

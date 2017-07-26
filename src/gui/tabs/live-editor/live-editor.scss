@@ -96,6 +96,11 @@
         & td {
             text-align: center;
 
+            &.error > input {
+                border-color: $error;
+                background-color: lighten($error, 35%);
+            }
+
             & input[type=color] {
                 width: 5em;
             }

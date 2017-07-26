@@ -114,6 +114,8 @@ export class LiveEditorTab extends Tab {
         card.setFrom(args);
 
         card.render().then((container: PIXI.Container) => {
+            this.checkForErrors(row, card);
+
             this.app.stage.addChild(container);
             this.app.render();
 
@@ -145,4 +147,18 @@ export class LiveEditorTab extends Tab {
             element.style.height = String(height * scale);
         }
     };
+
+    private checkForErrors(row: RowData, card: Card) {
+        const imageResource = PIXI.loader.resources[card.imageURL];
+        const logoResource = PIXI.loader.resources[card.logoURL];
+        const imageTD = row.tr.getElementsByClassName('column-imageURL')[0];
+        if (imageTD) {
+            if (!imageResource || imageResource.error) {
+                imageTD.classList.add('error');
+            }
+            else {
+                imageTD.classList.remove('error');
+            }
+        }
+    }
 };
