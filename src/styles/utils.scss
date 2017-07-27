@@ -1,5 +1,7 @@
 @import "./colors.scss";
 
+$transition-time: 0.35s;
+
 @mixin browser($browsers: Mozilla) {
   @each $browser in $browsers {
     html[data-browser*="#{$browser}"] & {

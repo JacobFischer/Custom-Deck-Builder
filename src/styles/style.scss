@@ -1,7 +1,7 @@
 @import "./utils.scss";
 
 *, *:before, *:after {
-    @include transition(all 0.35s ease-in-out);
+    @include transition(all $transition-time ease-in-out);
 }
 
 p {

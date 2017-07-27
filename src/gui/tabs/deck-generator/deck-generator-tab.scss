@@ -1,6 +1,8 @@
 @import "src/styles/colors.scss";
 
 .deck-generator-tab {
+    padding-bottom: 1em;
+
     & .file-uploader-wrapper {
         display: block;
         width: 100%;

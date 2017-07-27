@@ -30,8 +30,8 @@ export class UI {
 
         let changing = false;
         (<any>document.body).onhashchange = () => {
-            if (changing) {
-                return;
+            if (true || changing) {
+                return; // TODO: fix on fade in/out
             }
 
             const hash = window.location.hash.substr(1); // get the hash without the #
