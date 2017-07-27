@@ -490,3 +490,22 @@ export function stripTagsFromString(str: string): string {
     div.innerHTML = str;
     return div.textContent || div.innerText || '';
 }
+
+export function expand(element: HTMLElement): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+        element.classList.add('measuring');
+        setTimeout(() => {
+            const height = `${element.clientHeight}px`;
+            element.classList.remove('measuring');
+            setTimeout(() => {
+                element.style.height = height;
+                element.classList.add('expanded');
+                setTimeout(() => {
+                    element.classList.remove('expanded', 'expandable');
+                    element.style.height = '';
+                    resolve();
+                }, 350);
+            }, 50);
+        }, 50);
+    });
+}

@@ -35,6 +35,27 @@ body {
     -o-transform: skewX(-15deg) scaleY(0.75);
 }
 
+.expandable {
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+
+    &.measuring {
+        @include transition(none);
+        height: auto;
+        position: absolute;
+    }
+
+    &.expanded {
+        opacity: 1;
+        visibility: visible;
+        height: auto;
+        pointer-events: all;
+    }
+}
+
 .custom-deck-builder {
     color: $white;
     width: calc(1280px - 2em);

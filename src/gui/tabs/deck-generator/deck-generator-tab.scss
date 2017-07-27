@@ -1,8 +1,6 @@
 @import "src/styles/colors.scss";
 
 .deck-generator-tab {
-    padding-bottom: 1em;
-
     & .file-uploader-wrapper {
         display: block;
         width: 100%;
@@ -132,6 +130,12 @@
             min-height: 1em;
             padding: 0.5em 0;
             text-align: center;
+        }
+    }
+
+    & .generation {
+        &.expanded, &:not(.expandable) {
+            padding-bottom: 1em;
         }
     }
 
