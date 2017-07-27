@@ -29,26 +29,19 @@ export class UI {
         this.tabular = new Tabular();
 
         let changing = false;
-        (<any>document.body).onhashchange = () => {
-            if (true || changing) {
-                return; // TODO: fix on fade in/out
-            }
-
-            const hash = window.location.hash.substr(1); // get the hash without the #
-
-            const tab = this.tabular.getTabByID(hash);
-            if (tab) {
-                changing = true;
-                this.tabular.changeTab(tab);
-                changing = false;
-            }
-        };
 
         this.tabular.on(Tabular.EventSymbols.tabChanged, (tab: Tab) => {
+            // update the browser's hash when the tab changes to feel like pages
             window.location.hash = tab.id;
         });
 
-        this.tabular.setTabs(getTabs());
+        const tabs = getTabs();
+        let startingTab = tabs[0];
+        // if there is a hash, make the starting tab the tab with that id
+        if (window.location.hash) {
+            startingTab = tabs.find((tab) => tab.id === window.location.hash.substr(1));
+        }
+        this.tabular.setTabs(tabs, startingTab);
         this.tabular.setParent(this.mainElement);
     }
 }

@@ -18,11 +18,12 @@ export class Tabular extends EventEmitter {
     private element: HTMLElement;
     private tabsList: HTMLUListElement;
     private tabsContents: HTMLElement;
-    public tabs: Tab[];
     private tabToContent = new Map<Tab, HTMLElement>();
     private tabToListElement = new Map<Tab, HTMLLIElement>();
+    private timeouts = new Set<NodeJS.Timer>();
+
+    public tabs: Tab[];
     public currentTab: Tab;
-    private lastTransition: () => void;
 
     static EventSymbols = {
         tabChanged: Symbol('tabChanged'),
@@ -44,7 +45,7 @@ export class Tabular extends EventEmitter {
         }
     }
 
-    public setTabs(tabs: Tab[]) {
+    public setTabs(tabs: Tab[], startingTab?: Tab) {
         this.tabs = tabs;
 
         for (const tab of tabs) {
@@ -61,7 +62,7 @@ export class Tabular extends EventEmitter {
             this.tabToContent.set(tab, div);
         }
 
-        this.changeTab(tabs[0]);
+        this.changeTab(startingTab || tabs[0]);
     }
 
     public setParent(parent: HTMLElement): void {
@@ -81,7 +82,6 @@ export class Tabular extends EventEmitter {
 
         const oldTab = this.currentTab;
         this.currentTab = toTab;
-        console.log('change tab!', oldTab && oldTab.name, '-->', this.currentTab.name);
 
         // update <li>s
         if (oldTab) {
@@ -89,7 +89,7 @@ export class Tabular extends EventEmitter {
         }
         this.tabToListElement.get(this.currentTab).classList.add('current');
 
-        // crossfade content
+        // crossfade content <div>s
         const newContent = this.tabToContent.get(this.currentTab);
         const oldContent = this.tabToContent.get(oldTab);
 
@@ -100,21 +100,21 @@ export class Tabular extends EventEmitter {
         }
         else {
             this.tabsContents.style.height = `${oldContent.clientHeight}px`;
-
             oldContent.classList.remove('current');
-
             newContent.classList.remove('hidden');
-            setTimeout(() => {
+
+            this.clearTimeouts();
+            this.setTimeout(() => {
                 // we must do this so it shows up before the old tab while animating below
                 newContent.remove();
                 this.tabsContents.insertBefore(newContent, this.tabsContents.firstChild);
 
-                setTimeout(() => {
+                this.setTimeout(() => {
                     oldContent.classList.add('hidden');
                     newContent.classList.add('current');
 
                     this.tabsContents.style.height = `${newContent.clientHeight}px`;
-                    setTimeout(() => {
+                    this.setTimeout(() => {
                         this.tabsContents.style.height = '';
                         this.hideTabs();
                     }, 355);
@@ -141,5 +141,22 @@ export class Tabular extends EventEmitter {
                 this.tabToContent.get(tab).classList.add('hidden');
             }
         }
+    }
+
+    private setTimeout(callback: () => void, time: number): void {
+        const timer = setTimeout(() => {
+            this.timeouts.delete(timer);
+            callback();
+        }, time);
+
+        this.timeouts.add(timer);
+    }
+
+    private clearTimeouts(): void {
+        for (const timer of this.timeouts) {
+            clearTimeout(timer);
+        }
+
+        this.timeouts.clear();
     }
 }
