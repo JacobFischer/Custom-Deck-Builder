@@ -30,12 +30,6 @@ export interface RowData {
     tds: HTMLTableDataCellElement[],
 };
 
-export const TableEventSymbols = {
-    rowAdded: Symbol('rowAdded'),
-    cellChanged: Symbol('cellChanged'),
-    rowDeleted: Symbol('rowDeleted'),
-};
-
 /**
  * @class A simple wrapper around a <table> that emits events on editing
  */
@@ -47,6 +41,12 @@ export class EditableTable extends EventEmitter {
     private table = document.createElement('table');
     private headingsRow = document.createElement('tr');
     private headings = new Map<string, HTMLTableHeaderCellElement>();
+
+    static EventSymbols = {
+        rowAdded: Symbol('rowAdded'),
+        cellChanged: Symbol('cellChanged'),
+        rowDeleted: Symbol('rowDeleted'),
+    };
 
     constructor(parent: Node, columns?: string[] | ColumnData[], rows?: any[]) {
         super();
@@ -190,7 +190,7 @@ export class EditableTable extends EventEmitter {
             row.values[column.id] = column.transform(row.values[column.id], row);
         }
 
-        this.emit(TableEventSymbols.rowAdded, row.values, row);
+        this.emit(EditableTable.EventSymbols.rowAdded, row.values, row);
     }
 
     private updateRows(added: boolean): void {
@@ -204,9 +204,11 @@ export class EditableTable extends EventEmitter {
                 const column = this.columns[i];
                 const td = document.createElement('td');
                 td.setAttribute('class', `column-${column.id}`);
+                const wrapper = document.createElement('div');
+                td.appendChild(wrapper);
 
                 if (column.type === 'node') {
-                    td.appendChild(<Node>row.values[column.id]);
+                    wrapper.appendChild(<Node>row.values[column.id]);
                 }
 
                 if (!column.notEditable) {
@@ -238,7 +240,7 @@ export class EditableTable extends EventEmitter {
                                 checkbox = true;
                                 const label = document.createElement('label');
                                 label.setAttribute('for', id);
-                                td.appendChild(label);
+                                wrapper.appendChild(label);
                                 break;
                             case 'number':
                                 inputType = 'number';
@@ -247,6 +249,7 @@ export class EditableTable extends EventEmitter {
                                 if (column.color) {
                                     inputType = 'color';
                                 }
+                                break;
                         }
                         child.setAttribute('type', inputType);
                     }
@@ -265,7 +268,7 @@ export class EditableTable extends EventEmitter {
                     }
 
                     child.id = id;
-                    td.insertBefore(child, td.firstChild);
+                    wrapper.insertBefore(child, wrapper.firstChild);
 
                     let lastValue: any = child.value;
                     child.addEventListener(event, () => {
@@ -279,7 +282,7 @@ export class EditableTable extends EventEmitter {
 
                         if (lastValue !== newValue) {
                             row.values[column.id] = column.transform(newValue, row);
-                            this.emit(TableEventSymbols.cellChanged, row, column, newValue);
+                            this.emit(EditableTable.EventSymbols.cellChanged, row, column, newValue);
 
                             lastValue = newValue;
                         }
@@ -295,7 +298,7 @@ export class EditableTable extends EventEmitter {
                     });
                 }
                 else if (column.type !== 'node') {
-                    td.innerHTML = String(row.values[column.id]);
+                    wrapper.innerHTML = String(row.values[column.id]);
                 }
 
                 if (column.rowsTitle) {
@@ -304,8 +307,6 @@ export class EditableTable extends EventEmitter {
 
                 row.tds.push(td);
                 row.tr.appendChild(td);
-
-                //this.emit(TableEventSymbols.rowAdded, row.values, row);
             }
         }
     }
@@ -336,6 +337,6 @@ export class EditableTable extends EventEmitter {
         }
         row.tr.remove(); // from the DOM
 
-        this.emit(TableEventSymbols.rowDeleted, row);
+        this.emit(EditableTable.EventSymbols.rowDeleted, row);
     }
 }

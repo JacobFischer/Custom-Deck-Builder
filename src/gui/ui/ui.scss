@@ -103,6 +103,7 @@ body {
         color: $white;
         padding: 0.375em 0.5em;
         cursor: pointer;
+        margin-bottom: 3px;
 
         &:hover, &:focus {
             background-color: $primary-light;

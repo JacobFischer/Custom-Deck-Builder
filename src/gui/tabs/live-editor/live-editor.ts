@@ -1,7 +1,7 @@
 import './live-editor.scss';
 import * as PIXI from 'pixi.js';
 import { template, loadTextures, tryToCast, cloneExceptEmpty } from 'src/utils';
-import { EditableTable, TableEventSymbols, RowValues, RowData } from 'src/gui/table';
+import { EditableTable, RowValues, RowData } from 'src/gui/table';
 import { cardsHeadings, cardsRows, defaultsHeadings, defaultsRows } from './live-editor-tables';
 import { Card, CARD_MAX_WIDTH, CARD_MAX_HEIGHT } from 'src/cards/card/';
 import { Tab } from 'src/gui/tabular/';
@@ -36,6 +36,11 @@ export class LiveEditorTab extends Tab {
         // Defaults Table \\
         this.defaultsTable = new EditableTable(this.element.getElementsByClassName('defaults-table')[0]);
         this.defaultsTable.addColumns(defaultsHeadings);
+
+        this.defaultsTable.on(EditableTable.EventSymbols.rowAdded, (rowValues: RowValues, row: RowData) => {
+            row.tr.classList.add('shown');
+        });
+
         this.defaultsTable.addRows(defaultsRows);
 
         this.defaultsRow = this.defaultsTable.getRow(0);
@@ -44,20 +49,20 @@ export class LiveEditorTab extends Tab {
         const cardsElement = this.element.getElementsByClassName('cards-table')[0];
         this.cardsTable = new EditableTable(cardsElement);
 
-        this.cardsTable.on(TableEventSymbols.rowAdded, (rowValues: RowValues, row: RowData) => {
+        this.cardsTable.on(EditableTable.EventSymbols.rowAdded, (rowValues: RowValues, row: RowData) => {
             this.rowAdded(row);
         });
 
-        this.cardsTable.on(TableEventSymbols.cellChanged, (row: RowData): void => {
+        this.cardsTable.on(EditableTable.EventSymbols.cellChanged, (row: RowData): void => {
             this.renderCard(row);
         });
 
-        this.cardsTable.on(TableEventSymbols.rowDeleted, (row: RowData) => {
+        this.cardsTable.on(EditableTable.EventSymbols.rowDeleted, (row: RowData) => {
             this.rowDeleted(row);
         });
 
         // if the defaults rows are edited, update all custom cards
-        this.defaultsTable.on(TableEventSymbols.cellChanged, (): void => {
+        this.defaultsTable.on(EditableTable.EventSymbols.cellChanged, (): void => {
             for (const row of this.cardsTable.getAllRows()) {
                 this.renderCard(row);
             }
@@ -79,15 +84,26 @@ export class LiveEditorTab extends Tab {
     }
 
     private rowAdded(row: RowData) {
+        const canvas = document.createElement('canvas');
+
+        setTimeout(() => {
+            canvas.classList.add('shown');
+            row.tr.classList.add('shown')
+        }, 50);
+
         const deleteButton = <HTMLButtonElement>row.values.delete;
         deleteButton.addEventListener('click', () => {
-            this.cardsTable.deleteRow(row);
+            row.tr.classList.remove('shown');
+            canvas.classList.remove('shown');
+
+            setTimeout(() => {
+                this.cardsTable.deleteRow(row);
+            }, 355); // css animation variable
         });
 
         const card = new Card(row.values);
         this.cards.set(row, card);
 
-        const canvas = document.createElement('canvas');
         this.canvases.set(row, canvas);
         this.canvasesElement.appendChild(canvas);
 

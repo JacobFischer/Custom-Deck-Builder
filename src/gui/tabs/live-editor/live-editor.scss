@@ -5,6 +5,7 @@
     & .custom-cards-bottom {
         float: left;
         width: 100%;
+        margin-top: 0.5em;
     }
 
     & .canvases-scale {
@@ -33,6 +34,7 @@
             padding: 0.25em;
 
             &[type=number] {
+                width: 4em;
                 text-align: right;
             }
 
@@ -41,6 +43,10 @@
                 background: transparent;
                 border: 0;
                 cursor: pointer;
+
+                @include browser('Chrome') {
+                    height: 2em;
+                }
             }
         }
 
@@ -51,7 +57,6 @@
                 font-weight: bold;
                 content: ' '; // checkmark
                 cursor: pointer;
-                //font-size: 0.75em;
                 min-width: 1.5em;
                 min-height: 1.5em;
                 padding: 0.125em;
@@ -64,20 +69,49 @@
             }
         }
 
+        & .column-logoScale, & .column-copyright {
+            & input {
+                width: 3.75em;
+            }
+        }
+
+        & input[type=color] {
+            width: 5em;
+        }
+
         & textarea {
             height: 3.5em;
+            resize: none;
         }
 
-        & .column-logoScale {
-            width: 4.5em;
+        & .column-copyright {
+            & input {
+                width: 4.5em;
+            }
         }
 
-        & .column-copyright, .column-set, .column-name {
-            width: 8.75em;
+        & .column-type, & .column-subtype {
+            & select, & input {
+                width: 6em;
+            }
+        }
+
+        & .column-legal {
+            & textarea {
+                width: 20em;
+            }
+        }
+
+        & .column-set, & .column-name, & .column-imageURL, & .column-logoURL {
+            & input {
+                width: 8.75em;
+            }
         }
 
         & .column-cost, & .column-victoryPoints {
-            width: 2.5em;
+            & input {
+                width: 2.5em;
+            }
         }
 
         & .column-text {
@@ -93,16 +127,33 @@
             cursor: pointer;
         }
 
-        & td {
-            text-align: center;
+        & tr {
+            & td {
+                text-align: center;
+                padding: 0;
+                opacity: 0;
 
-            &.error > input {
-                border-color: $error;
-                background-color: lighten($error, 35%);
+                & > div { //we assume it's hidden by default
+                    max-height: 0;
+                    margin: 0;
+                }
+
+                &.error input {
+                    border-color: $error;
+                    background-color: lighten($error, 35%);
+                }
             }
 
-            & input[type=color] {
-                width: 5em;
+            // this div is a wrapper so we can animate max-height changes
+            &.shown > td {
+                opacity: 1;
+
+                & > div {
+                    margin: 0.5em;
+                    max-height: 4.5em;
+                    overflow: hidden;
+                    box-sizing: border-box;
+                }
             }
         }
     }
@@ -112,7 +163,17 @@
 
         & canvas {
             margin: 0.75em;
-            display: inline;
+            display: inline-block;
+            opacity: 0;
+            max-height: 0;
+            max-width: 0;
+            overflow: hidden;
+
+            &.shown {
+                opacity: 1;
+                max-height: 1200px;
+                max-width: 900px;
+            }
         }
     }
 }
