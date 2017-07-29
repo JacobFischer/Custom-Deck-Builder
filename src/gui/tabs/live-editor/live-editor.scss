@@ -5,6 +5,7 @@
     & .custom-cards-bottom {
         float: left;
         width: 100%;
+        text-align: center;
         margin-top: 0.5em;
     }
 
@@ -23,6 +24,24 @@
         cursor: pointer;
         float: right;
         margin-right: 0.625em;
+    }
+
+    & .reset-to-defaults {
+        background-color: $secondary;
+        color: $black;
+
+        &:before {
+            display: inline-block;
+            content: '↻';
+            margin-right: 0.375em;
+        }
+
+        &:hover {
+            background-color: $secondary-light;
+            &:before {
+                @include vendor-prefix(transform, rotate(360deg));
+            }
+        }
     }
 
     & table {

@@ -182,13 +182,16 @@ export function loadTextures(textures: string[], callback?: () => void) {
         }
 
          PIXI.loader.load(() => {
-            for (const texture of nowLoading) {
-                const baseTexture = PIXI.loader.resources[texture].texture.baseTexture;
-                baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
-                baseTexture.mipmap = true;
-                PIXI.utils.BaseTextureCache[texture].scaleMode = PIXI.SCALE_MODES.LINEAR;
+            for (const name of nowLoading) {
+                const texture = PIXI.loader.resources[name].texture;
+                if (texture) {
+                    const baseTexture = texture.baseTexture;
+                    baseTexture.scaleMode = PIXI.SCALE_MODES.LINEAR;
+                    baseTexture.mipmap = true;
+                    PIXI.utils.BaseTextureCache[name].scaleMode = PIXI.SCALE_MODES.LINEAR;
 
-                baseTexture.update();
+                    baseTexture.update();
+                }
             }
 
             for (const nowCallback of nowCallbacks) {
