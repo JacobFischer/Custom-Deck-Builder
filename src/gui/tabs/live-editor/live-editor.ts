@@ -45,7 +45,6 @@ export class LiveEditorTab extends Tab {
 
         // if the defaults rows are edited, update all custom cards
         this.defaultsTable.on(EditableTable.EventSymbols.cellChanged, (row: RowData): void => {
-            console.log("what's up my yohiz");
             this.updateStore(this.defaultsTable);
             this.renderAllCards();
         });

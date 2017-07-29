@@ -4,6 +4,7 @@ import { template, replaceAll, expand } from 'src/utils';
 import { basename, normalize } from 'path';
 import { DeckBuilder } from 'src/cards/deck-builder';
 import * as filesaver  from 'file-saver';
+import * as store from 'store';
 
 const tabTemplate = template(require('./deck-generator-tab.hbs'));
 
@@ -39,6 +40,19 @@ export class DeckGeneratorTab extends Tab {
         this.generateButton.addEventListener('click', () => this.generate());
         this.downloadButton.addEventListener('click', () => this.download());
 
+        this.setupCardDimension(this.maxCardsXInput, 'x', 10, 7);
+        this.setupCardDimension(this.maxCardsYInput, 'y', 7, 5);
+
+        this.maxCardsXInput.value = String(store.get('max-cards-x') || 7);
+        this.maxCardsXInput.addEventListener('change', () => {
+            store.set('max-cards-x', Number(this.maxCardsXInput.value));
+        });
+
+        this.maxCardsYInput.value = String(store.get('max-cards-y') || 5);
+        this.maxCardsYInput.addEventListener('change', () => {
+            store.set('max-cards-y', Number(this.maxCardsYInput.value));
+        });
+
         this.updateFileInput();
     }
 
@@ -53,6 +67,23 @@ export class DeckGeneratorTab extends Tab {
         this.generateButton.title = fakeValue
             ? ''
             : 'Please select a file to generate you deck from.';
+    }
+
+    private setupCardDimension(input: HTMLInputElement, coordinate: string, max: number, startingValue: number): void {
+        const id = `max-cards-${coordinate}`;
+        input.value = String(store.get(id) || startingValue);
+        input.min = '2';
+        input.max = `${max}`;
+        input.addEventListener('change', () => {
+            let value = input.valueAsNumber;
+
+            if (!value || value > Number(input.max) || value < Number(input.min)) {
+                value = startingValue;
+            }
+
+            store.set(id, value);
+            input.valueAsNumber = value;
+        });
     }
 
     private generate(): void {
