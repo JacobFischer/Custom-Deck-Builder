@@ -149,16 +149,20 @@
         list-style-type: none;
 
         & li {
-            &.error {
-                color: $error;
-            }
-
             & + li {
                 margin-top: 1em;
             }
 
             &:nth-child(odd) {
                 color: $primary-darkest;
+            }
+
+            &.error {
+                color: $error;
+
+                &:nth-child(odd) {
+                    color: darken($error, 15%);
+                }
             }
         }
     }

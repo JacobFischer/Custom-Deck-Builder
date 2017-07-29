@@ -56,7 +56,7 @@ export class DeckBuilder extends EventEmitter {
                     this.emit(DeckBuilder.EventSymbols.doneRendering);
                     this.zipCards(cardImages).then(resolve);
                 });
-            }).catch(console.error);
+            }).catch(reject);
         });
     };
 
@@ -68,14 +68,9 @@ export class DeckBuilder extends EventEmitter {
                 rtrim: true,
                 skip_empty_lines: true,
                 auto_parse: true,
-            }, (err: any, data: any[]) => {
+            }, (err: Error, data: any[]) => {
                 if (err) {
-                    console.error(err);
-                    return;
-                }
-
-                if (err) {
-                    reject(err);
+                    reject(new Error(`Could not parse CSV File: ${err.message}`));
                 }
 
                 let cards = this.parseCards(data);

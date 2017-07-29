@@ -151,9 +151,14 @@ export class DeckGeneratorTab extends Tab {
                 this.downloadButton.disabled = false;
             });
 
-            deckBuilder.buildCards(reader.result).then((zip: Blob) => {
-                this.generatedZip = zip;
-            });
+            deckBuilder.buildCards(reader.result)
+                .then((zip: Blob) => {
+                    this.generatedZip = zip;
+                })
+                .catch((err: Error) => {
+                    this.log(err.message, true);
+                    this.log('Deck generation aborted due to fatal error', true);
+                });
         });
     }
 
