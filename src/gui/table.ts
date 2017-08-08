@@ -1,4 +1,4 @@
-import { toCamelCase } from 'src/utils';
+import { toCamelCase } from 'src/utils/string';
 import { EventEmitter } from 'events';
 import * as uuid from 'uuid/v4';
 

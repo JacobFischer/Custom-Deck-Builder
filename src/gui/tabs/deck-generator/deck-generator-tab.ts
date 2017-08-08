@@ -1,6 +1,6 @@
 import './deck-generator-tab.scss';
 import { Tab } from 'src/gui/tabular/';
-import { template, replaceAll, expand } from 'src/utils';
+import { template, replaceAll, expand } from 'src/utils/';
 import { basename, normalize } from 'path';
 import { DeckBuilder } from 'src/cards/deck-builder';
 import * as filesaver  from 'file-saver';

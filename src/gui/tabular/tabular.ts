@@ -1,4 +1,4 @@
-import { template, loadTextures, tryToCast, cloneExceptEmpty, toDashCase } from 'src/utils';
+import { template, loadTextures, tryToCast, cloneExceptEmpty, toDashCase } from 'src/utils/';
 import { EventEmitter } from 'events';
 
 const tabularTemplate = template(require('./tabular.hbs'));

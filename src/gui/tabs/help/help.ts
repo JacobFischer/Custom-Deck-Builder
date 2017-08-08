@@ -2,7 +2,7 @@ import './help.scss';
 import { Tab } from 'src/gui/tabular/';
 import { EditableTable, ColumnData, RowData } from 'src/gui/table';
 import { CardOptionsList } from 'src/cards/card/card-options';
-import { template } from 'src/utils';
+import { template } from 'src/utils/dom';
 
 const tabTemplate = template(require('./help.hbs'));
 

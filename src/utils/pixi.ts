@@ -1,145 +1,20 @@
-export function toCamelCase(str: string) {
-    return str.replace(/(?:^\w|[A-Z]|\b\w|\s+)/g, function(match, index) {
-        if (+match === 0) return ""; // or if (/\s+/.test(match)) for white spaces
-        return index == 0 ? match.toLowerCase() : match.toUpperCase();
-    });
-}
+/** Contains useful functions relating to the PIXI.js framework */
 
-export function toDashCase(str: string) {
-    if (!str) {
-        return '';
-    }
+import { doesCircleOverlapRectangle, doRectanglesOverlap } from './math';
 
-    //ensure the first character is lower-cased
-    str = str[0].toLowerCase() + str.substr(1);
-
-    // and there are no spaces
-    str = replaceAll(str, ' ', '');
-
-	return str.replace(/([A-Z])/g, function(s){return '-' + s.toLowerCase();});
-}
-
-export function tryToCast(value: string | number | boolean): string | number | boolean {
-    if (typeof(value) === 'string') {
-        // try to make it a number
-        const asNum = Number(value);
-        if (!isNaN(asNum)) {
-            value = asNum;
-        }
-        else {
-            // try to make it a boolean
-            const lowered = value.toLowerCase();
-            if (lowered === 'false') {
-                value = false;
-            }
-            else if (lowered === 'true') {
-                value = true;
-            }
-        }
-    }
-
-    return value;
-}
-
-export function escapeRegExp(str: string) {
-    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
-
-export function removeTags(str: string, replacement: string = '') {
-    return str.replace(/(<([^>]+)>)/ig, replacement);
-}
-
-export function replaceAll(target: string, search: string, replacement: string): string {
-    return target.replace(new RegExp(escapeRegExp(search), 'g'), replacement);
-    //return target.split(search).join(replacement);
-};
-
-export function clamp(val: number, min: number, max: number) {
-    return Math.max(min, Math.min(max, val))
-}
-
-export function doRectanglesOverlap(r1: PIXI.Rectangle, r2: PIXI.Rectangle): boolean {
-    return !(
-        r2.x > (r1.x + r1.width) ||
-        (r2.x + r2.width) < r1.x ||
-        r2.y > (r1.y + r1.height) ||
-        (r2.y + r2.height) < r1.y
-    );
-}
-
-export function doesCircleOverlapRectangle(rect: PIXI.Rectangle, circle: PIXI.Circle) {
-    const distX = Math.abs(circle.x - rect.x - rect.width/2);
-    const distY = Math.abs(circle.y - rect.y - rect.height/2);
-
-    if (distX > (rect.width/2 + circle.radius)) { return false; }
-    if (distY > (rect.height/2 + circle.radius)) { return false; }
-
-    if (distX <= (rect.width/2)) { return true; }
-    if (distY <= (rect.height/2)) { return true; }
-
-    var dx=distX-rect.width/2;
-    var dy=distY-rect.height/2;
-    const does = ((dx*dx + dy*dy) <= (circle.radius * circle.radius));
-
-    return does;
-}
-
-export function xdoesCircleOverlapRectangle(rectangle: PIXI.Rectangle, circle: PIXI.Circle) {
-    // Find the closest point to the circle within the rectangle
-    // Assumes axis alignment! ie rect must not be rotated
-    const closestX = clamp(circle.x, rectangle.x, rectangle.x + rectangle.width);
-    const closestY = clamp(circle.y, rectangle.y, rectangle.y + rectangle.height);
-
-    // Calculate the distance between the circle's center and this closest point
-    const distanceX = circle.x - closestX;
-    const distanceY = circle.x - closestY;
-
-    // If the distance is less than the circle's radius, an intersection occurs
-    const distanceSquared = (distanceX * distanceX) + (distanceY * distanceY);
-    const does = distanceSquared < (circle.radius * circle.radius);
-    return does;
-}
-
-
-interface match {
-    start: number,
-    end: number,
-    str: string,
-}
-
-export function surroundText(search: string, regex: RegExp, front: string, end: string): string {
-    let matches: match[] = [];
-    while (true) {
-        let result = regex.exec(search);
-
-        if (result) {
-            matches.push({
-                start: result.index,
-                end: result.index + result[0].length,
-                str: result[0]
-            }); // we care about the first returned result
-        }
-        else {
-            break; // no more matches
-        }
-    }
-
-    const addLength = front.length + end.length;
-    let addedLength = 0;
-    for (const match of matches) {
-        // bold each plus power part of the text
-        search = search.substring(0, match.start + addedLength) + front + match.str + end +  search.substring(match.end + addedLength)
-        addedLength += addLength;
-    }
-
-    return search;
-}
-
+/**
+ * Creates a new sprite from a given resources key and placed into a parent
+ * @param textureKey the key of the texture to use for the sprite in the PIXI
+ *                   loader's resources. If not present an error will be thrown
+ * @param container optional container to add this sprite to as a child
+ * @returns the PIXI.Sprite that has newly been created
+ */
 export function newSprite(textureKey: string, container?: PIXI.Container): PIXI.DisplayObject {
     const resource = PIXI.loader.resources[textureKey];
     if (!resource) {
         throw new Error(`No resource found for key ${textureKey}`);
     }
+
     const sprite = new PIXI.Sprite(resource.texture);
 
     if (container) {
@@ -149,8 +24,18 @@ export function newSprite(textureKey: string, container?: PIXI.Container): PIXI.
     return sprite;
 }
 
+// these variables are static scope level variables used to backlog textures
+// to load in case of multiple async loadTextures calls
 const backlogTextures = new Set<string>();
 const backlogCallbacks: (() => void)[] = [];
+
+/**
+ * Loads a list of given urls to texture files then fires a callback if given.
+ * If another loadTextures is in progress this call will be backlogged to
+ * execute after the previous loadTextures finishes
+ * @param textures the list of textures to load
+ * @param callback optional callback to invoke once textures have been loaded
+ */
 export function loadTextures(textures: string[], callback?: () => void) {
     const filtered = new Set<string>(textures.filter((t) => t && !PIXI.loader.resources[t]));
     for (const texture of filtered) {
@@ -214,29 +99,10 @@ export function loadTextures(textures: string[], callback?: () => void) {
     }
 }
 
-export function outline(obj: PIXI.DisplayObject): void {
-    var graphics = new PIXI.Graphics();
-
-    graphics.lineStyle(2, 0x0000FF, 1);
-    graphics.beginFill(0xFF700B, 1);
-    let bounds = obj.getBounds();
-    graphics.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
-
-    obj.parent.addChild(graphics);
-    obj.parent.removeChild(obj);
-    graphics.parent.addChild(obj);
-}
-
-export function outlineCircle(cir: PIXI.Circle): PIXI.Graphics {
-    var graphics = new PIXI.Graphics();
-
-    //graphics.lineStyle(2, 0x0000FF, 1);
-    graphics.beginFill(0x3F700B, 1);
-    graphics.drawCircle(cir.x, cir.y, cir.radius);
-
-    return graphics;
-}
-
+/**
+ * Special characters used when wrapping styled text to indicate bold and
+ * italics text blocks
+ */
 export const wrapStyledTextCharacters = {
     boldStart: String.fromCharCode(17),
     boldEnd: String.fromCharCode(18),
@@ -244,14 +110,15 @@ export const wrapStyledTextCharacters = {
     italicEnd: String.fromCharCode(20),
 };
 
+/**
+ * Builds a PIXI.Container which has child PIXI.Text objects that wrap a styled
+ * string
+ * @param text the text to build and wrap
+ * @param width the maximum width of the container to wrap at
+ * @param normalStyle the style to apply to the next for normal text. Bold and
+ *                    italics text will be set automatically when encountered
+ */
 export function wrapStyledText(text: string, width: number, normalStyle: PIXI.TextStyle): PIXI.Container {
-    /*text = replaceAll(text, wrapStyledTextCharacters.boldEnd + wrapStyledTextCharacters.boldEnd, '');
-    text = replaceAll(text, wrapStyledTextCharacters.boldStart + wrapStyledTextCharacters.boldEnd, '');
-    text = replaceAll(text, wrapStyledTextCharacters.boldEnd + wrapStyledTextCharacters.boldStart, '');
-    text = replaceAll(text, wrapStyledTextCharacters.italicEnd + wrapStyledTextCharacters.italicEnd, '');
-    text = replaceAll(text, wrapStyledTextCharacters.italicStart + wrapStyledTextCharacters.italicEnd, '');
-    text = replaceAll(text, wrapStyledTextCharacters.italicEnd + wrapStyledTextCharacters.italicStart, '');*/
-
     const container = new PIXI.Container();
     const boldStyle = normalStyle.clone();
     boldStyle.fontWeight = 'bold';
@@ -344,10 +211,9 @@ export function wrapStyledText(text: string, width: number, normalStyle: PIXI.Te
                 for (let r = i; r >= 0; r--) {
                     let rChar = text[r];
                     if (rChar === ' ') {
-                        //text = text.substr(0, r) + '\n' + text.substr(r + 1);
                         const delta = i - r;
                         currentLine = currentLine.substring(0, currentLine.length - delta);
-                        i = r;
+                        i = r; // reset index
                         newline = true;
                         break;
                     }
@@ -376,21 +242,28 @@ export function wrapStyledText(text: string, width: number, normalStyle: PIXI.Te
                 x += pixiText.width - PIXI.TextMetrics.measureText(' ', currentStyle).width/5;
             }
 
-            //if (pixiText) outline(pixiText);
-
             currentLine = '';
         }
-    }
-
-    const childs = container.children.slice();
-    for (const c of childs) {
-        //outline(c);
     }
 
     return container;
 }
 
 export type PIXICircleOrRectangle = PIXI.Circle | PIXI.Rectangle;
+
+/**
+ * Builds a PIXI.Container that contains child PIXI.Texts that wrap a given
+ * string, and automatically downsizes the text to force it to fit
+ * @param text the text to fit
+ * @param width the maximum width to wrap at
+ * @param height the maximum height to downscale if the wrapped text it too tall
+ * @param normalStyle the normal style of the text
+ * @param autosizeStep when stepping down the text the amount to step down
+ * @param collisions a list of PIXI circles and/or rectangles to check for
+ *                   collisions in. If any are encountered we will downstep.
+ * @param centerHorizontally if the text should be centered horizontally
+ * @param centerVertically if the text should be centered vertically
+ */
 export function autoSizeAndWrapStyledText(text: string, width: number, height: number, normalStyle: PIXI.TextStyle,
     autosizeStep: number = 1,
     collisions: PIXICircleOrRectangle[] = [],
@@ -458,57 +331,4 @@ export function autoSizeAndWrapStyledText(text: string, width: number, height: n
     }
 
     return null; // nothing fits :(
-}
-
-function createNodeFromTemplate(required: (args: object) => string, args?: object) {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = required(args);
-    const node = tempDiv.firstChild;
-    node.parentElement.removeChild(node);
-
-    return node;
-}
-
-export function template(required: (args: object) => string): (args?: object) => Node {
-    return (args: object): Node => {
-        return createNodeFromTemplate(required, args);
-    };
-}
-
-export function cloneExceptEmpty(...args: any[]): any {
-    const result: any = {};
-    for (const arg of args) {
-        for (const key in arg) {
-            if (Object.prototype.hasOwnProperty.call(arg, key) && arg[key] !== '') {
-                result[key] = arg[key];
-            }
-        }
-    }
-
-    return result;
-}
-
-export function stripTagsFromString(str: string): string {
-    const div = document.createElement('div');
-    div.innerHTML = str;
-    return div.textContent || div.innerText || '';
-}
-
-export function expand(element: HTMLElement): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-        element.classList.add('measuring');
-        setTimeout(() => {
-            const height = `${element.clientHeight}px`;
-            element.classList.remove('measuring');
-            setTimeout(() => {
-                element.style.height = height;
-                element.classList.add('expanded');
-                setTimeout(() => {
-                    element.classList.remove('expanded', 'expandable');
-                    element.style.height = '';
-                    resolve();
-                }, 350);
-            }, 50);
-        }, 50);
-    });
 }

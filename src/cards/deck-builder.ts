@@ -1,7 +1,7 @@
 "use strict";
 
 import * as csvParse from 'csv-parse';
-import { replaceAll, loadTextures, outline, toCamelCase, tryToCast } from 'src/utils';
+import { replaceAll, loadTextures, toCamelCase, tryToCast } from 'src/utils/';
 import { initialTextures, initialTexturesToKey } from 'src/initialize';
 import { Card } from './card';
 import { EventEmitter } from 'events';

@@ -4,7 +4,7 @@ import { Tab } from '../tabular';
 import { LiveEditorTab } from './live-editor/';
 import { DeckGeneratorTab } from './deck-generator/';
 import { HelpTab } from './help/';
-import { template } from 'src/utils';
+import { template } from 'src/utils/dom';
 
 class SimpleTab extends Tab {
     constructor(name: string, required?: any) {

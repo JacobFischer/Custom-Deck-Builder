@@ -1,6 +1,6 @@
 import { ColumnData, RowValues, RowData, RowValue } from 'src/gui/table';
 import { CardOptions } from 'src/cards/card/card-options';
-import { stripTagsFromString } from 'src/utils';
+import { stripTagsFromString } from 'src/utils/';
 
 function addTitlesTo(columns: ColumnData[]): void {
     for (const column of columns) {

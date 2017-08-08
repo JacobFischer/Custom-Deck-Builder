@@ -1,5 +1,5 @@
 //import { wrapSVGText, roundedRectangle } from 'src/svg-text-helper';
-import { replaceAll, surroundText, newSprite, outline, outlineCircle, wrapStyledText, autoSizeAndWrapStyledText, wrapStyledTextCharacters, loadTextures } from 'src/utils';
+import { replaceAll, surroundText, newSprite, wrapStyledText, autoSizeAndWrapStyledText, wrapStyledTextCharacters, loadTextures } from 'src/utils/';
 import { getStyle } from './card-styles';
 import './card.scss';
 import 'normalize.css';

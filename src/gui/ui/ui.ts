@@ -1,5 +1,5 @@
 import './ui.scss';
-import { template, removeTags } from 'src/utils';
+import { template, removeTags } from 'src/utils/';
 import { Tabular, Tab } from 'src/gui/tabular/';
 import { getTabs } from 'src/gui/tabs/';
 
