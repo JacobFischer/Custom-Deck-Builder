@@ -1,8 +1,7 @@
-//import { wrapSVGText, roundedRectangle } from 'src/svg-text-helper';
+'use strict';
+
 import { replaceAll, surroundText, newSprite, wrapStyledText, autoSizeAndWrapStyledText, wrapStyledTextCharacters, loadTextures } from 'src/utils/';
 import { getStyle } from './card-styles';
-import './card.scss';
-import 'normalize.css';
 
 /** The maximum width (in pixels) that a card can be (oversized) */
 export const CARD_MAX_WIDTH = 900;
@@ -134,96 +133,6 @@ export class Card {
             this.pxHeight = 1050;
         }
     }
-
-    /*
-    toSVG(): SVGSVGElement {
-        let vpKey = 'normal';
-        if (this.victoryPoints < 0) {
-            vpKey = 'negative';
-        }
-
-        const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        let variantType: string = this.type;
-        if (this.variant && (this.type === 'Hero' || this.type === 'Villain')) {
-            variantType = `Super ${variantType}`;
-        }
-        else if (this.oversized) {
-            variantType = `oversized-${this.type}`;
-        }
-        variantType = variantType.replace(' ', '-').toLowerCase();
-
-        // TODO: extract this from the template?
-        const width = this.oversized ? 900 : 750;
-        const height = this.oversized ? 1200 : 1050;
-
-        svgElement.setAttribute('width', `${width}px`);
-        svgElement.setAttribute('height', `${height}px`);
-        svgElement.setAttribute('viewBox', `0 0 ${width} ${height}`);
-        svgElement.setAttribute('class', `custom-card main-type-${this.type.replace(' ', '-').toLowerCase()} ${this.variant ? 'variant' : this.oversized ? 'oversized' : 'normal'}`);
-        svgElement.setAttribute('style', 'display: inline-block;');
-
-        const template = this.oversized ? oversizedTemplate : regularTemplate;
-
-        svgElement.innerHTML = template({
-            name: this.name.toUpperCase(),
-            type: this.type !== 'Weakness' && this.type.toUpperCase(),
-            backgroundTypeImage: require(`../resources/card-templates/${variantType}.png`),
-            backgroundVPImage: require(`../resources/card-templates/background-vp-${vpKey}.png`),
-            backgroundCostImage: require(`../resources/card-templates/background-cost.png`),
-            vpVariableImage: this.victoryPoints === '*' && require(`../resources/card-templates/vp-variable.png`),
-            vpType: this.victoryPoints < 0 ? 'negative' : 'positive',
-            vp: Math.abs(Number(this.victoryPoints)),
-            cost: this.cost,
-            imageURL: this.imageURL,
-            logoURL: this.logoURL,
-            copyright: this.copyright,
-            legal: this.legal,
-            subtype: this.type !== 'Weakness' && this.subtype && this.subtype.toUpperCase(),
-            set: this.set && this.set.toUpperCase(),
-            setTextColor: this.setTextColor,
-            setBackgroundColor: this.setBackgroundColor,
-        });
-
-        // now we need to manually wrap the text, because svg can't do that for whatever reason :P
-
-        // we assume the template has a .text-wrapper with 1 child .text.
-        // We will extract those and manually wrap them
-        const cardText = <SVGTextElement>svgElement.getElementsByClassName('card-text')[0];
-        const cardLegal = <SVGTextElement>svgElement.getElementsByClassName('card-legal')[0];
-        const cardVPRect = <SVGRectElement>svgElement.getElementsByClassName('card-vp-rect')[0];
-
-        const formattedText = this.formatText();
-
-        setTimeout(() => {
-            wrapSVGText(cardText, formattedText, {
-                center: this.oversized,
-                middle: this.oversized,
-
-                textSize: this.textSize,
-                resize: !this.manualTextSize,
-                onResize: (options) => {
-                    options.lineHeight = options.textSize * 36/DEFAULT_TEXT_SIZE;
-                    options.newParagraphHeight = options.textSize * 50/DEFAULT_TEXT_SIZE;
-                },
-                collisions: this.oversized ? [] : [cardVPRect.getBBox()],
-            });
-
-            wrapSVGText(cardLegal, this.legal, {
-                textSize: 20,
-                lineHeight: 21,
-                newParagraphHeight: 22,
-            });
-
-            if (this.set) {
-                const setText = <any>svgElement.getElementsByClassName('card-set-text')[0];
-                const setBackground = <any>svgElement.getElementsByClassName('card-set-background')[0];
-                roundedRectangle(setBackground, setText);
-            }
-        }, 1);
-
-        return svgElement;
-    }
-    */
 
     /**
      * Formats the text, checking for keywords to bold or italic automatically

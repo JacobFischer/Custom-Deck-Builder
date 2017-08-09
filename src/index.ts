@@ -1,5 +1,7 @@
 "use strict";
 
+// css reset
+import 'normalize.css';
 // the main style sheet
 import 'src/styles/style.scss';
 
