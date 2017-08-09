@@ -173,6 +173,8 @@ body {
 
             & + dd {
                 margin-left: 1em;
+                color: $primary-darkest;
+
                 & + dt {
                     margin-top: 1em;
                 }
@@ -185,7 +187,7 @@ body {
         border-collapse: collapse;
         border-spacing: 0;
 
-        & tr:nth-child(even) {
+        & tr:nth-child(even) > td {
             background-color: $light-gray;
         }
 
@@ -194,12 +196,27 @@ body {
         }
     }
 
-    & tr:first-child {
+    & tr:first-child > th {
         background-color: $secondary-lightest;
         border-bottom: 0.25em solid $secondary;
+        padding: 0.5em 0.5em 0.25em 0.5em;
 
-        & > th {
-            padding: 0.5em 0.5em 0.25em 0.5em;
+        &:first-child {
+            border-radius: 0.625em 0 0 0;
+        }
+
+        &:last-child {
+            border-radius: 0 0.625em 0 0;
+        }
+    }
+
+    & tr:last-child > td {
+        &:first-child {
+            border-radius: 0 0 0 0.625em;
+        }
+
+        &:last-child {
+            border-radius: 0 0 0.625em 0;
         }
     }
 

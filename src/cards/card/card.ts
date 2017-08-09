@@ -9,9 +9,6 @@ export const CARD_MAX_WIDTH = 900;
 /** The maximum height (in pixels) that a card can be (oversized) */
 export const CARD_MAX_HEIGHT = 1200;
 
-const regularTemplate: (args: Object) => string = require('./card.hbs');
-const oversizedTemplate: (args: Object) => string = require('./card-oversized.hbs');
-
 /**
  * @class represents a custom card
  */

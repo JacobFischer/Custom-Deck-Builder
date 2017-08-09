@@ -28,6 +28,6 @@ export function getTabs(): Tab[] {
         new LiveEditorTab(),
         new DeckGeneratorTab(),
         new HelpTab(),
-        new SimpleTab('About'),
+        new SimpleTab('About', require('./about.hbs')),
     ];
 };
