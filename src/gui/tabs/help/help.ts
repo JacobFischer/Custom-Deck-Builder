@@ -2,7 +2,7 @@ import './help.scss';
 import { Tab } from 'src/gui/tabular/';
 import { EditableTable, ColumnData, RowData } from 'src/gui/table';
 import { CardOptionsList } from 'src/cards/card/card-options';
-import { template } from 'src/utils/dom';
+import { template, removeTags } from 'src/utils';
 
 const tabTemplate = template(require('./help.hbs'));
 
@@ -45,8 +45,10 @@ export class HelpTab extends Tab {
         this.cardOptionsTable = new EditableTable(this.element.getElementsByClassName('card-options')[0], columns, CardOptionsList);
 
         for (const td of this.element.getElementsByTagName('td')) {
-            const title = typeTitles[td.innerHTML];
+            const title = typeTitles[removeTags(td.innerHTML)];
 
+            // if a title was found (it's the 'type' <td>), then add the title
+            // based on it's type as found in the html above
             if (title) {
                 td.title = title;
             }
