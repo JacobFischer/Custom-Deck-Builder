@@ -15,9 +15,12 @@ const typeTitles: {[key: string]: string} = {
     'text list': 'A list of words or text items. Indicate a new text in the list via a comma and space ", ". E.g. "Some Card Name, Some Special Term, Bold This too"',
 };
 
+/** The help tab that shows a list of card options from the CardOptionsList */
 export class HelpTab extends Tab {
+    /** The table that shows what the card options are */
     private cardOptionsTable: EditableTable;
 
+    /** Creates a Help Tab for a Tabular */
     constructor() {
         super('Help', <HTMLElement>tabTemplate());
 

@@ -9,12 +9,22 @@ const uiTemplate = template(require('./ui.hbs'));
  * The User Interface to interact with this custom card builder project
  */
 export class UI {
+    /** The parent element of the UI (probably the body of the document) */
     readonly parent: HTMLElement;
+
+    /** The element containing the UI */
     private element: HTMLElement;
+
+    /** The <main> element not the wrapper */
     private mainElement: HTMLElement;
 
+    /** The tabular that controls each section of the UI */
     private tabular: Tabular;
 
+    /**
+     * Create the UI. Only one probably should exist per page
+     * @param element the parent element to place the UI in, probably the <body>
+     */
     constructor(element: HTMLElement) {
         this.parent = element;
         this.element = <HTMLElement>uiTemplate();

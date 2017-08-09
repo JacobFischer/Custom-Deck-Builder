@@ -1,9 +1,15 @@
+/** An option a card can have */
 export interface CardOption {
     name: string,
     type: 'text' | 'number' | 'checkbox' | 'url' | 'color' | 'text list',
     description: string,
 }
 
+/**
+ * All the options we can realistically expect to be set in a deck's CSV
+ * file.
+ * Ordered by most important to least.
+ */
 export const CardOptionsList: CardOption[] = [
     {
         name: 'Name',
@@ -43,7 +49,7 @@ export const CardOptionsList: CardOption[] = [
     {
         name: 'Text',
         type: 'text',
-        description: `The card text describing what this card does. It will auto format in both font size and bold/italics. Words like "+2 Power", "Attack", and other common <abbr title="Cryptozoic Game Engine">CGE</abbr> terms will automatically be bolded or italics. To manually bold text use [b]bold this[/b], and to italic us [i]italic this[/i]. Newlines can be used, and two sequential newlines indicate a break between sections of text.`,
+        description: `The card text describing what this card does. It will auto format in both font size and bold/italics. Words like "+2 Power", "Attack", and other common <abbr title="Cryptozoic Game Engine">CGE</abbr> terms will automatically be bolded or italics. To manually bold text use [b]bold this[/b], and to italic use [i]italic this[/i]. Newlines can be used, and two sequential newlines indicate a break between sections of text.`,
     },
     {
         name: 'Image URL',
@@ -107,9 +113,13 @@ export const CardOptionsList: CardOption[] = [
     },
 ];
 
+/**
+ * All the options we can realistically expect to be set in a deck's CSV
+ * file.
+ * Indexed by the option's name (order is lost)
+ */
 export const CardOptions: {[key: string]: CardOption} = {};
 
 for (const cardOption of CardOptionsList) {
     CardOptions[cardOption.name] = cardOption;
 }
-

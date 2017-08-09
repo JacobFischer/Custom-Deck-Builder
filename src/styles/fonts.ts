@@ -1,3 +1,5 @@
+/** Acts as an interface between css fonts and code that requires it */
+
 import './fonts.scss';
 import * as FontFaceObserver from 'fontfaceobserver';
 
@@ -26,6 +28,8 @@ function checkIfReady(): void {
     }
 }
 
+// for every font, load it then check if we are ready
+// once the last font is loaded, we are ready
 for (const fontFamily of Object.keys(fonts)) {
     const font = fonts[fontFamily];
     for (const fontType of font) {
@@ -49,6 +53,10 @@ for (const fontFamily of Object.keys(fonts)) {
     }
 }
 
+/**
+ * Attaches a callback to be invoked once all fonts are loaded
+ * @param callback the callback to invoke once all fonts are loaded
+ */
 export function onFontsLoaded(callback: (error: boolean) => void): void {
     _onReady.callback = callback;
     checkIfReady();

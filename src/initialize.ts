@@ -29,9 +29,17 @@ function requireAll(r: __WebpackModuleApi.RequireContext) {
 // require all the images in the templates folder
 requireAll(require.context('../resources/card-templates/', true, /\.png$/));
 
+/** The key/value mapping of initial textures loaded for all cards */
 export const initialTextures = textures;
+
+/** A reverse key/value mapping of texture to key for initialTextures */
 export const initialTexturesToKey = new Map<PIXI.Texture, string>();
 
+/**
+ * Initializes textures and fonts required for this application to function
+ *
+ * @param callback the callback to invoke once all resources are initialized
+ */
 export function initialize(callback: () => void): void {
     wrapper.callback = callback;
 

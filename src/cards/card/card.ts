@@ -4,7 +4,10 @@ import { getStyle } from './card-styles';
 import './card.scss';
 import 'normalize.css';
 
+/** The maximum width (in pixels) that a card can be (oversized) */
 export const CARD_MAX_WIDTH = 900;
+
+/** The maximum height (in pixels) that a card can be (oversized) */
 export const CARD_MAX_HEIGHT = 1200;
 
 const regularTemplate: (args: Object) => string = require('./card.hbs');
@@ -14,52 +17,97 @@ const oversizedTemplate: (args: Object) => string = require('./card-oversized.hb
  * @class represents a custom card
  */
 export class Card {
-    [key: string]: any;
-
+    /** The PIXI.Container this card's render is in */
     private container: PIXI.Container;
 
+    /** The current width in pixels of the rendered card */
     public pxWidth = CARD_MAX_WIDTH;
+
+    /** The current height in pixels of the rendered card */
     public pxHeight = CARD_MAX_HEIGHT;
 
+    /** The name of the card */
     public name: string = 'Card Name';
+
+    /** The type of the card, used for background generation */
     public type: 'Equipment' | 'Hero' | 'Location' | 'Starter' | 'Super Power' | 'Villain' | 'Weakness' = 'Starter';
+
+    /** If this card is a variant with black background text */
     public variant: boolean = false;
+
+    /** If this card is oversized */
     public oversized: boolean = false;
+
+    /** A string prefix to place in front of this card's type */
     public typePrefix: string = '';
+
+    /** The number of VP this card is worth at the end of the game */
     public victoryPoints: '*' | number = 1;
+
+    /** How much this card costs to buy */
     public cost: number = 1;
+
+    /** The text on the card. You can use [b] and [i] to bold and italic text */
     public text: string = '';
+
+    /** The url to the image to use for this card */
     public imageURL: string = '';
+
+    /** The url to the image to use for its upper right logo */
     public logoURL: string = '';
+
+    /** A scalar to apply to the logo's size */
     public logoScale: number = 1;
-    public copyright: string = '';
+
+    /** The copyright text, A © is automatically placed in front of this text */
+    public copyright: string = String(new Date().getFullYear());
+
+    /** The legal disclaimer on the bottom of the card */
     public legal: string = '';
+
+    /** The sub type of the card next to the type */
     public subtype: string = '';
+
+    /** The name of the set this card is a part of */
     public set: string = '';
+
+    /** The color of the name of this card's set */
     public setTextColor = '#cccccc';
+
+    /** The background color of the rounded box behind the set text */
     public setBackgroundColor = '#333333';
+
+    /**
+     * The preferred starting text size number to start at when auto sizing the
+     * text. If the number is too large it will be ignored and downscaled
+     */
     public preferredTextSize: number = 0;
+
+    /** A list of string to bold if they are encountered in the text */
     public alsoBold: string[] = [];
+
+    /** If the corners of the card should be rounded */
     public roundCorners: boolean = true;
 
+    /** Creates a card from so key/value object */
     constructor(args?: {[key: string]: any}) {
         if (args) {
             this.setFrom(args);
         }
     }
 
+    /**
+     * Sets this card's internal variables from a key/value object
+     * @param args the args to set; so to set imageURL, set args.imageURL
+     * */
     public setFrom(args: {[key: string]: any}) {
         args = Object.assign({}, args);
         args.victoryPoints = args.victoryPoints || args.vp || args.VP || args.vP || 0;
 
         for (let key in args) {
             if (Object.prototype.hasOwnProperty.call(this, key)) {
-                this[key] = args[key];
+                (<any>this)[key] = args[key];
             }
-        }
-
-        if (!this.copyright) {
-            this.copyright = String(new Date().getFullYear());
         }
 
         // special cases, we can take "Super Hero/Villain" as a type
@@ -177,6 +225,10 @@ export class Card {
     }
     */
 
+    /**
+     * Formats the text, checking for keywords to bold or italic automatically
+     * @returns the text now with bold and italic formatting tags inserted
+     */
     private formatText(): string {
         let formattedText = this.text;
 
@@ -192,10 +244,21 @@ export class Card {
         return formattedText;
     }
 
+    /**
+     * Gets the PIXI.TextStyle for a part of the card
+     * @param part the part of the card to get the style for
+     * @returns the style for that part of the card, if found
+     */
     private getStyle(part: string): PIXI.TextStyle {
         return getStyle(this.type, part, this.oversized);
     }
 
+    /**
+     * Rendered the card asynchronously to a PIXI.Container
+     * This method will load textures
+     * @returns a promise that resolves to a rendered PIXI.Container with no
+     *          parent
+     */
     public render(): Promise<PIXI.Container> {
         return new Promise((resolve, reject) => {
             loadTextures([this.imageURL, this.logoURL], () => {
@@ -206,6 +269,11 @@ export class Card {
         });
     }
 
+    /**
+     * Renders a card synchronously, must be invoked after textures are already
+     * loaded
+     * @returns a PIXI.Container with no parent of the rendered card
+     */
     public renderSync(): PIXI.Container {
         if (this.container) {
             this.container.removeChild(this.container);
@@ -230,11 +298,14 @@ export class Card {
         const set = this.renderSet(copyright);
         this.renderLegal(set, copyright);
 
-        this.renderBleed();
+        this.renderRoundedCorners();
 
         return this.container;
     };
 
+    /**
+     * Renders the image part of the card
+     */
     private renderImage(): void {
         if (!this.imageURL) {
             return;
@@ -266,6 +337,9 @@ export class Card {
         backgroundImage.mask = backgroundImageMask;
     }
 
+    /**
+     * Renders the background part of the card based on the card's type
+     */
     private renderBackground(): void {
         if (!this.type) {
             return;
@@ -293,6 +367,9 @@ export class Card {
         }
     }
 
+    /**
+     * Renders the logo part of the card
+     */
     private renderLogo(): void {
         if (!this.logoURL) {
             return;
@@ -328,6 +405,9 @@ export class Card {
         logoSprite.position.set(x, y);
     }
 
+    /**
+     * Renders the name part of the card
+     */
     private renderName(): void {
         let x = 45;
         let y = 48;
@@ -345,6 +425,9 @@ export class Card {
         this.container.addChild(cardName);
     }
 
+    /**
+     * Renders the type part of the card (text, not background)
+     */
     private renderType(): void {
         if (this.oversized || this.type === 'Weakness') {
             return;
@@ -364,6 +447,9 @@ export class Card {
         this.container.addChild(cardTypeText);
     }
 
+    /**
+     * Renders the sub type text part of the card
+     */
     private renderSubType(): void {
         if (!this.subtype) {
             return;
@@ -385,6 +471,9 @@ export class Card {
         this.container.addChild(subtypeText);
     }
 
+    /**
+     * Renders the cost part of the card
+     */
     private renderCost(): void {
         if (this.oversized) {
             return;
@@ -409,6 +498,9 @@ export class Card {
         this.container.addChild(cardCostFrontText);
     }
 
+    /**
+     * Renders the victory points part of the card
+     */
     private renderVP(): void {
         if (this.oversized) {
             return;
@@ -442,6 +534,9 @@ export class Card {
         }
     }
 
+    /**
+     * Renders the text part of the card
+     */
     private renderText(): void {
         let formattedText = this.formatText();
 
@@ -481,6 +576,9 @@ export class Card {
         this.container.addChild(textContainer);
     }
 
+    /**
+     * Renders the set part of the card
+     */
     private renderSet(copyright: PIXI.Container): PIXI.Container {
         if (!this.set) {
             return;
@@ -514,6 +612,9 @@ export class Card {
         return set;
     }
 
+    /**
+     * Renders the copyright part of the card
+     */
     private renderCopyright(): PIXI.Container {
         let maxWidth = 332;
         let x = 223;
@@ -543,6 +644,9 @@ export class Card {
         return copyright;
     }
 
+    /**
+     * Renders the legal part of the card
+     */
     private renderLegal(set: PIXI.Container, copyright: PIXI.Container): void {
         let maxWidth = 332;
         let x = 223;
@@ -573,7 +677,10 @@ export class Card {
         }
     }
 
-    private renderBleed(): void {
+    /**
+     * Renders the rounded corners part of the card
+     */
+    private renderRoundedCorners(): void {
         if (!this.roundCorners) {
             return;
         }
@@ -590,6 +697,9 @@ export class Card {
         this.container.mask = bleedMask;
     }
 
+    /**
+     * A handy toString override that tells you this card's name
+     */
     public toString(): string {
         return `Card ${this.name}`;
     }

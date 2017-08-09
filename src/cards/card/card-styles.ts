@@ -1,6 +1,10 @@
 // Note: This is like a poor man's CSS
 // PIXI.js support CSS "like" styles, but not identical properties
 
+/**
+ * A "fake" css like structure that contains PIXI text style options based on a
+ * card's part, type, and if it is oversized
+ */
 const styles: {
     [key: string]: {
         [key: string]: PIXI.TextStyleOptions
@@ -160,6 +164,13 @@ const styles: {
     },
 }
 
+/**
+ * Gets a style for a card part
+ * @param type the type this card is
+ * @param part the part of the card we are styling
+ * @param oversized if this card is oversized
+ * @returns a PIXI.TextStyle with default values representing that card part
+ */
 export function getStyle(type: string, part: string, oversized = false): PIXI.TextStyle {
     const style = Object.assign({}, styles.defaults.defaults);
 

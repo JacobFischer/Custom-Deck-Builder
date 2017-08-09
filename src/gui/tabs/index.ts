@@ -6,6 +6,7 @@ import { DeckGeneratorTab } from './deck-generator/';
 import { HelpTab } from './help/';
 import { template } from 'src/utils/dom';
 
+/** A simple tab with a name and handlebars file, but no logic otherwise */
 class SimpleTab extends Tab {
     constructor(name: string, required?: any) {
         let element: HTMLElement;
@@ -21,6 +22,7 @@ class SimpleTab extends Tab {
     }
 }
 
+/** Gets and creates a new list of Tabs for the GUI's Tabular */
 export function getTabs(): Tab[] {
     return [
         new LiveEditorTab(),

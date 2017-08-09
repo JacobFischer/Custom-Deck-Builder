@@ -2,9 +2,15 @@ import { toCamelCase } from 'src/utils/string';
 import { EventEmitter } from 'events';
 import * as uuid from 'uuid/v4';
 
+/** Valid types for a Row's value (cell) */
 export type RowValue = number | string | Node | boolean;
+
+/** key/value mapping of column names to cell values for a row */
 export type RowValues = {[key: string]: RowValue};
 
+/**
+ * All variables associated with a column, row agnostic
+ */
 export interface ColumnData {
     id?: string,
 
@@ -23,6 +29,9 @@ export interface ColumnData {
     inputAttributes?: {[key: string]: any},
 };
 
+/**
+ * All the variable associated with a row, column(s) agnostic
+ */
 export interface RowData {
     index: number,
     values: RowValues,
@@ -34,20 +43,42 @@ export interface RowData {
  * @class A simple wrapper around a <table> that emits events on editing
  */
 export class EditableTable extends EventEmitter {
+    /** The columns of this table */
     readonly columns: ColumnData[];
+
+    /** The rows in this table */
     readonly rows: RowData[];
 
+    /** The parent node in the DOM of this table */
     private parent: Node;
+
+    /** the table element we control */
     private table = document.createElement('table');
+
+    /** the tr row that acts as the headings in the table */
     private headingsRow = document.createElement('tr');
+
+    /** map of column names (strings) to their heading cell element */
     private headings = new Map<string, HTMLTableHeaderCellElement>();
 
+    /** Symbols emitted by this Table for certain events */
     static EventSymbols = {
+        /** Emitted when a new row is added to this table */
         rowAdded: Symbol('rowAdded'),
+
+        /** Emitted when an existing cell is modified in this table */
         cellChanged: Symbol('cellChanged'),
+
+        /** Emitted when a row is deleted from this table */
         rowDeleted: Symbol('rowDeleted'),
     };
 
+    /**
+     * Creates a new Table on some HTML element in the DOM
+     * @param parent the parent element to attach a table to
+     * @param columns optional columns to initialize
+     * @param rows optional row values to put in cells (must have columns)
+     */
     constructor(parent: Node, columns?: string[] | ColumnData[], rows?: any[]) {
         super();
 
@@ -67,6 +98,11 @@ export class EditableTable extends EventEmitter {
         }
     }
 
+    /**
+     * Adds columns to this table at the end
+     * @param columns the list of columns to add to the table. Can be strings,
+     *                or fully formed ColumnData
+     */
     public addColumns(columns: (string | ColumnData)[]): void {
         for (const column of columns) {
             this.formatColumn(column);
@@ -74,11 +110,19 @@ export class EditableTable extends EventEmitter {
         this.updateColumns();
     }
 
+    /**
+     * Adds a single column to this table at the end
+     * @param column the name of the column to add, or fully formed ColumnData
+     */
     public addColumn(column: string | ColumnData): void {
         this.formatColumn(column);
         this.updateColumns();
     }
 
+    /**
+     * Adds rows to add to the bottom of the table
+     * @param rows the list of rows to add
+     */
     public addRows(rows: any[]): void {
         for (const row of rows) {
             this.formatRow(row);
@@ -86,11 +130,21 @@ export class EditableTable extends EventEmitter {
         this.updateRows(true);
     }
 
+    /**
+     * Adds row to add to the bottom of the table
+     * @param rows the single row to add
+     */
     public addRow(values: any): void {
         this.formatRow(values);
         this.updateRows(true);
     }
 
+    /**
+     * Formats a column, creating the html elements and verifying the input is
+     * valid
+     * @param column the string name or fully formed ColumnData to add and
+     *               format
+     */
     private formatColumn(column: string | ColumnData) {
         if (typeof(column) == 'string') {
             column = <ColumnData>{
@@ -135,6 +189,9 @@ export class EditableTable extends EventEmitter {
         this.columns.push(column);
     }
 
+    /**
+     * Internally updates the columns and ensures they are added to the DOM
+     */
     private updateColumns(): void {
         if (this.headings.size < this.columns.length) {
             const newColumns = this.columns.slice(this.headings.size);
@@ -149,6 +206,10 @@ export class EditableTable extends EventEmitter {
         }
     }
 
+    /**
+     * Formats a row to create its RowData, and verifies its input is valid
+     * @param values the values (cells) in the row that make it up
+     */
     private formatRow(values: any): void {
         if (values instanceof Array) {
             const obj: any = {};
@@ -193,6 +254,9 @@ export class EditableTable extends EventEmitter {
         this.emit(EditableTable.EventSymbols.rowAdded, row.values, row);
     }
 
+    /**
+     * Internally updates the rows and ensures they are added to the DOM
+     */
     private updateRows(added: boolean): void {
         for (const row of this.rows) {
             if (!row.tr.parentElement) {
@@ -311,6 +375,12 @@ export class EditableTable extends EventEmitter {
         }
     }
 
+    /**
+     * Gets a row's data at a given index
+     * @param index the index of the row, if out of bounds an Error will be
+     *              thrown
+     * @returns the row at the given index
+     */
     public getRow(index: number): RowData {
         if (index > -1 && index < this.rows.length) {
             return this.rows[index];
@@ -319,10 +389,18 @@ export class EditableTable extends EventEmitter {
         throw new RangeError(`${index} not in range of table with ${this.rows.length} rows.`);
     }
 
+    /**
+     * Gets a copy of the array of all the rows
+     * @returns a copy of the array of all the rows
+     */
     public getAllRows(): RowData[] {
         return this.rows.slice();
     }
 
+    /**
+     * deletes a row at the given index, or throws an Error if none exists there
+     * @param index the index of the row to delete
+     */
     public deleteRow(index: number | RowData): void {
         if (typeof(index) === 'object') {
             index = index.index;

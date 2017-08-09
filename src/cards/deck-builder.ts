@@ -16,20 +16,42 @@ interface CardImages {
     [key: string]: Blob
 }
 
+/**
+ * A class that, when given a csv file, will asynchronously transform it to a
+ * deck of cards in a zip file. This is the meat of this application
+ */
 export class DeckBuilder extends EventEmitter {
+    /** The zip file generated once this is ran */
     private generatedZip: Blob;
+
+    /** The csv source file used to generate the zip */
     private csvText: string;
 
+    /** Symbols that will be emitted when certain events occur */
     static EventSymbols = {
+        /** Emitted when an error is encountered. This it not necessarily fatal */
         error: Symbol('error'),
+
+        /** Emitted when the csv file has been fully parsed */
         parsed: Symbol('parsed'),
+
+        /** Emitted when all the cards have finished rendering */
         doneRendering: Symbol('doneRendering'),
+
+        /** Emitted when a new batch of cards starts being rendered */
         batchStart: Symbol('batchStart'),
+
+        /** Emitted when the current batch of cards textures have been loaded */
         batchTexturesLoaded: Symbol('batchTexturesLoaded'),
+
+        /** Emitted when the current batch has been rendered */
         batchComplete: Symbol('batchComplete'),
+
+        /** Emitted when all the rendered cards have been zipped up */
         zipped: Symbol('zipped'),
     };
 
+    /** Creates a new Deck Builder. Can only be used once */
     constructor(
         readonly maxWidth: number = 10, // these numbers are defined by table top simulator.
         readonly maxHeight: number = 7, // a deck can be at most 4096px X 4096 consisting of 10 cards X 7 cards
@@ -60,6 +82,10 @@ export class DeckBuilder extends EventEmitter {
         });
     };
 
+    /**
+     * Parses the CSV file needed to build cards from
+     * @param csv the csv file to parse
+     */
     private parse(csv: string): Promise<Card[]> {
         return new Promise<Card[]>((resolve, reject) => {
             let parsed = csvParse(csv, {
@@ -79,6 +105,11 @@ export class DeckBuilder extends EventEmitter {
         });
     }
 
+    /**
+     * Parses all the cards generated from the csv file
+     * @param data results from the parsed csv file which makes up the cards
+     * @returns the list of un-rendered cards created from the csv data
+     */
     private parseCards(data: any[]): Card[] {
         const baseCard: Object = {};
         const baseOversizedCard: Object = {};
@@ -145,6 +176,14 @@ export class DeckBuilder extends EventEmitter {
         return cards;
     }
 
+    /**
+     * Recursively renders all cards created from the csv
+     * @param normalCards the array of normal cards needed to render
+     * @param oversizedCards the array of oversized cards needed to render
+     * @param cardImages the card images generated thus far
+     * @param batch the current batch number we are working on
+     * @param callback the callback to invoke once there are no cards to render
+     */
     private renderAllCards(normalCards: Card[], oversizedCards: Card[], cardImages: CardImages, batch: number, callback: (cardImages: CardImages) => void) {
         return new Promise((resolve, reject) => {
             this.emit(DeckBuilder.EventSymbols.batchStart, batch);
@@ -190,7 +229,6 @@ export class DeckBuilder extends EventEmitter {
      * Recursively destroys all the PIXI display objects, and their children
      * If their texture is not an initial texture, we tell pixi to remove it
      * from memory
-     *
      * @param obj - the object to destroy textures in
      */
     private destroyPIXITextures(obj: PIXI.DisplayObject): void {
@@ -207,6 +245,12 @@ export class DeckBuilder extends EventEmitter {
         }
     }
 
+    /**
+     * Renders a set of cards. Chooses normal cards first
+     * @param normalCards the array of normal cards that need to be rendered
+     * @param oversizedCards the array of oversized cards that need to be
+     *                       rendered
+     */
     private renderCards(normalCards: Card[], oversizedCards: Card[]): Promise<PIXI.Application> {
         return new Promise((resolve, reject) => {
             let cards = normalCards.length ? normalCards : oversizedCards;
@@ -321,8 +365,9 @@ export class DeckBuilder extends EventEmitter {
 
     /**
      * Zips up a collection of blobs (textures of multiple cards) into a zip file
-     *
-     * @param cardImages - dictionary of names to texture Blobs
+     * @param cardImages dictionary of names to texture Blobs
+     * @returns a promise that will resolve to a blog that is the cards zipped
+     *          up with the csv file and a readme
      */
     private zipCards(cardImages: CardImages): Promise<Blob> {
         return new Promise((resolve, reject) => {

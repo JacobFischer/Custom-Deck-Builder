@@ -1,3 +1,5 @@
+/** The tables present by default in the LiveEditorTab */
+
 import { ColumnData, RowValues, RowData, RowValue } from 'src/gui/table';
 import { CardOptions } from 'src/cards/card/card-options';
 import { stripTagsFromString } from 'src/utils/';
@@ -22,6 +24,7 @@ const deleteButton = document.createElement('button');
 deleteButton.innerHTML = '&#x2716;';
 deleteButton.setAttribute('title', 'Delete this row');
 
+/** the headings for the cards defaults table on the LiveEditorTable */
 export const defaultsHeadings: ColumnData[] = [
     {
         name: 'Name',
@@ -61,6 +64,7 @@ export const defaultsHeadings: ColumnData[] = [
 
 addTitlesTo(defaultsHeadings);
 
+/** the rows for the cards defaults table on the LiveEditorTable */
 export const defaultsRows: RowValues[] = [
     {
         name: '__defaults__',
@@ -80,6 +84,7 @@ export const defaultsRows: RowValues[] = [
     },*/
 ];
 
+/** the headings for the custom cards table on the LiveEditorTable */
 export const cardsHeadings: ColumnData[] = [
     {
         name: 'Name',
@@ -130,6 +135,7 @@ export const cardsHeadings: ColumnData[] = [
 
 addTitlesTo(cardsHeadings);
 
+/** the rows for the custom cards table on the LiveEditorTable */
 export const cardsRows: RowValues[] = [
     {
         name: 'Vulnerability',

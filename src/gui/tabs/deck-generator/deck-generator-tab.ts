@@ -8,20 +8,44 @@ import * as store from 'store';
 
 const tabTemplate = template(require('./deck-generator-tab.hbs'));
 
+/** The Deck Generator tab part of the GUI */
 export class DeckGeneratorTab extends Tab {
+    /** The file input element (that is hidden) */
     private inputElement: HTMLInputElement;
+
+    /** The label of the input element that acts as the input */
     private fakeLabelElement: HTMLElement;
+
+    /** None selected text element */
     private noneSelectedElement: HTMLElement;
+
+    /** generate button element */
     private generateButton: HTMLButtonElement;
+
+    /** x max number input for cards per column */
     private maxCardsXInput: HTMLInputElement;
+
+    /** y max number input for cards per row */
     private maxCardsYInput: HTMLInputElement;
+
+    /** the fake progress bar element to expand on progress */
     private progressBarElement: HTMLElement;
+
+    /** the generation log (ul) of events during generation */
     private generationLog: HTMLUListElement;
+
+    /** the download button */
     private downloadButton: HTMLButtonElement;
+
+    /** the section of the tab shown once generation has started */
     private generationDiv: HTMLElement;
 
+    /** The resulting zip file once generation has finished */
     private generatedZip: Blob;
 
+    /**
+     * Creates a Deck Generator Tab
+     */
     constructor() {
         super('Deck Generator', <HTMLElement>tabTemplate());
 
@@ -56,6 +80,9 @@ export class DeckGeneratorTab extends Tab {
         this.updateFileInput();
     }
 
+    /**
+     * Invoked when the file input is updates so its label can visually update
+     */
     private updateFileInput(): void {
         const fakeValue = this.inputElement.value;
         this.fakeLabelElement.innerHTML = basename(replaceAll(fakeValue, '\\', '/'));
@@ -69,7 +96,14 @@ export class DeckGeneratorTab extends Tab {
             : 'Please select a file to generate you deck from.';
     }
 
-    private setupCardDimension(input: HTMLInputElement, coordinate: string, max: number, startingValue: number): void {
+    /**
+     * Sets up a card dimension input box
+     * @param input the input to setup
+     * @param coordinate the coordinate of the axis this input represents
+     * @param max the maximum value of the input
+     * @param startingValue the preferred starting value of the input (not max)
+     */
+    private setupCardDimension(input: HTMLInputElement, coordinate: 'x' | 'y', max: number, startingValue: number): void {
         const id = `max-cards-${coordinate}`;
         input.value = String(store.get(id) || startingValue);
         input.min = '2';
@@ -86,6 +120,9 @@ export class DeckGeneratorTab extends Tab {
         });
     }
 
+    /**
+     * Expands the generation part of the tab
+     */
     private generate(): void {
         const file = this.inputElement.files[0];
         if (file) {
@@ -93,6 +130,10 @@ export class DeckGeneratorTab extends Tab {
         }
     }
 
+    /**
+     * Starts generating a deck
+     * @param file the csv file to generate the deck from
+     */
     private startGenerating(file: File) {
         this.generateButton.disabled = true;
         this.inputElement.disabled = true;
@@ -162,6 +203,12 @@ export class DeckGeneratorTab extends Tab {
         });
     }
 
+    /**
+     * Logs a string to the generation log
+     * @param str The string to log
+     * @param error true if this string is a logged error,
+     *              false or omitted otherwise
+     */
     private log(str: string, error?: boolean): void {
         const li = document.createElement('li');
 
