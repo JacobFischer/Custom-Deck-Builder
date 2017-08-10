@@ -75,15 +75,17 @@ body {
         @extend .card-name
     }
 
-    & h1 {
-        font-size: 5em;
-        text-shadow: 5px 5px #000000;
-        display: block;
-        text-align: center;
+    & .page-title h1 {
+        & > span {
+            font-size: 5rem;
+            text-shadow: 5px 5px #000000;
+            display: block;
+            text-align: center;
+        }
 
         & .subtitle {
             color: $secondary-lightest;
-            font-size: 0.75em;
+            font-size: 3.75rem;
         }
     }
 

@@ -21,20 +21,35 @@ export class UI {
     /** The tabular that controls each section of the UI */
     private tabular: Tabular;
 
+    /** The main title of the UI */
+    readonly title = 'Cryptozoic Game Engine';
+
+    /** The subtitle to be placed below the UI */
+    readonly subtitle = 'Custom Deck Builder';
+
     /**
      * Create the UI. Only one probably should exist per page
      * @param element the parent element to place the UI in, probably the <body>
      */
     constructor(element: HTMLElement) {
         this.parent = element;
-        this.element = <HTMLElement>uiTemplate();
+        this.element = <HTMLElement>uiTemplate(this);
         this.parent.appendChild(this.element);
 
         this.mainElement = <HTMLElement>this.element.getElementsByTagName('main')[0];
 
-        // adds the user agent to the document for css styling per browser
+        // add the user agent to the document for css styling per browser
         document.documentElement.setAttribute("data-browser", navigator.userAgent);
-        document.title = removeTags(this.element.getElementsByTagName('h1')[0].innerHTML, ' - ');
+
+        // set the title to the title of the UI
+        document.title = 'Cryptozoic Game Engine - Custom Card builder';
+
+        // add the favicon
+        const faviconLink = document.createElement('link');
+        faviconLink.href = require('../../../resources/images/favicon.png');
+        faviconLink.rel = 'icon';
+        faviconLink.type = 'image/png';
+        document.head.appendChild(faviconLink);
 
         this.tabular = new Tabular();
 
