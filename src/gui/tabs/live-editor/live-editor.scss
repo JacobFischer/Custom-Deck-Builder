@@ -20,6 +20,9 @@
         & .canvases-scale-percent {
             margin-left: 0.5em;
             color: $primary-dark;
+            text-align: left;
+            width: 3.5em;
+            display: inline-block;
         }
     }
 
@@ -78,17 +81,16 @@
 
             & + label:before {
                 font-weight: bold;
-                content: ' '; // checkmark
+                content: '\00a0'; // non breaking space to preserve height
                 cursor: pointer;
                 min-width: 1.5em;
-                min-height: 1.5em;
-                padding: 0.125em;
+                padding: 0.25em 0.125em;
                 display: inline-block;
                 @extend .input-like;
             }
 
             &:checked + label:before {
-                content: '\2713';
+                content: '\2713'; // checkmark
             }
         }
 
@@ -141,7 +143,7 @@
             width: 30em;
 
             & textarea {
-                width: 100%;
+                width: calc(100% - 1em);
             }
         }
 

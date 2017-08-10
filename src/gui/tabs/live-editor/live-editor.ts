@@ -231,8 +231,9 @@ export class LiveEditorTab extends Tab {
         for (const element of elements) {
             const width = Number(element.getAttribute('width'));
             const height = Number(element.getAttribute('height'));
-            element.style.width = String(width * scale);
-            element.style.height = String(height * scale);
+            console.log('omg', width, height, scale);
+            element.style.width = `${width * scale}px`;
+            element.style.height = `${height * scale}px`;
         }
     };
 
