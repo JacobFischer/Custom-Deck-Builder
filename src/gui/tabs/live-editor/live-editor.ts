@@ -12,7 +12,7 @@ const tabTemplate = template(require('./live-editor.hbs'));
 /** The Live Editor tab of a Tabular */
 export class LiveEditorTab extends Tab {
     /** The container element for all rendered card canvases */
-    private canvasesElement: Element;
+    private canvasesElement: HTMLElement;
 
     /** The scale slider element */
     private scaleSlider: HTMLInputElement;
@@ -38,6 +38,12 @@ export class LiveEditorTab extends Tab {
     /** The PIXI.Graphics we use to clear the canvas before a re-render */
     private clearGraphics: PIXI.Graphics;
 
+    /** The maximum number of cards users can create before we stop them */
+    private maxCustomCards: number = 6;
+
+    /** The warning container for when there are too many cards */
+    private tooManyCardsElement: HTMLElement;
+
     /**
      * Row to card mapping of all custom cards
      * As all cards as static when not changed we store the results in a canvas
@@ -53,7 +59,9 @@ export class LiveEditorTab extends Tab {
     constructor() {
         super('Live Editor', <HTMLElement>tabTemplate());
 
-        this.canvasesElement = this.element.getElementsByClassName('canvases')[0];
+        this.tooManyCardsElement = <HTMLElement>this.element.getElementsByClassName('too-many-cards')[0];
+        this.canvasesElement = <HTMLElement>this.element.getElementsByClassName('canvases')[0];
+        this.addRowButton = <HTMLButtonElement>this.element.getElementsByClassName('add-row-button')[0];
 
         this.scaleSlider = <HTMLInputElement>this.element.getElementsByClassName('canvases-scale-slider')[0];
         this.scaleSlider.addEventListener('input', () => this.resizeCanvases());
@@ -105,7 +113,6 @@ export class LiveEditorTab extends Tab {
         this.cardsTable.addColumns(cardsHeadings);
         this.cardsTable.addRows(store.get('cards') || cardsRows);
 
-        this.addRowButton = <HTMLButtonElement>this.element.getElementsByClassName('add-row-button')[0];
         this.addRowButton.addEventListener('click', () => {
             this.cardsTable.addRow(cardsRows[0]);
         });
@@ -132,6 +139,7 @@ export class LiveEditorTab extends Tab {
         deleteButton.addEventListener('click', () => {
             row.tr.classList.remove('shown');
             canvas.classList.remove('shown');
+            this.checkMaxCards(this.cardsTable.rows.length - 1);
 
             setTimeout(() => {
                 this.cardsTable.deleteRow(row);
@@ -145,6 +153,7 @@ export class LiveEditorTab extends Tab {
         this.canvasesElement.appendChild(canvas);
 
         this.renderCard(row);
+        this.checkMaxCards(this.cardsTable.rows.length);
     }
 
     /**
@@ -246,7 +255,7 @@ export class LiveEditorTab extends Tab {
      *            'logoURL'
      */
     private checkIfImageLoaded(row: RowData, card: Card, key: string): void {
-        const resource = PIXI.loader.resources[card[key]];
+        const resource = PIXI.loader.resources[(<any>card)[key]];
         const td = row.tr.getElementsByClassName(`column-${key}`)[0];
 
         td.classList.toggle('error', Boolean(resource.error) || !resource || !resource.texture);
@@ -269,7 +278,7 @@ export class LiveEditorTab extends Tab {
     /**
      * Resets all EditableTables to their default values, and clears stores
      */
-    private resetToDefaults() {
+    private resetToDefaults(): void {
         const cards = this.cardsTable.rows.slice();
         for (const row of cards) {
             row.tr.classList.remove('shown');
@@ -298,5 +307,17 @@ export class LiveEditorTab extends Tab {
                 this.updateStore(this.cardsTable);
             }, 50);
         }, 355);
+    }
+
+    /**
+     * Checks if the user hit the maximum number of cards and we need to show or
+     * hide elements accordingly
+     * @param numberOfCards the number of cards there will be
+     */
+    private checkMaxCards(numberOfCards: number): void {
+        const tooManyCards = (numberOfCards >= this.maxCustomCards);
+
+        this.addRowButton.disabled = tooManyCards;
+        this.tooManyCardsElement.classList.toggle('collapsed', !tooManyCards);
     }
 };

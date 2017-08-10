@@ -2,6 +2,10 @@
 @import "src/styles/utils.scss";
 
 .live-editor {
+    & .custom-cards {
+        margin-top: 1em;
+    }
+
     & .custom-cards-bottom {
         float: left;
         width: 100%;
@@ -174,6 +178,35 @@
                     box-sizing: border-box;
                 }
             }
+        }
+    }
+
+    & .too-many-cards {
+        clear: both;
+        text-align: center;
+        padding-top: 1em;
+        max-height: 3em;
+
+        & .warning-block {
+            display: inline-block;
+            text-align: center;
+            background: $secondary-darkest;
+            color: $white;
+            padding: 0.5em;
+            border-radius: 0.75em;
+
+            & a {
+                color: $secondary-lightest;
+
+                &:hover, &:focus {
+                    color: $primary-lightest;
+                }
+            }
+        }
+
+        &.collapsed {
+            max-height: 0em;
+            opacity: 0;
         }
     }
 
