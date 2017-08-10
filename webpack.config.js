@@ -1,8 +1,8 @@
-let _ = require('lodash');
-let webpack = require('webpack');
-let path = require('path');
+const webpack = require('webpack');
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-let babelOptions = {
+const babelOptions = {
   "presets": "es2015"
 };
 
@@ -10,7 +10,7 @@ function isNodeModule(module) {
   return module.context && module.context.indexOf('node_modules') !== -1;
 }
 
-let entries = {
+const entries = {
   index: './src/index.ts',
 };
 
@@ -19,7 +19,7 @@ module.exports = {
   output: {
     filename: 'js/[name].js',
     path: path.resolve(__dirname, 'built'),
-    publicPath: 'built/',
+    //publicPath: 'built/',
   },
   module: {
     rules: [
@@ -119,6 +119,7 @@ module.exports = {
     fs: "empty"
   },
   plugins: [
+    new HtmlWebpackPlugin(),
     // provides a great speedup in both module use and development debugging
     // https://webpack.js.org/plugins/commons-chunk-plugin/
     new webpack.optimize.CommonsChunkPlugin({
@@ -127,7 +128,7 @@ module.exports = {
         // creates a common vendor js file for libraries in node_modules
         return isNodeModule(module);
       }
-    })
+    }),
   ],
   devtool: 'source-map',
   devServer: {
