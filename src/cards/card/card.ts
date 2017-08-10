@@ -509,7 +509,7 @@ export class Card {
         const bottomPad = 4;
         const graphics = new PIXI.Graphics();
         graphics.beginFill(parseInt((this.setBackgroundColor || '#000000').replace(/^#/, ''), 16));
-        graphics.drawRoundedRect(set.x - set.width - xPad, set.y - set.height - topPad, set.width + xPad*2, set.height + bottomPad*2, 4);
+        graphics.drawRoundedRect(set.x - set.width - xPad, set.y - set.height - topPad, set.width + xPad*2, set.height + bottomPad*2, 8);
         graphics.endFill();
 
         this.container.addChild(graphics);
