@@ -22,10 +22,13 @@ export class UI {
     private tabular: Tabular;
 
     /** The main title of the UI */
-    readonly title = 'Cryptozoic Game Engine';
+    readonly title: string = 'Cryptozoic Game Engine';
 
     /** The subtitle to be placed below the UI */
-    readonly subtitle = 'Custom Deck Builder';
+    readonly subtitle: string = 'Custom Deck Builder';
+
+    /** If the tabs are transitioning */
+    private tabsChanging: boolean = true;
 
     /**
      * Create the UI. Only one probably should exist per page
@@ -53,11 +56,14 @@ export class UI {
 
         this.tabular = new Tabular();
 
-        let changing = false;
+        this.tabular.on(Tabular.EventSymbols.tabChanging, (tab: Tab) => {
+            // update the browser's hash when the tab changes to feel like pages
+            this.tabsChanging = true;
+            window.location.hash = tab.id;
+        });
 
         this.tabular.on(Tabular.EventSymbols.tabChanged, (tab: Tab) => {
-            // update the browser's hash when the tab changes to feel like pages
-            window.location.hash = tab.id;
+            this.tabsChanging = false; // it's done
         });
 
         const tabs = getTabs();
@@ -68,5 +74,22 @@ export class UI {
         }
         this.tabular.setTabs(tabs, startingTab);
         this.tabular.setParent(this.mainElement);
+
+        this.tabsChanging = false;
+        (<any>document.body).onhashchange = () => {
+            if (this.tabsChanging) {
+                return; // ignore, it's a natural tab change
+            }
+            // else they clicked a hash and we need to change the tab
+
+            // get the hash without the #
+            const hash = window.location.hash.substr(1);
+            // and get the tab for that hash
+            const tab = this.tabular.getTabByID(hash);
+
+            if (tab) {
+                this.tabular.changeTab(tab);
+            }
+        };
     }
 }

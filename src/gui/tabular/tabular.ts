@@ -63,6 +63,10 @@ export class Tabular extends EventEmitter {
 
     /** Symbols emitted when an event occurs in this Tabular */
     static EventSymbols = {
+        /** Emitted when a tab changed and starts the animation */
+        tabChanging: Symbol('tabChanging'),
+
+        /** Emitted when a tab changed and finished the animation */
         tabChanged: Symbol('tabChanged'),
     };
 
@@ -177,6 +181,8 @@ export class Tabular extends EventEmitter {
                     this.setTimeout(() => {
                         this.tabsContents.style.height = '';
                         this.hideTabs();
+
+                        this.emit(Tabular.EventSymbols.tabChanged, toTab);
                     }, 355);
                 }, 50);    // delay for DOM to update (MSDN says this shouldn't be needed...)
             }, 355);     // this number is from the SCSS transition (3.5 sec)
@@ -189,7 +195,7 @@ export class Tabular extends EventEmitter {
             // as old school setTimeouts
         }
 
-        this.emit(Tabular.EventSymbols.tabChanged, toTab);
+        this.emit(Tabular.EventSymbols.tabChanging, toTab);
     }
 
     /**
