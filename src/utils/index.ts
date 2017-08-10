@@ -21,3 +21,12 @@ export function cloneExceptEmpty(...args: any[]): any {
 
     return result;
 }
+
+/**
+ * Clones object(s), basically Object.assign
+ * @param args list of objects to clone
+ * @returns a new object with all the properties of the args shallow cloned
+ */
+export function clone(...args: any[]) {
+    return Object.assign.call(Object, {}, ...args);
+}

@@ -1,7 +1,7 @@
 import './live-editor.scss';
 import * as PIXI from 'pixi.js';
 import * as store from 'store';
-import { template, loadTextures, tryToCast, cloneExceptEmpty } from 'src/utils/';
+import { template, loadTextures, tryToCast, cloneExceptEmpty, clone } from 'src/utils/';
 import { EditableTable, RowValues, RowData } from 'src/gui/table';
 import { cardsHeadings, cardsRows, defaultsHeadings, defaultsRows } from './live-editor-tables';
 import { Card, CARD_MAX_WIDTH, CARD_MAX_HEIGHT } from 'src/cards/card/';
@@ -181,8 +181,8 @@ export class LiveEditorTab extends Tab {
         this.clearGraphics.beginFill(0x000000, 0);
         this.clearGraphics.drawRect(0, 0, card.pxWidth, card.pxHeight);
 
-        const defaults = cloneExceptEmpty(this.defaultsTable.getRow(0).values);
-        const args = cloneExceptEmpty(defaults, row.values);
+        const defaults = clone(this.defaultsTable.getRow(0).values);
+        const args = clone(defaults, row.values);
 
         card.setFrom(args);
 
