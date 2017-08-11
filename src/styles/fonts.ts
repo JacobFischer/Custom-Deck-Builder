@@ -1,12 +1,12 @@
 /** Acts as an interface between css fonts and code that requires it */
 
-import './fonts.scss';
-import * as FontFaceObserver from 'fontfaceobserver';
+import * as FontFaceObserver from "fontfaceobserver";
+import "./fonts.scss";
 
-const fonts: {[key: string]: Array<string>} = {
-    CompactaBT: ['regular', 'bold', 'italics'],
-    CompactaBdBT: ['regular', 'bold'],
-    TradeGothic: ['regular', 'bold', 'italics'],
+const fonts: {[key: string]: string[]} = {
+    CompactaBT: ["regular", "bold", "italics"],
+    CompactaBdBT: ["regular", "bold"],
+    TradeGothic: ["regular", "bold", "italics"],
 };
 
 const _ready: {[key: string]: boolean} = {};
@@ -35,17 +35,17 @@ for (const fontFamily of Object.keys(fonts)) {
     for (const fontType of font) {
         _ready[fontFamily + fontType] = false;
 
-        let properties: Object = undefined;
-        if (fontType !== 'regular') {
-            properties = fontType === 'bold' ?
-                {weight: 'bold'} :
-                {style: 'italic'};
+        let properties: Object;
+        if (fontType !== "regular") {
+            properties = fontType === "bold" ?
+                {weight: "bold"} :
+                {style: "italic"};
         }
 
-        let fontFaceObserver = new FontFaceObserver(fontFamily, properties).load().then((...args: Array<any>) => {
+        const fontFaceObserver = new FontFaceObserver(fontFamily, properties).load().then((...args: any[]) => {
             _ready[fontFamily + fontType] = true;
             checkIfReady();
-        }, (...args: Array<any>) => {
+        }, (...args: any[]) => {
             const message = `${fontFamily} ${fontType} could not be loaded`;
             console.error(message, args);
             _onReady.callback(new Error(message));

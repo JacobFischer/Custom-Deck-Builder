@@ -1,8 +1,8 @@
 // if you include this file, we'll just give you all the util functions
-export * from './dom';
-export * from './math';
-export * from './pixi';
-export * from './string';
+export * from "./dom";
+export * from "./math";
+export * from "./pixi";
+export * from "./string";
 
 /**
  * Clones an object except those with an empty string key/value pair
@@ -13,7 +13,7 @@ export function cloneExceptEmpty(...args: any[]): any {
     const result: any = {};
     for (const arg of args) {
         for (const key in arg) {
-            if (Object.prototype.hasOwnProperty.call(arg, key) && arg[key] !== '') {
+            if (Object.prototype.hasOwnProperty.call(arg, key) && arg[key] !== "") {
                 result[key] = arg[key];
             }
         }
@@ -27,6 +27,6 @@ export function cloneExceptEmpty(...args: any[]): any {
  * @param args list of objects to clone
  * @returns a new object with all the properties of the args shallow cloned
  */
-export function clone(...args: any[]) {
+export function clone(...args: any[]): any {
     return Object.assign.call(Object, {}, ...args);
 }

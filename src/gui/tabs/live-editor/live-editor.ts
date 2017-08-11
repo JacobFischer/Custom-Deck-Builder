@@ -1,13 +1,14 @@
-import './live-editor.scss';
-import * as PIXI from 'pixi.js';
-import * as store from 'store';
-import { template, loadTextures, tryToCast, cloneExceptEmpty, clone } from 'src/utils/';
-import { EditableTable, RowValues, RowData } from 'src/gui/table';
-import { cardsHeadings, cardsRows, defaultsHeadings, defaultsRows } from './live-editor-tables';
-import { Card, CARD_MAX_WIDTH, CARD_MAX_HEIGHT } from 'src/cards/card/';
-import { Tab } from 'src/gui/tabular/';
+import * as PIXI from "pixi.js";
+import { Card, CARD_MAX_HEIGHT, CARD_MAX_WIDTH } from "src/cards/card/";
+import { EditableTable, IRowData, IRowValues } from "src/gui/table";
+import { Tab } from "src/gui/tabular/";
+import { clone, select, template } from "src/utils/";
+import * as store from "store";
+import { cardsHeadings, cardsRows, defaultsHeadings, defaultsRows } from "./live-editor-tables";
+import * as hbs from "./live-editor.hbs";
+import "./live-editor.scss";
 
-const tabTemplate = template(require('./live-editor.hbs'));
+const tabTemplate = template(hbs as any);
 
 /** The Live Editor tab of a Tabular */
 export class LiveEditorTab extends Tab {
@@ -50,75 +51,75 @@ export class LiveEditorTab extends Tab {
      * outside of the PIXI instance, so we can manipulate them like regular DOM
      * elements
      */
-    private cards = new Map<RowData, Card>();
+    private cards = new Map<IRowData, Card>();
 
     /** Row to card's canvas of all custom cards */
-    private canvases = new Map<RowData, HTMLCanvasElement>();
+    private canvases = new Map<IRowData, HTMLCanvasElement>();
 
     /** Creates a new instance of the LiveEditorTab */
     constructor() {
-        super('Live Editor', <HTMLElement>tabTemplate());
+        super("Live Editor", tabTemplate() as HTMLElement);
 
-        this.tooManyCardsElement = <HTMLElement>this.element.getElementsByClassName('too-many-cards')[0];
-        this.canvasesElement = <HTMLElement>this.element.getElementsByClassName('canvases')[0];
-        this.addRowButton = <HTMLButtonElement>this.element.getElementsByClassName('add-row-button')[0];
+        this.tooManyCardsElement = select(this.element, ".too-many-cards");
+        this.canvasesElement = select(this.element, ".canvases");
+        this.addRowButton = select(this.element, ".add-row-button") as HTMLButtonElement;
 
-        this.scaleSlider = <HTMLInputElement>this.element.getElementsByClassName('canvases-scale-slider')[0];
-        this.scaleSlider.addEventListener('input', () => this.resizeCanvases());
-        this.scaleSliderPercent = <HTMLElement>this.element.getElementsByClassName('canvases-scale-percent')[0];
-        this.scaleSlider.value = store.get('card-scale') || 0.5;
+        this.scaleSlider = select(this.element, ".canvases-scale-slider") as HTMLInputElement;
+        this.scaleSlider.addEventListener("input", () => this.resizeCanvases());
+
+        this.scaleSliderPercent = select(this.element, ".canvases-scale-percent");
+        this.scaleSlider.value = store.get("card-scale") || 0.5;
 
         // Defaults Table \\
-        this.defaultsTable = new EditableTable(this.element.getElementsByClassName('defaults-table')[0]);
+        this.defaultsTable = new EditableTable(select(this.element, ".defaults-table"));
         this.defaultsTable.addColumns(defaultsHeadings);
 
-        this.defaultsTable.on(EditableTable.EventSymbols.rowAdded, (rowValues: RowValues, row: RowData) => {
-            setTimeout(() => row.tr.classList.add('shown'), 50);
+        this.defaultsTable.on(EditableTable.EventSymbols.rowAdded, (rowValues: IRowValues, row: IRowData) => {
+            setTimeout(() => row.tr.classList.add("shown"), 50);
         });
 
         // if the defaults rows are edited, update all custom cards
-        this.defaultsTable.on(EditableTable.EventSymbols.cellChanged, (row: RowData): void => {
+        this.defaultsTable.on(EditableTable.EventSymbols.cellChanged, (row: IRowData): void => {
             this.updateStore(this.defaultsTable);
             this.renderAllCards();
         });
 
-        this.defaultsTable.addRows(store.get('card-defaults') || defaultsRows);
+        this.defaultsTable.addRows(store.get("card-defaults") || defaultsRows);
 
         // Custom Cards Table \\
-        const cardsElement = this.element.getElementsByClassName('cards-table')[0];
+        const cardsElement = select(this.element, ".cards-table");
         this.cardsTable = new EditableTable(cardsElement);
 
-        this.cardsTable.on(EditableTable.EventSymbols.rowAdded, (rowValues: RowValues, row: RowData) => {
+        this.cardsTable.on(EditableTable.EventSymbols.rowAdded, (rowValues: IRowValues, row: IRowData) => {
             this.updateStore(this.cardsTable);
             this.rowAdded(row);
         });
 
-        this.cardsTable.on(EditableTable.EventSymbols.cellChanged, (row: RowData): void => {
+        this.cardsTable.on(EditableTable.EventSymbols.cellChanged, (row: IRowData) => {
             this.updateStore(this.cardsTable);
             this.renderCard(row);
         });
 
-        this.cardsTable.on(EditableTable.EventSymbols.rowDeleted, (row: RowData) => {
+        this.cardsTable.on(EditableTable.EventSymbols.rowDeleted, (row: IRowData) => {
             this.updateStore(this.cardsTable);
             this.rowDeleted(row);
         });
 
         // Rendering related tasks \\
         this.app = new PIXI.Application(CARD_MAX_WIDTH, CARD_MAX_HEIGHT, {antialias: true, transparent: true});
-        //document.body.appendChild(this.app.view);
 
         this.clearGraphics = new PIXI.Graphics();
         this.app.stage.addChild(this.clearGraphics);
 
         this.cardsTable.addColumns(cardsHeadings);
-        this.cardsTable.addRows(store.get('cards') || cardsRows);
+        this.cardsTable.addRows(store.get("cards") || cardsRows);
 
-        this.addRowButton.addEventListener('click', () => {
+        this.addRowButton.addEventListener("click", () => {
             this.cardsTable.addRow(cardsRows[0]);
         });
 
-        this.resetToDefaultsButton = <HTMLButtonElement>this.element.getElementsByClassName('reset-to-defaults')[0];
-        this.resetToDefaultsButton.addEventListener('click', () => {
+        this.resetToDefaultsButton = select(this.element, ".reset-to-defaults") as HTMLButtonElement;
+        this.resetToDefaultsButton.addEventListener("click", () => {
             this.resetToDefaults();
         });
     }
@@ -127,18 +128,18 @@ export class LiveEditorTab extends Tab {
      * Invoked when a row is added to the Custom Cards table
      * @param row the row that was added, we need to render it
      */
-    private rowAdded(row: RowData): void {
-        const canvas = document.createElement('canvas');
+    private rowAdded(row: IRowData): void {
+        const canvas = document.createElement("canvas");
 
         setTimeout(() => {
-            canvas.classList.add('shown');
-            row.tr.classList.add('shown');
+            canvas.classList.add("shown");
+            row.tr.classList.add("shown");
         }, 50);
 
-        const deleteButton = <HTMLButtonElement>row.values.delete;
-        deleteButton.addEventListener('click', () => {
-            row.tr.classList.remove('shown');
-            canvas.classList.remove('shown');
+        const deleteButton = row.values.delete as HTMLButtonElement;
+        deleteButton.addEventListener("click", () => {
+            row.tr.classList.remove("shown");
+            canvas.classList.remove("shown");
             this.checkMaxCards(this.cardsTable.rows.length - 1);
 
             setTimeout(() => {
@@ -160,7 +161,7 @@ export class LiveEditorTab extends Tab {
      * Invoked when a row is deleted from the Custom Cards table
      * @param row the row that was deleted, we will remove its canvas and card
      */
-    private rowDeleted(row: RowData): void {
+    private rowDeleted(row: IRowData): void {
         this.updateStore(this.cardsTable);
 
         this.cards.delete(row);
@@ -182,7 +183,7 @@ export class LiveEditorTab extends Tab {
      * (re)-renders a card to its canvas asynchronous
      * @param row the row of the card to render
      */
-    private renderCard(row: RowData): void {
+    private renderCard(row: IRowData): void {
         const card = this.cards.get(row);
         const canvas = this.canvases.get(row);
 
@@ -203,7 +204,7 @@ export class LiveEditorTab extends Tab {
 
             canvas.width = card.pxWidth;
             canvas.height = card.pxHeight;
-            canvas.getContext('2d').drawImage(this.app.view, 0, 0);
+            canvas.getContext("2d").drawImage(this.app.view, 0, 0);
             this.app.stage.removeChild(container);
 
             this.resizeCanvases(canvas);
@@ -217,25 +218,26 @@ export class LiveEditorTab extends Tab {
      */
     private resizeCanvases(canvas?: HTMLCanvasElement): void {
         const scale = Number(this.scaleSlider.value);
-        this.scaleSliderPercent.innerHTML = `${Math.round(scale * 10000) / 100}%`;
-        store.set('card-scale', scale);
+        const asPercent = Math.round(scale * 10000) / 100;
+        this.scaleSliderPercent.innerHTML = `${asPercent}%`;
+        store.set("card-scale", scale);
 
         let elements;
         if (canvas) {
             elements = [canvas];
         }
         else {
-            elements = this.canvasesElement.getElementsByTagName('canvas');
+            elements = this.canvasesElement.getElementsByTagName("canvas");
         }
 
         for (const element of elements) {
-            const width = Number(element.getAttribute('width'));
-            const height = Number(element.getAttribute('height'));
-            console.log('omg', width, height, scale);
+            const width = Number(element.getAttribute("width"));
+            const height = Number(element.getAttribute("height"));
+
             element.style.width = `${width * scale}px`;
             element.style.height = `${height * scale}px`;
         }
-    };
+    }
 
     /**
      * Checks for errors such as image url cells that are invalid urls that
@@ -243,9 +245,9 @@ export class LiveEditorTab extends Tab {
      * @param row the row to check for errors in
      * @param card the card to check for errors in
      */
-    private checkForErrors(row: RowData, card: Card): void {
-        this.checkIfImageLoaded(row, card, 'imageURL');
-        this.checkIfImageLoaded(this.defaultsTable.rows[0], card, 'logoURL');
+    private checkForErrors(row: IRowData, card: Card): void {
+        this.checkIfImageLoaded(row, card, "imageURL");
+        this.checkIfImageLoaded(this.defaultsTable.rows[0], card, "logoURL");
     }
 
     /**
@@ -255,11 +257,11 @@ export class LiveEditorTab extends Tab {
      * @param key the column key we are checking, such as 'imageURL' or
      *            'logoURL'
      */
-    private checkIfImageLoaded(row: RowData, card: Card, key: string): void {
-        const resource = PIXI.loader.resources[(<any>card)[key]];
+    private checkIfImageLoaded(row: IRowData, card: Card, key: string): void {
+        const resource = PIXI.loader.resources[(card as any)[key]];
         const td = row.tr.getElementsByClassName(`column-${key}`)[0];
 
-        td.classList.toggle('error', Boolean(resource.error) || !resource || !resource.texture);
+        td.classList.toggle("error", Boolean(resource.error) || !resource || !resource.texture);
     }
 
     /**
@@ -268,12 +270,11 @@ export class LiveEditorTab extends Tab {
      * @param table the table to store
      */
     private updateStore(table: EditableTable): void {
-        store.set(
-            table === this.cardsTable
-                ? 'cards'
-                : 'card-defaults',
-            table.rows.map((row: RowData) => row.values)
-        );
+        const storeKey = table === this.cardsTable
+            ? "cards"
+            : "card-defaults";
+
+        store.set(storeKey, table.rows.map((row: IRowData) => row.values));
     }
 
     /**
@@ -282,14 +283,16 @@ export class LiveEditorTab extends Tab {
     private resetToDefaults(): void {
         const cards = this.cardsTable.rows.slice();
         for (const row of cards) {
-            row.tr.classList.remove('shown');
-            this.canvases.get(row).classList.remove('shown');
+            row.tr.classList.remove("shown");
+            this.canvases.get(row).classList.remove("shown");
         }
 
         const defaults = this.defaultsTable.rows.slice();
         for (const row of defaults) {
-            row.tr.classList.remove('shown');
+            row.tr.classList.remove("shown");
         }
+
+        this.scaleSlider.value = String(0.5);
 
         setTimeout(() => {
             for (const row of cards) {
@@ -319,6 +322,6 @@ export class LiveEditorTab extends Tab {
         const tooManyCards = (numberOfCards >= this.maxCustomCards);
 
         this.addRowButton.disabled = tooManyCards;
-        this.tooManyCardsElement.classList.toggle('collapsed', !tooManyCards);
+        this.tooManyCardsElement.classList.toggle("collapsed", !tooManyCards);
     }
-};
+}

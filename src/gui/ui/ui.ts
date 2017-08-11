@@ -1,16 +1,25 @@
-import './ui.scss';
-import { template, removeTags } from 'src/utils/';
-import { Tabular, Tab } from 'src/gui/tabular/';
-import { getTabs } from 'src/gui/tabs/';
+"use strict";
 
-const uiTemplate = template(require('./ui.hbs'));
+import { getTabs } from "src/gui/tabs/";
+import { Tab, Tabular } from "src/gui/tabular/";
+import { select, template } from "src/utils/";
+import * as hbs from "./ui.hbs";
+import "./ui.scss";
+
+const uiTemplate = template(hbs as any);
 
 /**
  * The User Interface to interact with this custom card builder project
  */
 export class UI {
+    /** The main title of the UI */
+    public readonly title: string = "Cryptozoic Game Engine";
+
+    /** The subtitle to be placed below the UI */
+    public readonly subtitle: string = "Custom Deck Builder";
+
     /** The parent element of the UI (probably the body of the document) */
-    readonly parent: HTMLElement;
+    public readonly parent: HTMLElement;
 
     /** The element containing the UI */
     private element: HTMLElement;
@@ -21,12 +30,6 @@ export class UI {
     /** The tabular that controls each section of the UI */
     private tabular: Tabular;
 
-    /** The main title of the UI */
-    readonly title: string = 'Cryptozoic Game Engine';
-
-    /** The subtitle to be placed below the UI */
-    readonly subtitle: string = 'Custom Deck Builder';
-
     /** If the tabs are transitioning */
     private tabsChanging: boolean = true;
 
@@ -36,22 +39,22 @@ export class UI {
      */
     constructor(element: HTMLElement) {
         this.parent = element;
-        this.element = <HTMLElement>uiTemplate(this);
+        this.element = uiTemplate(this) as HTMLElement;
         this.parent.appendChild(this.element);
 
-        this.mainElement = <HTMLElement>this.element.getElementsByTagName('main')[0];
+        this.mainElement = select(this.element, "main");
 
         // add the user agent to the document for css styling per browser
         document.documentElement.setAttribute("data-browser", navigator.userAgent);
 
         // set the title to the title of the UI
-        document.title = 'Cryptozoic Game Engine - Custom Card builder';
+        document.title = `${this.title} - ${this.subtitle}`;
 
         // add the favicon
-        const faviconLink = document.createElement('link');
-        faviconLink.href = require('../../../resources/images/favicon.png');
-        faviconLink.rel = 'icon';
-        faviconLink.type = 'image/png';
+        const faviconLink = document.createElement("link");
+        faviconLink.href = require("../../../resources/images/favicon.png");
+        faviconLink.rel = "icon";
+        faviconLink.type = "image/png";
         document.head.appendChild(faviconLink);
 
         this.tabular = new Tabular();
@@ -76,7 +79,7 @@ export class UI {
         this.tabular.setParent(this.mainElement);
 
         this.tabsChanging = false;
-        (<any>document.body).onhashchange = () => {
+        (document.body as any).onhashchange = () => {
             if (this.tabsChanging) {
                 return; // ignore, it's a natural tab change
             }

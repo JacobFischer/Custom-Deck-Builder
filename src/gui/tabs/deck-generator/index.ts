@@ -1,1 +1,1 @@
-export * from './deck-generator-tab';
+export * from "./deck-generator-tab";

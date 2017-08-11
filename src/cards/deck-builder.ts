@@ -1,19 +1,18 @@
 "use strict";
 
-import * as csvParse from 'csv-parse';
-import { replaceAll, loadTextures, toCamelCase, tryToCast } from 'src/utils/';
-import { initialTextures, initialTexturesToKey } from 'src/initialize';
-import { Card } from './card';
-import { EventEmitter } from 'events';
-import * as readmeText from './deck-builder-readme.txt';
-import * as PIXI from 'pixi.js';
-import * as JSZip from 'jszip';
-import * as filesaver  from 'file-saver';
+import * as csvParse from "csv-parse";
+import { EventEmitter } from "events";
+import * as JSZip from "jszip";
+import * as PIXI from "pixi.js";
+import { initialTextures, initialTexturesToKey } from "src/initialize";
+import { loadTextures, toCamelCase, tryToCast } from "src/utils/";
+import { Card } from "./card";
+import * as readmeText from "./deck-builder-readme.txt";
 
 const MAX_TEXTURE_LENGTH = 4096; // in px
 
-interface CardImages {
-    [key: string]: Blob
+interface ICardImages {
+    [key: string]: Blob;
 }
 
 /**
@@ -21,40 +20,46 @@ interface CardImages {
  * deck of cards in a zip file. This is the meat of this application
  */
 export class DeckBuilder extends EventEmitter {
+        /** Symbols that will be emitted when certain events occur */
+    public static EventSymbols = {
+        /** Emitted when an error is encountered. This it not necessarily fatal */
+        error: Symbol("error"),
+
+        /** Emitted when the csv file has been fully parsed */
+        parsed: Symbol("parsed"),
+
+        /** Emitted when all the cards have finished rendering */
+        doneRendering: Symbol("doneRendering"),
+
+        /** Emitted when a new batch of cards starts being rendered */
+        batchStart: Symbol("batchStart"),
+
+        /** Emitted when the current batch of cards textures have been loaded */
+        batchTexturesLoaded: Symbol("batchTexturesLoaded"),
+
+        /** Emitted when the current batch has been rendered */
+        batchComplete: Symbol("batchComplete"),
+
+        /** Emitted when all the rendered cards have been zipped up */
+        zipped: Symbol("zipped"),
+    };
+
     /** The zip file generated once this is ran */
     private generatedZip: Blob;
 
     /** The csv source file used to generate the zip */
     private csvText: string;
 
-    /** Symbols that will be emitted when certain events occur */
-    static EventSymbols = {
-        /** Emitted when an error is encountered. This it not necessarily fatal */
-        error: Symbol('error'),
-
-        /** Emitted when the csv file has been fully parsed */
-        parsed: Symbol('parsed'),
-
-        /** Emitted when all the cards have finished rendering */
-        doneRendering: Symbol('doneRendering'),
-
-        /** Emitted when a new batch of cards starts being rendered */
-        batchStart: Symbol('batchStart'),
-
-        /** Emitted when the current batch of cards textures have been loaded */
-        batchTexturesLoaded: Symbol('batchTexturesLoaded'),
-
-        /** Emitted when the current batch has been rendered */
-        batchComplete: Symbol('batchComplete'),
-
-        /** Emitted when all the rendered cards have been zipped up */
-        zipped: Symbol('zipped'),
-    };
-
     /** Creates a new Deck Builder. Can only be used once */
     constructor(
-        readonly maxWidth: number = 10, // these numbers are defined by table top simulator.
-        readonly maxHeight: number = 7, // a deck can be at most 4096px X 4096 consisting of 10 cards X 7 cards
+        /** The maximum width of cards to pack horizontally */
+        readonly maxWidth: number = 10,
+
+        /** The maximum height of cards to pack vertically */
+        readonly maxHeight: number = 7,
+
+        // NOTE: these numbers are defined by table top simulator.
+        // a deck can be at most 4096px X 4096 consisting of 10 cards X 7 cards
     ) {
         super();
     }
@@ -68,19 +73,26 @@ export class DeckBuilder extends EventEmitter {
         this.csvText = csvText;
 
         return new Promise<Blob>((resolve, reject) => {
-            this.parse(csvText).then(cards => {
-                const oversizedCards = cards.filter(card => card.oversized);
-                const normalCards = cards.filter(card => !card.oversized);
+            this.parse(csvText).then((cards) => {
+                const oversizedCards = cards.filter((card) => card.oversized);
+                const normalCards = cards.filter((card) => !card.oversized);
 
-                this.emit(DeckBuilder.EventSymbols.parsed, normalCards.length, oversizedCards.length);
+                this.emit(DeckBuilder.EventSymbols.parsed,
+                    normalCards.length, oversizedCards.length);
 
-                this.renderAllCards(normalCards, oversizedCards, {}, 1, (cardImages: CardImages) => {
-                    this.emit(DeckBuilder.EventSymbols.doneRendering);
-                    this.zipCards(cardImages).then(resolve);
-                });
+                this.renderAllCards(
+                    normalCards,
+                    oversizedCards,
+                    {},
+                    1,
+                    (cardImages: ICardImages) => {
+                        this.emit(DeckBuilder.EventSymbols.doneRendering);
+                        this.zipCards(cardImages).then(resolve);
+                    },
+                );
             }).catch(reject);
         });
-    };
+    }
 
     /**
      * Parses the CSV file needed to build cards from
@@ -88,18 +100,20 @@ export class DeckBuilder extends EventEmitter {
      */
     private parse(csv: string): Promise<Card[]> {
         return new Promise<Card[]>((resolve, reject) => {
-            let parsed = csvParse(csv, {
+            const csvOptions: csvParse.Options = {
                 columns: true,
                 ltrim: true,
                 rtrim: true,
                 skip_empty_lines: true,
                 auto_parse: true,
-            }, (err: Error, data: any[]) => {
+            };
+
+            csvParse(csv, csvOptions, (err: Error, data: any[]) => {
                 if (err) {
-                    reject(new Error(`Could not parse CSV File: ${err.message}`));
+                    return reject(new Error(`Could not parse CSV File: ${err.message}`));
                 }
 
-                let cards = this.parseCards(data);
+                const cards = this.parseCards(data);
                 resolve(cards);
             });
         });
@@ -111,43 +125,43 @@ export class DeckBuilder extends EventEmitter {
      * @returns the list of un-rendered cards created from the csv data
      */
     private parseCards(data: any[]): Card[] {
-        const baseCard: Object = {};
-        const baseOversizedCard: Object = {};
+        const baseCard: object = {};
+        const baseOversizedCard: object = {};
         const cards: Card[] = [];
 
         if (!data) {
             return;
         }
 
-        for (let i = 0; i < data.length; i++) {
-            const cardData = data[i];
+        for (const cardData of data) {
             let sanitized: any = {
                 roundCorners: false,
             };
 
-            for (let key in cardData) {
+            for (let key of Object.keys(cardData)) {
                 let value = cardData[key];
                 key = toCamelCase(key);
 
-                if (key.startsWith('#')) {
+                if (key.startsWith("#")) {
                     // skip this column
                     continue;
                 }
 
-                if (key === 'vp' || key === 'vps') {
-                    key = 'victorypoints';
+                if (key === "vp" || key === "vps") {
+                    // spell-checker:ignore victorypoints
+                    key = "victorypoints";
                 }
 
-                if (key === 'variant' && typeof(value) !== 'boolean') {
+                if (key === "variant" && typeof(value) !== "boolean") {
                     value = Boolean(value);
                 }
 
-                if (key === 'alsoBold' && value !== '') {
-                    value = value.split(',');
+                if (key === "alsoBold" && value !== "") {
+                    value = value.split(",");
                 }
 
-                if (value !== '') {
-                    if (typeof(value) === 'string') {
+                if (value !== "") {
+                    if (typeof(value) === "string") {
                         // try to cast it to a boolean or number
                         value = tryToCast(value);
                     }
@@ -156,18 +170,22 @@ export class DeckBuilder extends EventEmitter {
                 }
             }
 
-            if (sanitized.name === '__defaults__') {
+            if (sanitized.name === "__defaults__") {
                 Object.assign(baseCard, sanitized);
             }
-            else if (sanitized.name === '__oversized_defaults__') {
+            else if (sanitized.name === "__oversized_defaults__") {
                 Object.assign(baseOversizedCard, baseCard);
                 Object.assign(baseOversizedCard, sanitized);
             }
             else {
-                sanitized = Object.assign({}, sanitized.oversized ? baseOversizedCard :  baseCard, sanitized);
+                const base = sanitized.oversized
+                    ? baseOversizedCard
+                    : baseCard;
+
+                sanitized = Object.assign({}, base, sanitized);
             }
 
-            if (sanitized.name !== '__defaults__' && sanitized.name !== '__oversized_defaults__') {
+            if (sanitized.name !== "__defaults__" && sanitized.name !== "__oversized_defaults__") {
                 const card = new Card(sanitized);
                 cards.push(card);
             }
@@ -184,43 +202,57 @@ export class DeckBuilder extends EventEmitter {
      * @param batch the current batch number we are working on
      * @param callback the callback to invoke once there are no cards to render
      */
-    private renderAllCards(normalCards: Card[], oversizedCards: Card[], cardImages: CardImages, batch: number, callback: (cardImages: CardImages) => void) {
-        return new Promise((resolve, reject) => {
-            this.emit(DeckBuilder.EventSymbols.batchStart, batch);
-            this.renderCards(normalCards, oversizedCards).then((app: PIXI.Application) => {
-                if (!app) {
-                    callback(cardImages);
+    private renderAllCards(
+        normalCards: Card[],
+        oversizedCards: Card[],
+        cardImages: ICardImages,
+        batch: number,
+        callback: (cardImages: ICardImages) => void,
+    ): void {
+        this.emit(DeckBuilder.EventSymbols.batchStart, batch);
+        this.renderCards(normalCards, oversizedCards).then((app: PIXI.Application) => {
+            if (!app) {
+                callback(cardImages);
+            }
+
+            app.render();
+            app.view.toBlob((blob: Blob) => {
+                this.emit(DeckBuilder.EventSymbols.batchComplete, batch);
+                cardImages[`card-${batch}.png`] = blob;
+
+                // we are done with these images, destroy their textures from
+                // memory. there is a slight chance cards will reuse images,
+                // but it is way more memory efficient to dump it now than keep
+                // it all in memory
+                this.destroyPIXITextures(app.stage);
+
+                for (const textureKey in PIXI.loader.resources) {
+                    if (!initialTextures.hasOwnProperty(textureKey)) {
+                        PIXI.loader.resources[textureKey].texture.destroy(true);
+                        delete PIXI.loader.resources[textureKey];
+                        delete PIXI.utils.TextureCache[textureKey];
+                        delete PIXI.utils.BaseTextureCache[textureKey];
+                    }
                 }
 
-                app.render();
-                app.view.toBlob((blob: Blob) => {
-                    this.emit(DeckBuilder.EventSymbols.batchComplete, batch);
-                    cardImages[`card-${batch}.png`] = blob;
+                app.destroy(true);
 
-                    // we are done with these images, destroy their textures from memory
-                    // there is a slight chance cards will reuse images, but it is way more memory efficient to dump it now than keep it all in memory
-                    this.destroyPIXITextures(app.stage);
-
-                    for (let textureKey in PIXI.loader.resources) {
-                        if (!initialTextures.hasOwnProperty(textureKey)) {
-                            PIXI.loader.resources[textureKey].texture.destroy(true);
-                            delete PIXI.loader.resources[textureKey];
-                            delete PIXI.utils.TextureCache[textureKey];
-                            delete PIXI.utils.BaseTextureCache[textureKey];
-                        }
-                    }
-
-                    app.destroy(true);
-
-                    // now let's do the next batch
-                    if (normalCards.length || oversizedCards.length) {
-                        batch++;
-                        this.renderAllCards(normalCards, oversizedCards, cardImages, batch, callback);
-                    }
-                    else {
-                        callback(cardImages);
-                    }
-                })
+                // now let's do the next batch
+                if (normalCards.length || oversizedCards.length) {
+                    batch++;
+                    // async recursive implementation
+                    this.renderAllCards(
+                        normalCards,
+                        oversizedCards,
+                        cardImages,
+                        batch,
+                        callback,
+                    );
+                }
+                else {
+                    // all cards are rendered!
+                    callback(cardImages);
+                }
             });
         });
     }
@@ -253,7 +285,7 @@ export class DeckBuilder extends EventEmitter {
      */
     private renderCards(normalCards: Card[], oversizedCards: Card[]): Promise<PIXI.Application> {
         return new Promise((resolve, reject) => {
-            let cards = normalCards.length ? normalCards : oversizedCards;
+            const cards = normalCards.length ? normalCards : oversizedCards;
             if (cards.length === 0) {
                 resolve(null);
             }
@@ -264,7 +296,7 @@ export class DeckBuilder extends EventEmitter {
             // find how many cards we can render in this batch
             let i = 0;
             const textures: Set<string> = new Set();
-            let currentCards: Card[] = [];
+            const currentCards: Card[] = [];
             while (cards.length) {
                 i++;
                 const card = cards.shift();
@@ -279,7 +311,7 @@ export class DeckBuilder extends EventEmitter {
             }
 
             loadTextures(Array.from(textures), () => {
-                let unloadedTextures: string[] = [];
+                const unloadedTextures: string[] = [];
                 for (const texture of textures) {
                     const resource = PIXI.loader.resources[texture];
 
@@ -289,8 +321,10 @@ export class DeckBuilder extends EventEmitter {
                 }
 
                 if (unloadedTextures.length) {
-                    // some cards will not render correctly. We will keep trying put let's notify anyone who cares
-                    this.emit(DeckBuilder.EventSymbols.error, `Could not load textures: ${unloadedTextures.join(', ')}`);
+                    // some cards will not render correctly.
+                    // We will keep trying, but let's notify anyone who cares
+                    const errorTextures = unloadedTextures.join(", ");
+                    this.emit(DeckBuilder.EventSymbols.error, `Could not load textures: ${errorTextures}`);
                 }
 
                 this.emit(DeckBuilder.EventSymbols.batchTexturesLoaded);
@@ -298,17 +332,19 @@ export class DeckBuilder extends EventEmitter {
                 const cardWidth = currentCards[0].pxWidth;
                 const cardHeight = currentCards[0].pxHeight;
 
-                const renders: PIXI.Container[] = currentCards.map(card => card.renderSync());
+                const renders = currentCards.map((card) => card.renderSync());
 
-                // Note: packing cards into a optimal rectangle is a variant of the bin packing problem
-                // optimal solutions exist, but I'll just still with a greedy algorithm
+                // Note: packing cards into a optimal rectangle is a variant of
+                // the bin packing problem. optimal solutions exist, but I'll
+                // just still with a greedy algorithm
                 let width = 2;
                 let height = 1;
 
-                while((width * height) < renders.length) {
+                while ((width * height) < renders.length) {
                     if (width < maxWidth) {
                         width++;
                     }
+
                     if (height < maxHeight && (width * height) < renders.length) {
                         height++;
                     }
@@ -320,9 +356,9 @@ export class DeckBuilder extends EventEmitter {
 
                 let resizedWidth = cardWidth;
                 let resizedHeight = cardHeight;
-                let ourAspectRatio = cardHeight/cardWidth;
+                const ourAspectRatio = cardHeight / cardWidth;
 
-                if ((resizedWidth*maxWidth) > (resizedHeight*maxHeight)) {
+                if ((resizedWidth * maxWidth) > (resizedHeight * maxHeight)) {
                     // width first, some of the height will be wasted
                     resizedWidth = Math.floor(MAX_TEXTURE_LENGTH / maxWidth);
                     resizedHeight = Math.round(resizedWidth * ourAspectRatio);
@@ -330,7 +366,7 @@ export class DeckBuilder extends EventEmitter {
                 else {
                     // height first, some of the width will be wasted
                     resizedHeight = Math.floor(MAX_TEXTURE_LENGTH / maxHeight);
-                    resizedWidth = Math.round(resizedHeight * (1/ourAspectRatio));
+                    resizedWidth = Math.round(resizedHeight * (1 / ourAspectRatio));
                 }
 
                 if (resizedWidth > cardWidth) {
@@ -339,12 +375,12 @@ export class DeckBuilder extends EventEmitter {
                 }
 
                 const app = new PIXI.Application(resizedWidth * maxWidth, resizedHeight * maxHeight, {antialias: true});
-                const scale = resizedWidth/cardWidth;
+                const scale = resizedWidth / cardWidth;
 
-                for (let i = 0; i < renders.length; i++) {
-                    const x = i % maxWidth;
-                    const y = Math.floor(i / maxWidth);
-                    let render = renders[i];
+                for (let r = 0; r < renders.length; r++) {
+                    const x = r % maxWidth;
+                    const y = Math.floor(r / maxWidth);
+                    const render = renders[r];
                     render.cacheAsBitmap = true;
 
                     app.stage.addChild(render);
@@ -364,27 +400,28 @@ export class DeckBuilder extends EventEmitter {
     }
 
     /**
-     * Zips up a collection of blobs (textures of multiple cards) into a zip file
+     * Zips up a collection of blobs (textures of multiple cards) into a zip
+     * file
      * @param cardImages dictionary of names to texture Blobs
      * @returns a promise that will resolve to a blog that is the cards zipped
      *          up with the csv file and a readme
      */
-    private zipCards(cardImages: CardImages): Promise<Blob> {
+    private zipCards(cardImages: ICardImages): Promise<Blob> {
         return new Promise((resolve, reject) => {
             const zip = new JSZip();
             for (const key of Object.keys(cardImages)) {
                 zip.file(key, cardImages[key]);
             }
 
-            zip.file('source-spreadsheet.csv', this.csvText);
+            zip.file("source-spreadsheet.csv", this.csvText);
 
             // add a readme explaining what all this is
-            zip.file('readme.txt', readmeText
-                .replace('{width}', this.maxWidth)
-                .replace('{height}', this.maxHeight)
+            zip.file("readme.txt", (readmeText as any)
+                                   .replace("{width}", this.maxWidth)
+                                   .replace("{height}", this.maxHeight),
             );
 
-            zip.generateAsync({type: 'blob'}).then((content: Blob) => {
+            zip.generateAsync({type: "blob"}).then((content: Blob) => {
                 this.generatedZip = content;
                 this.emit(DeckBuilder.EventSymbols.zipped);
                 resolve(this.generatedZip);

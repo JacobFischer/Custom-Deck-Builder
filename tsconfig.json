@@ -4,6 +4,7 @@
         "noImplicitAny": true,
         "removeComments": true,
         "sourceMap": true,
+        "noUnusedLocals": true,
         "outDir": "js",
         "target": "es2015",
         "baseUrl": "./",

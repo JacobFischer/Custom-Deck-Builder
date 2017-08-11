@@ -1,20 +1,20 @@
-'use strict';
+"use strict";
 
-import { Tab } from '../tabular';
-import { LiveEditorTab } from './live-editor/';
-import { DeckGeneratorTab } from './deck-generator/';
-import { HelpTab } from './help/';
-import { template } from 'src/utils/dom';
+import { template } from "src/utils/dom";
+import { Tab } from "../tabular";
+import { DeckGeneratorTab } from "./deck-generator/";
+import { HelpTab } from "./help/";
+import { LiveEditorTab } from "./live-editor/";
 
 /** A simple tab with a name and handlebars file, but no logic otherwise */
 class SimpleTab extends Tab {
     constructor(name: string, required?: any) {
         let element: HTMLElement;
         if (required) {
-            element = <HTMLElement>template(required)();
+            element = template(required)() as HTMLElement;
         }
         else {
-            element = document.createElement('h2');
+            element = document.createElement("h2");
             element.innerHTML = name;
         }
 
@@ -28,6 +28,6 @@ export function getTabs(): Tab[] {
         new LiveEditorTab(),
         new DeckGeneratorTab(),
         new HelpTab(),
-        new SimpleTab('About', require('./about.hbs')),
+        new SimpleTab("About", require("./about.hbs")),
     ];
-};
+}

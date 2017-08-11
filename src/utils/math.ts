@@ -1,4 +1,4 @@
-/**Useful mathematical functions */
+/** Useful mathematical functions */
 
 /**
  * Clamps a number between a given minimum and maximum value
@@ -7,8 +7,8 @@
  * @param max the maximum value to clamp val on the upper bounds
  * @returns min if val is too low, max if val is too high, otherwise val
  */
-export function clamp(val: number, min: number, max: number) {
-    return Math.max(min, Math.min(max, val))
+export function clamp(val: number, min: number, max: number): number {
+    return Math.max(min, Math.min(max, val));
 }
 
 /**
@@ -32,20 +32,20 @@ export function doRectanglesOverlap(r1: PIXI.Rectangle, r2: PIXI.Rectangle): boo
  * @param circle the circle ro check
  * @returns true if the rectangle and circle overlap, false otherwise
  */
-export function doesCircleOverlapRectangle(rect: PIXI.Rectangle, circle: PIXI.Circle) {
-    const distX = Math.abs(circle.x - rect.x - rect.width/2);
-    const distY = Math.abs(circle.y - rect.y - rect.height/2);
+export function doesCircleOverlapRectangle(rect: PIXI.Rectangle, circle: PIXI.Circle): boolean {
+    const distX = Math.abs(circle.x - rect.x - rect.width / 2);
+    const distY = Math.abs(circle.y - rect.y - rect.height / 2);
 
-    if (distX > (rect.width/2 + circle.radius) || distY > (rect.height/2 + circle.radius)) {
+    if (distX > (rect.width / 2 + circle.radius) || distY > (rect.height / 2 + circle.radius)) {
         return false;
     }
 
-    if (distX <= (rect.width/2) || distY <= (rect.height/2)) {
+    if (distX <= (rect.width / 2) || distY <= (rect.height / 2)) {
         return true;
     }
 
-    const dx = distX - rect.width/2;
-    const dy = distY - rect.height/2;
+    const dx = distX - rect.width / 2;
+    const dy = distY - rect.height / 2;
 
-    return ((dx*dx + dy*dy) <= (circle.radius * circle.radius));
+    return ((dx * dx + dy * dy) <= (circle.radius * circle.radius));
 }

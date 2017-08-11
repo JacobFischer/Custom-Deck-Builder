@@ -1,7 +1,10 @@
-'use strict';
+"use strict";
 
-import { replaceAll, surroundText, newSprite, wrapStyledText, autoSizeAndWrapStyledText, wrapStyledTextCharacters, loadTextures } from 'src/utils/';
-import { getStyle } from './card-styles';
+import {
+    autoSizeAndWrapStyledText, loadTextures, newSprite, replaceAll,
+    surroundText, wrapStyledText, wrapStyledTextCharacters,
+} from "src/utils/";
+import { getStyle } from "./card-styles";
 
 /** The maximum width (in pixels) that a card can be (oversized) */
 export const CARD_MAX_WIDTH = 900;
@@ -13,8 +16,16 @@ export const CARD_MAX_HEIGHT = 1200;
  * @class represents a custom card
  */
 export class Card {
-    /** The PIXI.Container this card's render is in */
-    private container: PIXI.Container;
+    /** Keywords that are automatically bolded for all card text */
+    public static readonly autoBoldKeywords = [
+        "+Power",
+        ":",
+        "Attacked",
+        "Attack",
+        "Defense",
+        "Ongoing",
+        "Weakness",
+    ];
 
     /** The current width in pixels of the rendered card */
     public pxWidth = CARD_MAX_WIDTH;
@@ -23,10 +34,11 @@ export class Card {
     public pxHeight = CARD_MAX_HEIGHT;
 
     /** The name of the card */
-    public name: string = 'Card Name';
+    public name: string = "Card Name";
 
     /** The type of the card, used for background generation */
-    public type: 'Equipment' | 'Hero' | 'Location' | 'Starter' | 'Super Power' | 'Villain' | 'Weakness' = 'Starter';
+    public type: "Equipment" | "Hero" | "Location" | "Starter" |
+                 "Super Power" | "Villain" | "Weakness" = "Starter";
 
     /** If this card is a variant with black background text */
     public variant: boolean = false;
@@ -35,22 +47,22 @@ export class Card {
     public oversized: boolean = false;
 
     /** A string prefix to place in front of this card's type */
-    public typePrefix: string = '';
+    public typePrefix: string = "";
 
     /** The number of VP this card is worth at the end of the game */
-    public victoryPoints: '*' | number = 1;
+    public victoryPoints: "*" | number = 1;
 
     /** How much this card costs to buy */
     public cost: number = 1;
 
     /** The text on the card. You can use [b] and [i] to bold and italic text */
-    public text: string = '';
+    public text: string = "";
 
     /** The url to the image to use for this card */
-    public imageURL: string = '';
+    public imageURL: string = "";
 
     /** The url to the image to use for its upper right logo */
-    public logoURL: string = '';
+    public logoURL: string = "";
 
     /** A scalar to apply to the logo's size */
     public logoScale: number = 1;
@@ -59,23 +71,23 @@ export class Card {
     public copyright: string = String(new Date().getFullYear());
 
     /** The legal disclaimer on the bottom of the card */
-    public legal: string = '';
+    public legal: string = "";
 
     /** The sub type of the card next to the type */
-    public subtype: string = '';
+    public subtype: string = "";
 
     /** The name of the set this card is a part of */
-    public set: string = '';
+    public set: string = "";
 
     /** The color of the name of this card's set */
-    public setTextColor = '#cccccc';
+    public setTextColor = "#cccccc";
 
     /** The background color of the rounded box behind the set text */
-    public setBackgroundColor = '#333333';
+    public setBackgroundColor = "#333333";
 
     /**
      * The preferred starting text size number to start at when auto sizing the
-     * text. If the number is too large it will be ignored and downscaled
+     * text. If the number is too large it will be ignored and down-scaled
      */
     public preferredTextSize: number = 0;
 
@@ -84,6 +96,9 @@ export class Card {
 
     /** If the corners of the card should be rounded */
     public roundCorners: boolean = true;
+
+    /** The PIXI.Container this card's render is in */
+    private container: PIXI.Container;
 
     /** Creates a card from so key/value object */
     constructor(args?: {[key: string]: any}) {
@@ -95,29 +110,30 @@ export class Card {
     /**
      * Sets this card's internal variables from a key/value object
      * @param args the args to set; so to set imageURL, set args.imageURL
-     * */
-    public setFrom(args: {[key: string]: any}) {
+     */
+    public setFrom(args: {[key: string]: any}): void {
         args = Object.assign({}, args);
         args.victoryPoints = args.victoryPoints || args.vp || args.VP || args.vP || 0;
 
-        for (let key in args) {
+        for (const key in args) {
             if (Object.prototype.hasOwnProperty.call(this, key)) {
-                (<any>this)[key] = args[key];
+                (this as any)[key] = args[key];
             }
         }
 
         // special cases, we can take "Super Hero/Villain" as a type
         // (which is invalid) and make it the oversized version
-        if (<any>this.type === 'Super Hero') {
-            this.type = 'Hero';
+        if (this.type as any === "Super Hero") {
+            this.type = "Hero";
             this.oversized = true;
         }
-        else if (<any>this.type === 'Super Villain') {
-            this.type = 'Villain';
+        else if (this.type as any === "Super Villain") {
+            this.type = "Villain";
             this.oversized = true;
         }
 
-        if (this.oversized && !(this.type == 'Hero' || this.type === 'Villain')) {
+        const isHeroOrVillain = this.type === "Hero" || this.type === "Villain";
+        if (this.oversized && !isHeroOrVillain) {
             this.oversized = false;
         }
 
@@ -132,34 +148,6 @@ export class Card {
     }
 
     /**
-     * Formats the text, checking for keywords to bold or italic automatically
-     * @returns the text now with bold and italic formatting tags inserted
-     */
-    private formatText(): string {
-        let formattedText = this.text;
-
-        formattedText = surroundText(formattedText, /\+(.*?)\ Power/g, '[b]', '[/b]');
-        formattedText = surroundText(formattedText, /(\d)\ Power/g, '[b]', '[/b]');
-        formattedText = surroundText(formattedText,  /\(([^)]+)\)/g, '[i]', '[/i]');
-        formattedText = surroundText(formattedText, /(Stack)\ Ongoing/g, '[b]', '[/b]');
-
-        for (const toBold of ['+Power', ':', 'Attacked', 'Attack', 'Defense', 'Ongoing', 'Weakness', this.name].concat(this.alsoBold)) {
-            formattedText = replaceAll(formattedText, toBold, `[b]${toBold}[/b]`);
-        }
-
-        return formattedText;
-    }
-
-    /**
-     * Gets the PIXI.TextStyle for a part of the card
-     * @param part the part of the card to get the style for
-     * @returns the style for that part of the card, if found
-     */
-    private getStyle(part: string): PIXI.TextStyle {
-        return getStyle(this.type, part, this.oversized);
-    }
-
-    /**
      * Rendered the card asynchronously to a PIXI.Container
      * This method will load textures
      * @returns a promise that resolves to a rendered PIXI.Container with no
@@ -171,7 +159,7 @@ export class Card {
                 this.renderSync();
 
                 resolve(this.container);
-            })
+            });
         });
     }
 
@@ -207,7 +195,46 @@ export class Card {
         this.renderRoundedCorners();
 
         return this.container;
-    };
+    }
+
+    /**
+     * A handy toString override that tells you this card's name
+     */
+    public toString(): string {
+        return `Card ${this.name}`;
+    }
+
+    /**
+     * Formats the text, checking for keywords to bold or italic automatically
+     * @returns the text now with bold and italic formatting tags inserted
+     */
+    private formatText(): string {
+        let formattedText = this.text;
+
+        formattedText = surroundText(formattedText, /\+(.*?)\ Power/g, "[b]", "[/b]");
+        formattedText = surroundText(formattedText, /(\d)\ Power/g, "[b]", "[/b]");
+        formattedText = surroundText(formattedText,  /\(([^)]+)\)/g, "[i]", "[/i]");
+        formattedText = surroundText(formattedText, /(Stack)\ Ongoing/g, "[b]", "[/b]");
+
+        const boldKeywords = Card.autoBoldKeywords
+            .concat([this.name])
+            .concat(this.alsoBold);
+
+        for (const toBold of boldKeywords) {
+            formattedText = replaceAll(formattedText, toBold, `[b]${toBold}[/b]`);
+        }
+
+        return formattedText;
+    }
+
+    /**
+     * Gets the PIXI.TextStyle for a part of the card
+     * @param part the part of the card to get the style for
+     * @returns the style for that part of the card, if found
+     */
+    private getStyle(part: string): PIXI.TextStyle {
+        return getStyle(this.type, part, this.oversized);
+    }
 
     /**
      * Renders the image part of the card
@@ -227,18 +254,27 @@ export class Card {
         }
 
         const backgroundImage = newSprite(this.imageURL, this.container);
-        backgroundImage.position.set(imageMaxWidth/2, imageTop + imageMaxHeight/2);
+        backgroundImage.position.x = imageMaxWidth / 2;
+        backgroundImage.position.y = imageTop + imageMaxHeight / 2;
+
         let backgroundBounds = backgroundImage.getBounds();
-        const scale = Math.max(imageMaxWidth/backgroundBounds.width, imageMaxHeight/backgroundBounds.height);
+        const scale = Math.max(
+            imageMaxWidth / backgroundBounds.width,
+            imageMaxHeight / backgroundBounds.height,
+        );
+
+        backgroundBounds = backgroundImage.getLocalBounds();
 
         backgroundImage.scale.set(scale, scale);
-        backgroundBounds = backgroundImage.getLocalBounds();
-        backgroundImage.pivot.set(backgroundBounds.width/2, backgroundBounds.height/2);
+        backgroundImage.pivot.x = backgroundBounds.width / 2;
+        backgroundImage.pivot.y = backgroundBounds.height / 2;
 
-        let backgroundImageMask = new PIXI.Graphics();
+        const backgroundImageMask = new PIXI.Graphics();
         backgroundImageMask.beginFill(0);
-        backgroundImageMask.drawRect(0, imageTop, imageMaxWidth, imageMaxHeight);
+        backgroundImageMask.drawRect(0, imageTop,
+                                     imageMaxWidth, imageMaxHeight);
         backgroundImageMask.endFill();
+
         this.container.addChild(backgroundImageMask);
         backgroundImage.mask = backgroundImageMask;
     }
@@ -253,7 +289,7 @@ export class Card {
 
         let backgroundType: string = this.type;
         if (this.variant || this.oversized) {
-            if (this.type === 'Hero' || this.type === 'Villain') {
+            if (this.type === "Hero" || this.type === "Villain") {
                 backgroundType = `Super-${this.type}`;
             }
         }
@@ -261,7 +297,7 @@ export class Card {
             backgroundType = `Oversized-${backgroundType}`;
         }
 
-        let cardBackgroundSprite = newSprite(backgroundType.replace(' ', '-').toLowerCase(), this.container);
+        newSprite(backgroundType.replace(" ", "-").toLowerCase(), this.container);
 
         if (this.variant && !this.oversized) {
             // draw a black box behind the text
@@ -288,10 +324,10 @@ export class Card {
 
         let scale = 1;
         if (bounds.width > maxLogoWidth) {
-            scale = Math.min(scale, maxLogoWidth/bounds.width);
+            scale = Math.min(scale, maxLogoWidth / bounds.width);
         }
         if (bounds.height > maxLogoHeight) {
-            scale = Math.min(scale, maxLogoHeight/bounds.height);
+            scale = Math.min(scale, maxLogoHeight / bounds.height);
         }
 
         if (this.logoScale) {
@@ -322,7 +358,10 @@ export class Card {
             y = 55;
         }
 
-        let cardName = new PIXI.Text(this.name.toUpperCase(), this.getStyle('name'));
+        const cardName = new PIXI.Text(
+            this.name.toUpperCase(),
+            this.getStyle("name"),
+        );
 
         cardName.position.set(x, y);
         cardName.scale.y *= 0.75;
@@ -335,7 +374,7 @@ export class Card {
      * Renders the type part of the card (text, not background)
      */
     private renderType(): void {
-        if (this.oversized || this.type === 'Weakness') {
+        if (this.oversized || this.type === "Weakness") {
             return;
         }
 
@@ -343,7 +382,7 @@ export class Card {
         if (this.typePrefix) {
             text = `${this.typePrefix} ${text}`;
         }
-        let cardTypeText = new PIXI.Text(text, this.getStyle('type'));
+        const cardTypeText = new PIXI.Text(text, this.getStyle("type"));
         cardTypeText.x = 45;
         cardTypeText.y = 666;
 
@@ -368,7 +407,11 @@ export class Card {
             y = 950;
         }
 
-        let subtypeText = new PIXI.Text(this.subtype.toUpperCase(), this.getStyle('subtype'));
+        const subtypeText = new PIXI.Text(
+            this.subtype.toUpperCase(),
+            this.getStyle("subtype"),
+        );
+
         subtypeText.scale.y *= 0.75;
         subtypeText.scale.x *= 0.96;
         subtypeText.skew.x = -0.265;
@@ -385,22 +428,31 @@ export class Card {
             return;
         }
 
-        let backgroundCost = newSprite('background-cost', this.container);
+        newSprite("background-cost", this.container);
 
         // card's cost back
-        const cardCostBackStyle = this.getStyle('cost');
-        let cardCostBackText = new PIXI.Text(String(this.cost), cardCostBackStyle);
-        cardCostBackText.pivot.set(cardCostBackText.width/2, cardCostBackText.height/2);
+        const cardCostBackStyle = this.getStyle("cost");
+        const cardCostBackText = new PIXI.Text(
+            String(this.cost),
+            cardCostBackStyle,
+        );
+        cardCostBackText.pivot.x = cardCostBackText.width / 2;
+        cardCostBackText.pivot.y = cardCostBackText.height / 2;
         cardCostBackText.position.set(641, 958);
         this.container.addChild(cardCostBackText);
 
         // and front (so we can basically have a double stroke)
         const cardCostFrontStyle = cardCostBackStyle.clone();
-        cardCostFrontStyle.stroke = '#ffffff';
+        cardCostFrontStyle.stroke = "#ffffff";
         cardCostFrontStyle.strokeThickness = 10;
-        let cardCostFrontText = new PIXI.Text(String(this.cost), cardCostFrontStyle);
-        cardCostFrontText.pivot.set(cardCostFrontText.width/2, cardCostFrontText.height/2);
-        cardCostFrontText.position.set(641, 958);;
+        const cardCostFrontText = new PIXI.Text(
+            String(this.cost),
+            cardCostFrontStyle,
+        );
+
+        cardCostFrontText.pivot.x = cardCostFrontText.width / 2;
+        cardCostFrontText.pivot.y = cardCostFrontText.height / 2;
+        cardCostFrontText.position.set(641, 958);
         this.container.addChild(cardCostFrontText);
     }
 
@@ -412,29 +464,30 @@ export class Card {
             return;
         }
 
-        const vpSign = this.victoryPoints < 0 ? 'negative': 'normal';
-        let backgroundVP = newSprite(`background-vp-${vpSign}`, this.container);
+        const vpSign = this.victoryPoints < 0 ? "negative" : "normal";
+        newSprite(`background-vp-${vpSign}`, this.container);
 
-        if (this.victoryPoints === '*') {
-            const vpAsteriskSprite = newSprite('vp-variable', this.container);
+        if (this.victoryPoints === "*") {
+            newSprite("vp-variable", this.container);
         }
         else { // it's a number
             const scalar = 2;
-            const vpStyle = this.getStyle('vp');
+            const vpStyle = this.getStyle("vp");
 
             if (this.victoryPoints < 0) {
-                vpStyle.stroke = '#9dcd4e'; // green outline for negative VPs
+                vpStyle.stroke = "#9dcd4e"; // green outline for negative VPs
             }
 
             vpStyle.fontSize = Number(vpStyle.fontSize) * scalar;
             vpStyle.strokeThickness = Number(vpStyle.strokeThickness) * scalar;
 
-            const vpText = new PIXI.Text(String(Math.abs(this.victoryPoints)), vpStyle);
-            vpText.scale.y *= 0.75/scalar;
-            vpText.scale.x *= 1/scalar;
+            const vps = String(Math.abs(this.victoryPoints));
+            const vpText = new PIXI.Text(vps, vpStyle);
+            vpText.scale.y *= 0.75 / scalar;
+            vpText.scale.x *= 1 / scalar;
 
             const bounds = vpText.getLocalBounds();
-            vpText.pivot.set(bounds.width/2, bounds.height/2);
+            vpText.pivot.set(bounds.width / 2, bounds.height / 2);
             vpText.position.set(88, 982);
             this.container.addChild(vpText);
         }
@@ -446,36 +499,44 @@ export class Card {
     private renderText(): void {
         let formattedText = this.formatText();
 
-        formattedText = replaceAll(formattedText, '[b]', wrapStyledTextCharacters.boldStart);
-        formattedText = replaceAll(formattedText, '[/b]', wrapStyledTextCharacters.boldEnd);
-        formattedText = replaceAll(formattedText, '[i]', wrapStyledTextCharacters.italicStart);
-        formattedText = replaceAll(formattedText, '[/i]', wrapStyledTextCharacters.italicEnd);
+        formattedText = replaceAll(formattedText, "[b]", wrapStyledTextCharacters.boldStart);
+        formattedText = replaceAll(formattedText, "[/b]", wrapStyledTextCharacters.boldEnd);
+        formattedText = replaceAll(formattedText, "[i]", wrapStyledTextCharacters.italicStart);
+        formattedText = replaceAll(formattedText, "[/i]", wrapStyledTextCharacters.italicEnd);
 
         const vpCircle = new PIXI.Circle(603, 215, 78 + 5);
-        let collisions = [];
+        const collisions = [];
         let maxWidth = 750;
         let maxHeight = 172;
-        let x = 39;
+        const x = 39;
         let y = 731;
         if (this.oversized) {
             y = 974;
             maxWidth = 900;
-            maxHeight = 161 - 14*2;
+            maxHeight = 161 - 14 * 2;
         }
         else {
             collisions.push(vpCircle);
         }
 
-        const style = this.getStyle('text');
+        const style = this.getStyle("text");
         if (this.variant && !this.oversized) {
-            style.fill = '#ffffff';
+            style.fill = "#ffffff";
         }
 
         if (this.preferredTextSize > 0) {
             style.fontSize = this.preferredTextSize;
         }
 
-        let textContainer = autoSizeAndWrapStyledText(formattedText, maxWidth - x*2, maxHeight, style, 1, collisions, this.oversized, this.oversized);
+        const textContainer = autoSizeAndWrapStyledText(
+            formattedText,
+            maxWidth - x * 2,
+            maxHeight, style,
+            1,
+            collisions,
+            this.oversized,
+            this.oversized,
+        );
 
         textContainer.position.set(x, y);
 
@@ -484,20 +545,25 @@ export class Card {
 
     /**
      * Renders the set part of the card
+     * @param copyright the rendered copyright element to position from
+     * @returns the rendered set element for future renders to position off
      */
     private renderSet(copyright: PIXI.Container): PIXI.Container {
         if (!this.set) {
             return;
         }
 
-        const style = this.getStyle('set');
-        style.fill = this.setTextColor || '#ffffff';
-        let set = new PIXI.Text(this.set.toUpperCase(), style);
+        const style = this.getStyle("set");
+        style.fill = this.setTextColor || "#ffffff";
+        const set = new PIXI.Text(this.set.toUpperCase(), style);
 
         set.scale.y *= 0.75;
         set.pivot.set(set.width, set.height);
         if (this.oversized) {
-            set.position.set(copyright.x - copyright.width - 16, 1171 - set.height);
+            // note these and other numbers were found via pixel coordinates
+            // on the photo shop template
+            set.position.x = copyright.x - copyright.width - 16;
+            set.position.y = 1171 - set.height;
         }
         else {
             set.position.set(550, 934);
@@ -507,9 +573,16 @@ export class Card {
         const xPad = 4;
         const topPad = 3;
         const bottomPad = 4;
+        const backgroundColor = (this.setBackgroundColor || "#000000");
         const graphics = new PIXI.Graphics();
-        graphics.beginFill(parseInt((this.setBackgroundColor || '#000000').replace(/^#/, ''), 16));
-        graphics.drawRoundedRect(set.x - set.width - xPad, set.y - set.height - topPad, set.width + xPad*2, set.height + bottomPad*2, 8);
+        graphics.beginFill(parseInt(backgroundColor.replace(/^#/, ""), 16));
+        graphics.drawRoundedRect(
+            set.x - set.width - xPad,
+            set.y - set.height - topPad,
+            set.width + xPad * 2,
+            set.height + bottomPad * 2,
+            8, // border radius
+        );
         graphics.endFill();
 
         this.container.addChild(graphics);
@@ -531,12 +604,12 @@ export class Card {
             y = 1136;
         }
 
-        const style = this.getStyle('copyright');
+        const style = this.getStyle("copyright");
         if (this.variant && !this.oversized) {
-            style.fill = '#ffffff';
+            style.fill = "#ffffff";
         }
 
-        let copyright = wrapStyledText(`©${this.copyright}`, maxWidth, style);
+        const copyright = wrapStyledText(`©${this.copyright}`, maxWidth, style);
 
         if (this.oversized) {
             copyright.pivot.x = copyright.width;
@@ -552,12 +625,14 @@ export class Card {
 
     /**
      * Renders the legal part of the card
+     * @param set the already rendered set to position off
+     * @param copyright the already rendered copyright to position off
      */
     private renderLegal(set: PIXI.Container, copyright: PIXI.Container): void {
         let maxWidth = 332;
         let x = 223;
         let y = 954;
-        const style = this.getStyle('legal');
+        const style = this.getStyle("legal");
         let legal: PIXI.Container;
         if (this.oversized) {
             maxWidth = 824;
@@ -571,10 +646,21 @@ export class Card {
                 maxWidth -= copyright.width + 16;
             }
 
-            legal = autoSizeAndWrapStyledText(this.legal, maxWidth, Number(style.fontSize)*2, style, 0.25);
+            legal = autoSizeAndWrapStyledText(
+                this.legal,
+                maxWidth,
+                Number(style.fontSize) * 2,
+                style,
+                0.25,
+            );
         }
         else {
-            legal = wrapStyledText(this.legal, maxWidth, this.getStyle('legal'));
+            // no need to auto size on none oversized cards
+            legal = wrapStyledText(
+                this.legal,
+                maxWidth,
+                this.getStyle("legal"),
+            );
         }
 
         if (legal) {
@@ -596,17 +682,16 @@ export class Card {
             : 37;
 
         const bleedMask = new PIXI.Graphics();
-        bleedMask.beginFill(0, 1)
-        bleedMask.drawRoundedRect(0, 0, this.pxWidth, this.pxHeight, borderRadius);
+        bleedMask.beginFill(0, 1);
+        bleedMask.drawRoundedRect(
+            0,
+            0,
+            this.pxWidth,
+            this.pxHeight,
+            borderRadius,
+        );
         bleedMask.endFill();
         this.container.addChild(bleedMask);
         this.container.mask = bleedMask;
-    }
-
-    /**
-     * A handy toString override that tells you this card's name
-     */
-    public toString(): string {
-        return `Card ${this.name}`;
     }
 }

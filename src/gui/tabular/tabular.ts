@@ -1,32 +1,29 @@
-import { template, loadTextures, tryToCast, cloneExceptEmpty, toDashCase } from 'src/utils/';
-import { EventEmitter } from 'events';
+import { EventEmitter } from "events";
+import { select, template } from "src/utils/";
+import Tab from "./tab";
+import * as hbs from "./tabular.hbs";
 
-const tabularTemplate = template(require('./tabular.hbs'));
-
-/**
- * The basics of a Tab for a Tabular.
- * If you make a custom Tab it must extend this class
- */
-export abstract class Tab {
-    /** The id of the tab. Will be the-dash-case version of its name */
-    readonly id: string;
-
-    /** Creates a named Tab */
-    constructor(
-        /** The name of the tab to display on the tab and use for ID */
-        readonly name: string,
-
-        /** The element that makes up the section to toggle between */
-        readonly element: HTMLElement,
-    ) {
-        this.id = toDashCase(this.name);
-    }
-}
+const tabularTemplate = template(hbs as any);
 
 /**
  * A simple GUI element that wraps sections and selects between them using Tabs
  */
 export class Tabular extends EventEmitter {
+    /** Symbols emitted when an event occurs in this Tabular */
+    public static EventSymbols = {
+        /** Emitted when a tab changed and starts the animation */
+        tabChanging: Symbol("tabChanging"),
+
+        /** Emitted when a tab changed and finished the animation */
+        tabChanged: Symbol("tabChanged"),
+    };
+
+    /** All the tabs in this Tabular */
+    public tabs: Tab[];
+
+    /** The currently selected (displayed) tabs */
+    public currentTab: Tab;
+
     /** The parent element of the Tabular (tabs and their contents) */
     private parent: HTMLElement;
 
@@ -40,35 +37,16 @@ export class Tabular extends EventEmitter {
     private tabsContents: HTMLElement;
 
     /** A mapping of a tab to its contents */
-    private tabToContent = new Map<Tab, HTMLElement>();
+    private tabToContent: Map<Tab, HTMLElement> = new Map();
 
     /** A mapping of a tab to its list element (visual tab) */
-    private tabToListElement = new Map<Tab, HTMLLIElement>();
+    private tabToListElement: Map<Tab, HTMLLIElement> = new Map();
 
     /**
      * Set of timeouts waiting to happen to allow for animations (fading)
      * transitions
-    */
-    private timeouts = new Set<NodeJS.Timer>();
-
-    /**
-     * All the tabs in this Tabular
      */
-    public tabs: Tab[];
-
-    /**
-     * The currently selected (displayed) tabs
-     */
-    public currentTab: Tab;
-
-    /** Symbols emitted when an event occurs in this Tabular */
-    static EventSymbols = {
-        /** Emitted when a tab changed and starts the animation */
-        tabChanging: Symbol('tabChanging'),
-
-        /** Emitted when a tab changed and finished the animation */
-        tabChanged: Symbol('tabChanged'),
-    };
+    private timeouts: Set<NodeJS.Timer> = new Set();
 
     /**
      * Creates a new Tabular
@@ -78,9 +56,9 @@ export class Tabular extends EventEmitter {
     constructor(tabs?: Tab[], parent?: HTMLElement) {
         super();
 
-        this.element = <HTMLElement>tabularTemplate();
-        this.tabsList = <HTMLUListElement>this.element.getElementsByTagName('ul')[0];
-        this.tabsContents = <HTMLElement>this.element.getElementsByClassName('tabular-contents')[0];
+        this.element = tabularTemplate() as HTMLElement;
+        this.tabsList = select(this.element, "ul") as HTMLUListElement;
+        this.tabsContents = select(this.element, ".tabular-contents");
 
         if (tabs) {
             this.setTabs(tabs);
@@ -96,18 +74,18 @@ export class Tabular extends EventEmitter {
      * @param tabs the array of tabs to use
      * @param startingTab the tab in the array of tabs to set to the current tab
      */
-    public setTabs(tabs: Tab[], startingTab?: Tab) {
+    public setTabs(tabs: Tab[], startingTab?: Tab): void {
         this.tabs = tabs;
 
         for (const tab of tabs) {
-            const li = document.createElement('li');
+            const li = document.createElement("li");
             li.innerHTML = tab.name;
-            li.addEventListener('click', () => this.changeTab(tab));
+            li.addEventListener("click", () => this.changeTab(tab));
             this.tabsList.appendChild(li);
             this.tabToListElement.set(tab, li);
 
-            const div = document.createElement('div');
-            div.classList.add('tab-contents');
+            const div = document.createElement("div");
+            div.classList.add("tab-contents");
             div.appendChild(tab.element);
             this.tabsContents.appendChild(div);
             this.tabToContent.set(tab, div);
@@ -130,7 +108,7 @@ export class Tabular extends EventEmitter {
      * @param id the id of the tab to get
      * @returns the tab with the given ID, or undefined if not found
      */
-    public getTabByID(id: string) {
+    public getTabByID(id: string): Tab {
         return this.tabs.find((tab: Tab) => tab.id === id);
     }
 
@@ -149,23 +127,23 @@ export class Tabular extends EventEmitter {
 
         // update <li>s
         if (oldTab) {
-            this.tabToListElement.get(oldTab).classList.remove('current');
+            this.tabToListElement.get(oldTab).classList.remove("current");
         }
-        this.tabToListElement.get(this.currentTab).classList.add('current');
+        this.tabToListElement.get(this.currentTab).classList.add("current");
 
-        // crossfade content <div>s
+        // cross-fade content <div>s
         const newContent = this.tabToContent.get(this.currentTab);
         const oldContent = this.tabToContent.get(oldTab);
 
         if (!oldTab) {
-            newContent.classList.add('current');
-            newContent.classList.remove('hidden');
+            newContent.classList.add("current");
+            newContent.classList.remove("hidden");
             this.hideTabs();
         }
         else {
             this.tabsContents.style.height = `${oldContent.clientHeight}px`;
-            oldContent.classList.remove('current');
-            newContent.classList.remove('hidden');
+            oldContent.classList.remove("current");
+            newContent.classList.remove("hidden");
 
             this.clearTimeouts();
             this.setTimeout(() => {
@@ -174,20 +152,20 @@ export class Tabular extends EventEmitter {
                 this.tabsContents.insertBefore(newContent, this.tabsContents.firstChild);
 
                 this.setTimeout(() => {
-                    oldContent.classList.add('hidden');
-                    newContent.classList.add('current');
+                    oldContent.classList.add("hidden");
+                    newContent.classList.add("current");
 
                     this.tabsContents.style.height = `${newContent.clientHeight}px`;
                     this.setTimeout(() => {
-                        this.tabsContents.style.height = '';
+                        this.tabsContents.style.height = "";
                         this.hideTabs();
 
                         this.emit(Tabular.EventSymbols.tabChanged, toTab);
                     }, 355);
-                }, 50);    // delay for DOM to update (MSDN says this shouldn't be needed...)
-            }, 355);     // this number is from the SCSS transition (3.5 sec)
-                         //  file. I can't think of an elegant way that doesn't
-                         //  piss off VSC to parse this out of SCSS
+                }, 50);  // delay for DOM to update (MSDN says this shouldn't be needed...)
+            }, 355);     // this number is from the SCSS transition (3.5 sec) file.
+                         // I can't think of an elegant way that doesn't
+                         // piss off VSC to parse this out of SCSS
 
             // Note: we could add event listeners for 'transitionend', however
             // then we'd have to cancel them if they click too fast, and it
@@ -201,13 +179,13 @@ export class Tabular extends EventEmitter {
     /**
      * Hides all tabs content except the current tab
      */
-    private hideTabs() {
-        this.tabToContent.get(this.currentTab).classList.remove('hidden');
-        this.tabToListElement.get(this.currentTab).classList.add('current');
+    private hideTabs(): void {
+        this.tabToContent.get(this.currentTab).classList.remove("hidden");
+        this.tabToListElement.get(this.currentTab).classList.add("current");
 
         for (const tab of this.tabs) {
             if (tab !== this.currentTab) {
-                this.tabToContent.get(tab).classList.add('hidden');
+                this.tabToContent.get(tab).classList.add("hidden");
             }
         }
     }

@@ -1,0 +1,20 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended",
+        "tslint-eslint-rules"
+    ],
+    "jsRules": {},
+    "rules": {
+        "one-line": [true, "check-open-brace", "check-whitespace"],
+        "no-constant-condition": [true, { "checkLoops": false }],
+        "brace-style": [ true, "stroustrup" ],
+        "typedef": [ true,
+            "call-signature",
+            "parameter",
+            "property-declaration"
+        ],
+        "object-literal-sort-keys": false
+    },
+    "rulesDirectory": []
+}
