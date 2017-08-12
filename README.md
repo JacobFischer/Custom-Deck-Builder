@@ -17,7 +17,7 @@ This project was made using a variety of frameworks:
 - **[TypeScript](https://www.typescriptlang.org/ "JavaScript with types")**: The coding language used for pretty much everything in this project.
 - **[SASS](http://sass-lang.com/ "Syntactically Awesome Style Sheets")**: Used to control the style and most animations on this page.
 - **[Handlebars](http://handlebarsjs.com/ "Simple HTML Templates")**: Used to template the HTML layout and elements for all page sections.
-- **[PIXI.js](http://www.pixijs.com/ "2D graphics library for easily drawing cards")**: Currently the best browser library for manipulating 2D graphics and images on canvases. Used to render the custom cards.
+- **[PixiJS](http://www.pixijs.com/ "2D graphics library for easily drawing cards")**: Currently the best browser library for manipulating 2D graphics and images on canvases. Used to render the custom cards.
 - **[NPM](https://www.npmjs.com/ "Node Package Manager")**: The biggest and most popular JavaScript package manager, that hosts many of the smaller modules not explicitly mentioned here, but are still necessary to run.
 - **[Webpack 2](https://webpack.js.org/)**: What wraps all these things together into a single page. I used this opportunity to transition Webpack 1.x skills to 2.0.
 
@@ -25,7 +25,7 @@ All the source code, commits, and resources are available freely on [GitHub](htt
 
 ---
 
-A live version of application is kep up to date on https://jacobfischer.github.io/custom-deck-builder/. Check out that version if you are not interested in developing it yourself.
+A live version of application is kept up to date on https://jacobfischer.github.io/Custom-Deck-Builder/. Check out that version if you are not interested in developing it yourself.
 
 ## How to Build
 

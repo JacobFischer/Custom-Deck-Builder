@@ -6,15 +6,16 @@
     ],
     "jsRules": {},
     "rules": {
-        "one-line": [true, "check-open-brace", "check-whitespace"],
-        "no-constant-condition": [true, { "checkLoops": false }],
         "brace-style": [ true, "stroustrup" ],
+        "no-constant-condition": [true, { "checkLoops": false }],
+        "no-unused-expression": [true, "allow-new"],
+        "object-literal-sort-keys": false,
+        "one-line": [true, "check-open-brace", "check-whitespace"],
         "typedef": [ true,
             "call-signature",
             "parameter",
             "property-declaration"
-        ],
-        "object-literal-sort-keys": false
+        ]
     },
     "rulesDirectory": []
 }
