@@ -9,9 +9,11 @@
         "Compacta",
         "PIXI",
         "filesaver",
+        "fontfaceobserver",
         "jszip",
         "ltrim",
         "rtrim",
+        "storejs",
         "stroustrup",
         "textbox",
         "transitionend"

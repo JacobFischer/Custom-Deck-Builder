@@ -62,7 +62,7 @@ export function toDashCase(str: string): string {
     // and there are no spaces
     str = replaceAll(str, " ", "");
 
-    return str.replace(/([A-Z])/g, (sub) =>  "-" + sub.toLowerCase());
+    return str.replace(/([A-Z])/g, (sub) => "-" + sub.toLowerCase());
 }
 
 /**
