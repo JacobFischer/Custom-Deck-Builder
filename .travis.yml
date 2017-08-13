@@ -1,8 +1,15 @@
 language: node_js
 node_js:
   - "6.9.1"
+
 script:
-  # run build script specified in package.json
+  # run webpack to build the static pages to deploy
   - npm run build
-  # call script for deploying of produced artifacts
-  - bash ./.travis-deploy.sh
+
+deploy:
+  provider: pages
+  skip_cleanup: true
+  local_dir: built/
+  github_token: $GH_TOKEN
+  on:
+    branch: master
