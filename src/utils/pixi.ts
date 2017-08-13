@@ -1,4 +1,4 @@
-/** Contains useful functions relating to the PIXI.js framework */
+/* Contains useful functions relating to the PIXI.js framework */
 
 import { doesCircleOverlapRectangle, doRectanglesOverlap } from "./math";
 
@@ -117,6 +117,7 @@ export const wrapStyledTextCharacters = {
  * @param width the maximum width of the container to wrap at
  * @param normalStyle the style to apply to the next for normal text. Bold and
  *                    italics text will be set automatically when encountered
+ * @returns a pixi container with text wrapped in it accordingly
  */
 export function wrapStyledText(text: string, width: number, normalStyle: PIXI.TextStyle): PIXI.Container {
     const container = new PIXI.Container();
@@ -266,6 +267,7 @@ export type PIXICircleOrRectangle = PIXI.Circle | PIXI.Rectangle;
  *                   collisions in. If any are encountered we will down-step.
  * @param centerHorizontally if the text should be centered horizontally
  * @param centerVertically if the text should be centered vertically
+ * @returns a pixi container with text wrapped in it accordingly
  */
 export function autoSizeAndWrapStyledText(text: string, width: number, height: number, normalStyle: PIXI.TextStyle,
                                           autoSizeStep: number = 1,

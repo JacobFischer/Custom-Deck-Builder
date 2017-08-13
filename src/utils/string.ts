@@ -1,5 +1,4 @@
-"use strict";
-/** Contains useful string related functions */
+/* Contains useful string related functions */
 
 /**
  * Tries to cast a string to a primitive value if it looks like one
@@ -75,9 +74,10 @@ export function escapeRegExp(str: string): string {
 }
 
 /**
- * Removes all sub strings in <tags> from the string
+ * Removes all sub strings in <tags> from the string (strips xml tags)
  * @param str the string to remove tags from
  * @param replacement str without tagged substrings
+ * @returns a string with xml tags removed
  * @example 'some<p>thing</p>' -> 'something</p>'
  */
 export function removeTags(str: string, replacement: string = ""): string {
@@ -105,6 +105,8 @@ export function stripTagsFromString(str: string): string {
  * @param search the substring to search for in target
  * @param replacement optional replacement string to replace instances of search
  *                    with
+ * @returns a string with ALL occurrences of search within target replaced with
+ *          the replacement string
  */
 export function replaceAll(target: string, search: string, replacement: string = ""): string {
     return target.replace(new RegExp(escapeRegExp(search), "g"), replacement);
@@ -123,6 +125,8 @@ interface ISurroundTextMatch {
  * @param regex the regex to apply to the search string
  * @param front the string to put at the front of matches
  * @param end the string to put at the end of matches
+ * @returns the string that is search with all matches of the regex having the
+ *          front and end string placed around each match
  */
 export function surroundText(search: string, regex: RegExp, front: string, end: string): string {
     const matches: ISurroundTextMatch[] = [];

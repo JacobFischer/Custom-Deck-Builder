@@ -9,22 +9,22 @@ const fonts: {[key: string]: string[]} = {
     TradeGothic: ["regular", "bold", "italics"],
 };
 
-const _ready: {[key: string]: boolean} = {};
-const _onReady: any = {
+const ready: {[key: string]: boolean} = {};
+const onReady: any = {
     callback: null,
 };
 
 function checkIfReady(): void {
-    let ready = true;
-    for (const key of Object.keys(_ready)) {
-        if (!_ready[key]) {
-            ready = false;
+    let areWeReady = true;
+    for (const key of Object.keys(ready)) {
+        if (!ready[key]) {
+            areWeReady = false;
             break;
         }
     }
 
-    if (ready && _onReady.callback) {
-        _onReady.callback();
+    if (areWeReady && onReady.callback) {
+        onReady.callback();
     }
 }
 
@@ -33,22 +33,21 @@ function checkIfReady(): void {
 for (const fontFamily of Object.keys(fonts)) {
     const font = fonts[fontFamily];
     for (const fontType of font) {
-        _ready[fontFamily + fontType] = false;
+        ready[fontFamily + fontType] = false;
 
-        let properties: Object;
+        let properties: {[key: string]: any};
         if (fontType !== "regular") {
             properties = fontType === "bold" ?
                 {weight: "bold"} :
                 {style: "italic"};
         }
 
-        const fontFaceObserver = new FontFaceObserver(fontFamily, properties).load().then((...args: any[]) => {
-            _ready[fontFamily + fontType] = true;
+        new FontFaceObserver(fontFamily, properties).load().then((...args: any[]) => {
+            ready[fontFamily + fontType] = true;
             checkIfReady();
         }, (...args: any[]) => {
             const message = `${fontFamily} ${fontType} could not be loaded`;
-            console.error(message, args);
-            _onReady.callback(new Error(message));
+            onReady.callback(new Error(message));
         });
     }
 }
@@ -58,6 +57,6 @@ for (const fontFamily of Object.keys(fonts)) {
  * @param callback the callback to invoke once all fonts are loaded
  */
 export function onFontsLoaded(callback: (error: boolean) => void): void {
-    _onReady.callback = callback;
+    onReady.callback = callback;
     checkIfReady();
 }

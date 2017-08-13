@@ -13,7 +13,7 @@ export const CARD_MAX_WIDTH = 900;
 export const CARD_MAX_HEIGHT = 1200;
 
 /**
- * @class represents a custom card
+ * represents a custom card
  */
 export class Card {
     /** Keywords that are automatically bolded for all card text */
@@ -100,7 +100,10 @@ export class Card {
     /** The PIXI.Container this card's render is in */
     private container: PIXI.Container;
 
-    /** Creates a card from so key/value object */
+    /**
+     * Creates a card from so key/value object
+     * @param args optional args to call setFrom on
+     */
     constructor(args?: {[key: string]: any}) {
         if (args) {
             this.setFrom(args);
@@ -199,6 +202,7 @@ export class Card {
 
     /**
      * A handy toString override that tells you this card's name
+     * @returns card plus its name
      */
     public toString(): string {
         return `Card ${this.name}`;
@@ -213,7 +217,7 @@ export class Card {
 
         formattedText = surroundText(formattedText, /\+(.*?)\ Power/g, "[b]", "[/b]");
         formattedText = surroundText(formattedText, /(\d)\ Power/g, "[b]", "[/b]");
-        formattedText = surroundText(formattedText,  /\(([^)]+)\)/g, "[i]", "[/i]");
+        formattedText = surroundText(formattedText, /\(([^)]+)\)/g, "[i]", "[/i]");
         formattedText = surroundText(formattedText, /(Stack)\ Ongoing/g, "[b]", "[/b]");
 
         const boldKeywords = Card.autoBoldKeywords
@@ -593,6 +597,7 @@ export class Card {
 
     /**
      * Renders the copyright part of the card
+     * @returns the copyright pixi object rendered
      */
     private renderCopyright(): PIXI.Container {
         let maxWidth = 332;

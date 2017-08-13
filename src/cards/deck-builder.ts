@@ -50,7 +50,11 @@ export class DeckBuilder extends EventEmitter {
     /** The csv source file used to generate the zip */
     private csvText: string;
 
-    /** Creates a new Deck Builder. Can only be used once */
+    /**
+     * Creates a new Deck Builder. Each instance can only be used once.
+     * @param maxWidth: max width to set to
+     * @param maxHeight max height to set to
+     */
     constructor(
         /** The maximum width of cards to pack horizontally */
         readonly maxWidth: number = 10,
@@ -97,6 +101,7 @@ export class DeckBuilder extends EventEmitter {
     /**
      * Parses the CSV file needed to build cards from
      * @param csv the csv file to parse
+     * @returns a promise to return the parsed cards array
      */
     private parse(csv: string): Promise<Card[]> {
         return new Promise<Card[]>((resolve, reject) => {
@@ -282,6 +287,7 @@ export class DeckBuilder extends EventEmitter {
      * @param normalCards the array of normal cards that need to be rendered
      * @param oversizedCards the array of oversized cards that need to be
      *                       rendered
+     * @returns a promise that returns the PIXI application used to render cards
      */
     private renderCards(normalCards: Card[], oversizedCards: Card[]): Promise<PIXI.Application> {
         return new Promise((resolve, reject) => {
@@ -390,7 +396,7 @@ export class DeckBuilder extends EventEmitter {
                     }
 
                     render.pivot.set(0, 0);
-                    render.position.set(x * resizedWidth,  y * resizedHeight);
+                    render.position.set(x * resizedWidth, y * resizedHeight);
                     app.stage.addChild(render);
                 }
 

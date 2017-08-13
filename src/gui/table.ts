@@ -41,9 +41,7 @@ export interface IRowData {
     tds: HTMLTableDataCellElement[];
 }
 
-/**
- * @class A simple wrapper around a <table> that emits events on editing
- */
+/** A simple wrapper around a <table> that emits events on editing */
 export class EditableTable extends EventEmitter {
     /** Symbols emitted by this Table for certain events */
     public static EventSymbols = {
@@ -134,10 +132,10 @@ export class EditableTable extends EventEmitter {
 
     /**
      * Adds row to add to the bottom of the table
-     * @param rows the single row to add
+     * @param row the single row to add
      */
-    public addRow(values: any): void {
-        this.formatRow(values);
+    public addRow(row: any): void {
+        this.formatRow(row);
         this.updateRows(true);
     }
 
@@ -302,6 +300,7 @@ export class EditableTable extends EventEmitter {
 
     /**
      * Internally updates the rows and ensures they are added to the DOM
+     * @param added if rows were added before this was called
      */
     private updateRows(added: boolean): void {
         for (const row of this.rows) {

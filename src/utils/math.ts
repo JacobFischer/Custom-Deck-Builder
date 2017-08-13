@@ -1,4 +1,4 @@
-/** Useful mathematical functions */
+/* Useful mathematical functions */
 
 /**
  * Clamps a number between a given minimum and maximum value

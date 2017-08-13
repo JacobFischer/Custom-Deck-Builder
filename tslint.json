@@ -7,15 +7,44 @@
     "jsRules": {},
     "rules": {
         "brace-style": [ true, "stroustrup" ],
+        "new-parens": true,
+        "no-bitwise": true,
         "no-constant-condition": [true, { "checkLoops": false }],
+        "no-duplicate-case": true,
+        "no-ex-assign": true,
+        "ter-no-sparse-arrays": [true],
+        "no-extra-boolean-cast": true,
+        "no-extra-semi": true,
+        "no-inner-declarations": [ true, "both" ],
+        "no-invalid-regexp": true,
+        "no-multi-spaces": true,
         "no-unused-expression": [true, "allow-new"],
         "object-literal-sort-keys": false,
         "one-line": [true, "check-open-brace", "check-whitespace"],
+        "space-in-parens": [true, "never"],
+        "ter-prefer-arrow-callback": [true],
+        "ter-func-call-spacing": [true],
+        "ter-indent": [true, 4, {
+            "SwitchCase": 1
+        }],
+        "ter-no-irregular-whitespace": [true],
         "typedef": [ true,
             "call-signature",
             "parameter",
             "property-declaration"
-        ]
+        ],
+        "valid-jsdoc": [true, {
+            "prefer": {
+              "return": "returns"
+            },
+            "requireReturn": false,
+            "requireReturnType": false,
+            "requireParamDescription": true,
+            "requireReturnDescription": true,
+            "requireParamType": false,
+            "matchDescription": ".+"
+        }],
+        "valid-typeof": true
     },
     "rulesDirectory": []
 }

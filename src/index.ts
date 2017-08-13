@@ -15,7 +15,7 @@ unloadedMessage.innerText = "Loading...";
 
 // initialize everything, then create the UI
 initialize(() => {
-    new UI(document.body);
-
     unloadedMessage.remove();
+
+    new UI(document.body);
 });

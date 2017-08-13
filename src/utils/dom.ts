@@ -1,4 +1,4 @@
-/** Useful functions for DOM Elements */
+/* Useful functions for DOM Elements */
 
 /**
  * Private scope function used to generate template functions below
@@ -29,6 +29,7 @@ export function template(required: (args: object) => string): (args?: object) =>
  * Expands an expandable HTMLElement smoothly via CSS animations
  * (assumes you use the styles in the utils.scss file)
  * @param element the element to animate expanding
+ * @returns a promise which resolved once the expand animation finishes
  */
 export function expand(element: HTMLElement): Promise<void> {
     return new Promise<void>((resolve, reject) => {
