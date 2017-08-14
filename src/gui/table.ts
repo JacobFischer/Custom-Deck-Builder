@@ -1,5 +1,3 @@
-"use strict";
-
 import { EventEmitter } from "events";
 import { toCamelCase } from "src/utils/string";
 import * as uuid from "uuid/v4";

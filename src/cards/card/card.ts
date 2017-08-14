@@ -1,5 +1,3 @@
-"use strict";
-
 import {
     autoSizeAndWrapStyledText, loadTextures, newSprite, replaceAll,
     surroundText, wrapStyledText, wrapStyledTextCharacters,

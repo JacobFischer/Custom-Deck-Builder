@@ -1,4 +1,4 @@
-"use strict";
+// This is the entry point (file file) invoked by this application
 
 // css reset
 import "normalize.css";

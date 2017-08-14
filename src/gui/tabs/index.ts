@@ -1,5 +1,3 @@
-"use strict";
-
 import { Tab } from "../tabular";
 import AboutTab from "./about";
 import { DeckGeneratorTab } from "./deck-generator/";

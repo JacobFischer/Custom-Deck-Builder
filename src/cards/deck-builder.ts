@@ -1,5 +1,3 @@
-"use strict";
-
 import * as csvParse from "csv-parse";
 import { EventEmitter } from "events";
 import * as JSZip from "jszip";

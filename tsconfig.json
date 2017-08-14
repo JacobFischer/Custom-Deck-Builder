@@ -1,15 +1,18 @@
 {
     "compilerOptions": {
+        "target": "es2015",
         "module": "commonjs",
+
+        "strict": true,
         "noImplicitAny": true,
         "removeComments": true,
         "sourceMap": true,
         "noUnusedLocals": true,
+
         "outDir": "js",
-        "target": "es2015",
         "baseUrl": "./",
         "paths": {
-            "~/*" : ["src/*"]   // resolve any `~/foo/bar` to `<baseUrl>/src/foo/bar`
+            "~/*" : ["src/*"] // resolve any `~/foo/bar` to `<baseUrl>/src/foo/bar`
         }
     },
     "include": [

@@ -1,5 +1,3 @@
-"use strict";
-
 import { getTabs } from "src/gui/tabs/";
 import { Tab, Tabular } from "src/gui/tabular/";
 import { select, template } from "src/utils/";
